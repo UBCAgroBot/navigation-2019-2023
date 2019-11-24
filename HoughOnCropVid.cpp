@@ -9,7 +9,9 @@ const String window_detection_name = "HSV Image";
 const int max_value_H = 360/2;
 const int max_value = 255;
 int thresholdq = 10;
-int low_H = 0, low_S = 0, low_V = 0;
+//int low_H = 0, low_S = 0, low_V = 0;
+int low_H =21, low_S = 54, low_V = 37;
+
 int high_H = max_value_H, high_S = max_value, high_V = max_value;
 int dilation_size = 2;
 static void on_low_H_thresh_trackbar(int, void *)
@@ -82,13 +84,14 @@ int main() {
                                        Size( 2*dilation_size + 1, 2*dilation_size +1 ),
                                        Point( dilation_size, dilation_size ) );
         dilate(edges, edges, element);
-
+        GaussianBlur(edges,edges,Size(1,1),10000);
         vector<Vec4i> lines;
         HoughLinesP(edges, lines, 1, CV_PI/180, thresholdq, 10, 250);
         for(size_t i=0; i<lines.size(); i++){
             Vec4i l = lines[i];
-            line(edges, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 0, 0), 3, LINE_AA);
-
+            if(l[3]-l[1] >= 80 && l[2]-l[0]<=100){
+                line(edges, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255, 0, 0), 3, LINE_AA);
+            }
         }
         imshow("canny", edges);
 
