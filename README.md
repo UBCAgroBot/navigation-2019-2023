@@ -1,9 +1,8 @@
-# ![Navigation]()
 # Navigation
 <table>
 <tr>
 <td>
-  A webapp using Quandl API to display history of stock growth in a given period of time. It helps predict the growth of stocks from the  charts of stock performace in any period of time. It helps to judge stocks, with the principle of momentum investing, which returns 1% per month on average.
+ For AgroBot one of the main concern is the robot's navigation. The robot must autonomously navigate the crop rows and for this task we are taking a computer vision approach. The goal of this script is to efficiently detect crop rows on a video.
 </td>
 </tr>
 </table>
@@ -13,71 +12,33 @@
 Here is a working live demo :  https://iharsh234.github.io/WebApp/
 
 
-## Site
-
-### Landing Page
-Currently it is working on all NSE (India) Stocks, BSE (India) Stocks Symbol will be added soon.
+### Colour Filtering
+To accomplish this task, we need to first denoise the image. In particular, since we know we are looking for crops which are green in colour, we can filter based on colour. We convert our image to HSV format and define upper and lower bound for shades of green we capture. For example, here is an original frame from the video:
 
 ![](https://iharsh234.github.io/WebApp/images/demo/web_app_face.JPG)
 
-### Query Filled Form
+Now, we use the upper and lower bounds on our green colour to generate a mask. This is the resulting mask:
 ![](https://iharsh234.github.io/WebApp/images/demo/demo_query.JPG)
 
-### Charts
+By using bitwise and operator we see that this mask does correspond to the green regions of our image:
 ![](https://iharsh234.github.io/WebApp/images/demo/demo_chart1.JPG)
-![](https://iharsh234.github.io/WebApp/images/demo/demo_chart2.JPG)
-![](https://iharsh234.github.io/WebApp/images/demo/demo_chart3.JPG)
 
 
-## Mobile support
-The WebApp is compatible with devices of all sizes and all OS's, and consistent improvements are being made.
+## Denoising and Smoothing
+Next, we need to denoise the resulting mask (which is a binary image contains the crop rows). To do this, we perform gaussian blurring following by multiple iterations of dilation. Here is the resulting mask after dilation:
 
 ![](https://iharsh234.github.io/WebApp/images/demo/mobile.png)
+The reason we use dilation is because we want to fill the gaps in the mask to get a cleaner representation of our rows and also we want rows that are far from the camera to be merged into one. This is because these rows are not relevant to our navigation system and by merging them, we can avoid detecting them in our edge and line detection in subsequent steps.
 
 
+### Line Detection
+Although, the mask image is a binary image and it can be used directly with Hough transform, the large number of points in the image lead to noisy and slow computation. Hence, Canny edge detection was used to first decrease the number of points in image. The following image shows the results of the edge detection:
+
+Following this, we used Hough lines transform. We used the probabilistic version implemented in openCV due to faster compute time and also the ability to specify parameters such as minimum line length and maximum line gap. The following image shows the resulting lines we detected.
 
 
-## [Usage](https://iharsh234.github.io/WebApp/) 
-
-### Development
-Want to contribute? Great!
-
-To fix a bug or enhance an existing module, follow these steps:
-
-- Fork the repo
-- Create a new branch (`git checkout -b improve-feature`)
-- Make the appropriate changes in the files
-- Add changes to reflect the changes made
-- Commit your changes (`git commit -am 'Improve feature'`)
-- Push to the branch (`git push origin improve-feature`)
-- Create a Pull Request 
-
-### Bug / Feature Request
-
-If you find a bug (the website couldn't handle the query and / or gave undesired results), kindly open an issue [here](https://github.com/iharsh234/WebApp/issues/new) by including your search query and the expected result.
-
-If you'd like to request a new function, feel free to do so by opening an issue [here](https://github.com/iharsh234/WebApp/issues/new). Please include sample queries and their corresponding results.
-
-
-## Built with 
-
-- [jQuery - Ajax](http://www.w3schools.com/jquery/jquery_ref_ajax.asp) - jQuery simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
-- [Google Chart API](https://developers.google.com/chart/interactive/docs/quick_start) - Free , Rich Gallery , Customizable and Cross-browser compatible.
-- [Bootstrap](http://getbootstrap.com/) - Extensive list of components and  Bundled Javascript plugins.
-
-
-## To-do
-- Add BSE (India) Symbol to the current App.
-- Decide comparison models of Stocks. (suggestions are most welcome).
-- Another WebApp, capable of comparing at least 10 stocks.
-
-## Team
-
-[![Harsh Vijay](https://avatars1.githubusercontent.com/u/12688534?v=3&s=144)](https://github.com/iharsh234)  | [![Quandl.com](https://github.com/iharsh234/WebApp/blob/master/images/quandl.jpg)](https://www.quandl.com/)
----|---
-[Harsh Vijay ](https://github.com/iharsh234) |[Quandl](https://www.quandl.com)
-
-## [License](https://github.com/iharsh234/WebApp/blob/master/LICENSE.md)
+### How does this fit in with the rest of the system?
+We are currently using these lines and calculating their intersection which occurs at vanishing point. Then we are using a PID controller to minimimize the distance of this vanishing point from the center of our frame. Using this method, we are able to centre our chassis over the crop rows we are traversing.
 
 MIT © [Harsh Vijay ](https://github.com/iharsh234)
 
