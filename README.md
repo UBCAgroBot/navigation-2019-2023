@@ -27,7 +27,7 @@ By using bitwise and operator we see that this mask does correspond to the green
 
 
 ## Denoising and Smoothing
-Next, we need to denoise the resulting mask (which is a binary image contains the crop rows). To do this, we perform gaussian blurring following by multiple iterations of dilation. Here is the resulting mask after dilation:
+Next, we need to denoise the resulting mask (which is a binary image containing the crop rows). To do this, we perform gaussian blurring following by multiple iterations of dilation. Here is the resulting mask after dilation:
 
 ![](/Demo/denoising.png)
 
