@@ -15,7 +15,7 @@ Here is a working live demo :  https://iharsh234.github.io/WebApp/
 ### Colour Filtering
 To accomplish this task, we need to first denoise the image. In particular, since we know we are looking for crops which are green in colour, we can filter based on colour. We convert our image to HSV format and define upper and lower bound for shades of green we capture. For example, here is an original frame from the video:
 
-![](https://gitlab.com/UBCAgroBot/Navigation/-/tree/master/Demo/crop.png)
+![alt text](https://gitlab.com/UBCAgroBot/Navigation/-/tree/master/Demo/crop.png)
 
 Now, we use the upper and lower bounds on our green colour to generate a mask. This is the resulting mask:
 ![](https://iharsh234.github.io/WebApp/images/demo/demo_query.JPG)
