@@ -18,6 +18,7 @@ To accomplish this task, we need to first denoise the image. In particular, sinc
 ![](/Demo/crop.png)
 
 Now, we use the upper and lower bounds on our green colour to generate a mask. This is the resulting mask:
+
 ![](/Demo/mask.png)
 
 By using bitwise and operator we see that this mask does correspond to the green regions of our image:
