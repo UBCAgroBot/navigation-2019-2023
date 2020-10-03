@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import sys
-from functions import *
 
 class hough_algorithm:
 
