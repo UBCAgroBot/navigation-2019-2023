@@ -1,0 +1,162 @@
+import cv2
+import numpy as np
+import sys
+from functions import *
+
+class hough_algorithm:
+
+    def __init__(self):
+        # green filter
+        self.LOWER_GREEN = np.array([25,61,70])
+        self.UPPER_GREEN = np.array([55,190,177])
+
+        # gaussian blur / dilate
+        self.K_SIZE = (5,5)
+
+        # canny edge
+        self.CANNY_THRESH_1 = 100
+        self.CANNY_THRESH_2 = 200
+
+        # prob. hough
+        self.THRESHOLD = 30
+        self.MIN_LINE_LENGTH = 25
+        self.MAX_LINE_GAP = 10
+
+        # resize factor
+        self.resizeFactor = 2
+            
+    def process_frame(self, frame):
+
+        # create mask by filtering image colors
+        mask = self.createMask(frame)
+    
+        # dilate the mask
+        mask = self.dilate(mask)
+    
+        # Resize frame to smaller size to allow faster processing
+        frame = self.resize(frame, self.resizeFactor)
+        mask = self.resize(mask, self.resizeFactor)
+    
+        # Perform Canny Edge Detection
+        edges = cv2.Canny(mask, self.CANNY_THRESH_1, self.CANNY_THRESH_2)
+    
+        # Perform Hough Lines Probabilistic Transform
+        lines = cv2.HoughLinesP(
+            edges, 
+            1, 
+            np.pi/180, 
+            self.THRESHOLD, 
+            np.array([]), 
+            self.MIN_LINE_LENGTH, 
+            maxLineGap=self.MAX_LINE_GAP
+        )
+    
+        # Draw Detected Lines on the frame
+        lineimg = drawp(lines,frame.copy())
+    
+        intersections, points = self.intersectPoint(frame, lines)
+
+        # print(intersections)
+        if len(points) is not 0:
+            IntersectingX = np.average(points)
+            cv2.circle(frame, (int(IntersectingX), frame.shape[0]/2), 8, (255, 255, 255), -1)
+
+        
+        cv2.imshow('mask',mask)
+        cv2.imshow('edges',edges)
+        cv2.imshow('lineimg',lineimg)
+        cv2.imshow('frame', frame)
+    
+    def createMask(self, frame):
+        
+        # Convert to hsv format to allow for easier colour filtering
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Filter image and allow only shades of green to pass
+        mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
+        # Apply gaussian blur
+        mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
+
+        return mask
+    
+    def dilate(self, mask):
+
+        # Perform dilation on mask
+        # Dilation helps fill in gaps within a single row
+        # In addition it helps blend rows that are far from the camera together
+        # Hence, we get cleaner edges when we perform Canny edge detection
+        kernel = np.ones(self.K_SIZE, np.uint8)
+        mask = cv2.dilate(mask, kernel, iterations=4)
+
+        return mask
+    
+    def resize(self, frame, factor):
+
+        # Resize frame to smaller size to allow faster processing
+        return cv2.resize(frame, (frame.shape[1]/factor, frame.shape[0]/factor))
+
+    def drawp(self, lines,frame):
+        
+        # Helper Function to Draw Lines On Given Frame
+        if lines is not None:
+            for x1,y1,x2,y2 in lines[:,0,:]:
+                # Avoids math error, and we can skip since we don't care about horizontal lines
+                if x1 == x2:
+                    continue
+                slope = (float(y2-y1))/(x2-x1)
+                # Check if slope is sufficiently large, since we are interested in vertical lines
+                if abs(slope)>1:
+                    cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),4)
+        return frame
+
+    def intersectPoint(self, frame, lines):
+        intersections = []
+        points = []
+        lines_left = []
+        lines_right = []
+
+        if lines is not None:
+            for line in lines:
+                x1, y1, x2, y2 = line[0]
+                if x2 == x1:
+                    continue
+                else:
+                    slope = (y2-y1)/(x2-x1)
+                if slope > 1 or slope < -1:
+                    cv2.line(frame, (x1,y1), (x2,y2), (0,0,255), 1)
+                    if slope > 0:
+                        lines_right.append(line)
+                    else:
+                        lines_left.append(line)
+
+            for lineL in lines_left:
+                for lineR in lines_right:
+                    x1L, y1L, x2L, y2L = lineL[0]
+                    x1R, y1R, x2R, y2R = lineR[0]
+                    intersect = self.getIntersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
+                    if type(intersect) is bool:
+                        continue
+                    intersections.append(intersect)
+                    points.append(intersect[0])
+            
+        return intersections, points
+    
+    
+    def getIntersection(self, line1, line2):
+        s1 = np.array(line1[0])
+        e1 = np.array(line1[1])
+
+        s2 = np.array(line2[0])
+        e2 = np.array(line2[1])
+
+        a1 = (s1[1] - e1[1]) / (s1[0] - e1[0])
+        b1 = s1[1] - (a1 * s1[0])
+
+        a2 = (s2[1] - e2[1]) / (s2[0] - e2[0])
+        b2 = s2[1] - (a2 * s2[0])
+
+        if abs(a1 - a2) < sys.float_info.epsilon:
+            return False
+
+        x = (b2 - b1) / (a1 - a2)
+        y = a1 * x + b1
+        return (x, y)
