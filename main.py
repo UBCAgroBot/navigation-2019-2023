@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import hough_algorithm
 
-vid = cv2.VideoCapture("videos/cropVid2.mp4")
+vid = cv2.VideoCapture("cropVid.mp4")
  
 if(vid.isOpened() == False):
     print("Error Opening Video File")

@@ -53,12 +53,13 @@ class hough_algorithm:
         )
     
         # Draw Detected Lines on the frame
-        lineimg = drawp(lines,frame.copy())
+        lineimg = self.drawp(lines,frame.copy())
     
+        # Draw the vanishing point obtained fromm all the lines
         intersections, points = self.intersectPoint(frame, lines)
-
         vPoint = self.vanishingPoint(frame, points)
        
+        # show the frames on screen for debugging
         cv2.imshow('mask',mask)
         cv2.imshow('edges',edges)
         cv2.imshow('lineimg',lineimg)
@@ -191,9 +192,9 @@ class hough_algorithm:
         y = a1 * x + b1
         return (x, y)
 
+    # helper function to draw the vanishing point on frame
     def vanishingPoint(self, frame, points):
         if len(points) is not 0:
             IntersectingX = np.average(points)
-            cv2.circle(frame, (int(IntersectingX), 200), 8, (255, 255, 255), -1)
- 
-        return (int(IntersectingX), 200)
+            cv2.circle(frame, (int(IntersectingX), int(frame.shape[1]/2)), 8, (255, 255, 255), -1)
+            return (int(IntersectingX), int(frame.shape[1]/2))
