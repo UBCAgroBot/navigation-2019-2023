@@ -177,15 +177,20 @@ class hough_algorithm:
 
         # a1 is the slope of line1
         a1 = (s1[1] - e1[1]) / (s1[0] - e1[0])
+        # b1 is the y-int of line1
         b1 = s1[1] - (a1 * s1[0])
 
         # a2 is the slope of line2
         a2 = (s2[1] - e2[1]) / (s2[0] - e2[0])
+        # b2 is the y-int of line2
         b2 = s2[1] - (a2 * s2[0])
 
+        # check if a1 and a2 are the same (epsilon is a very small value: 10^-16)
         if abs(a1 - a2) < sys.float_info.epsilon:
             return False
 
+        # x coordinate is obtained by equating two mx+b equations where m is a1, a2 and b is b1, b2
         x = (b2 - b1) / (a1 - a2)
+        # y coordinate is just obtained by plugging in one of the slope equations (since point must be on both lines)
         y = a1 * x + b1
         return (x, y)
