@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import hough_algorithm
-
-vid = cv2.VideoCapture("videos/cropVid2.mp4")
+import contour_algorithm
+vid = cv2.VideoCapture("cropVid.mp4")
  
 if(vid.isOpened() == False):
     print("Error Opening Video File")
@@ -15,8 +15,9 @@ while(vid.isOpened()):
         break
     
     ################### ADD ALGORITHM HERE ###################
-    h = hough_algorithm.hough_algorithm()
-    h.process_frame(frame)
+    #h = hough_algorithm.hough_algorithm()
+    h = contour_algorithm.contour_algorithm()
+    h.processFrame(frame)
 
 
     key = cv2.waitKey(25)
