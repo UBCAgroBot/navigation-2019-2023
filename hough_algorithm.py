@@ -23,7 +23,9 @@ class hough_algorithm:
 
         # resize factor
         self.resizeFactor = 2
-            
+             
+    # processFrame function that is called to process a frame of a video
+    # takes in frame mat object obtained from cv2 video.read()
     def process_frame(self, frame):
 
         # create mask by filtering image colors
@@ -66,17 +68,20 @@ class hough_algorithm:
         cv2.imshow('lineimg',lineimg)
         cv2.imshow('frame', frame)
     
+    # helper function to create a mask 
+    # takes in frame mat object, returns mask mat object
     def createMask(self, frame):
         
         # Convert to hsv format to allow for easier colour filtering
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         # Filter image and allow only shades of green to pass
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
-        # Apply gaussian blur
+        # Apply gaussian blur (can be removed)
         mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
 
         return mask
     
+    # helper function to dilate a mask mat object
     def dilate(self, mask):
 
         # Perform dilation on mask
@@ -88,14 +93,15 @@ class hough_algorithm:
 
         return mask
     
+    # helper function to resize a frame mat object
     def resize(self, frame, factor):
 
-        # Resize frame to smaller size to allow faster processing
+        # resize frame to smaller size to allow faster processing
         return cv2.resize(frame, (frame.shape[1]/factor, frame.shape[0]/factor))
 
-    def drawp(self, lines,frame):
-        
-        # Helper Function to Draw Lines On Given Frame
+    # helper function to draw lines on given frame
+    def drawp(self, lines, frame):
+
         if lines is not None:
             for x1,y1,x2,y2 in lines[:,0,:]:
                 # Avoids math error, and we can skip since we don't care about horizontal lines
@@ -107,49 +113,73 @@ class hough_algorithm:
                     cv2.line(frame,(x1,y1),(x2,y2),(0,0,255),4)
         return frame
 
+    # helper function that finds an array of intersection points given an array of lines
     def intersectPoint(self, frame, lines):
         intersections = []
         points = []
         lines_left = []
         lines_right = []
 
+        # check the lines array, only run if the lines array is not empty
         if lines is not None:
+
+            # for each line in the lines array, we determine its slope.
             for line in lines:
                 x1, y1, x2, y2 = line[0]
+
+                # if the line is a vertical line, skip it
                 if x2 == x1:
                     continue
                 else:
                     slope = (y2-y1)/(x2-x1)
+                
+                # we only want to process lines that have a steep slope
+                # keep in mind the x values increase to the right, y values increase downwards in an image
                 if slope > 1 or slope < -1:
                     cv2.line(frame, (x1,y1), (x2,y2), (0,0,255), 1)
+                    
+                    # we split the lines into two different lists by their slopes (positive vs. negative)
+                    # we call these two list lines_right and lines_left
                     if slope > 0:
                         lines_right.append(line)
                     else:
                         lines_left.append(line)
 
+            # for each possible pairs of line that can be made from lines_right and lines_left, 
+            # we find an intersection point
             for lineL in lines_left:
                 for lineR in lines_right:
                     x1L, y1L, x2L, y2L = lineL[0]
                     x1R, y1R, x2R, y2R = lineR[0]
+                    
+                    # calls the getIntersection helper function
                     intersect = self.getIntersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
                     if type(intersect) is bool:
                         continue
+
+                    # the intersections array is an array of points coordinates (x, y)
+                    # the points array is an array of the x coordinates of the points
                     intersections.append(intersect)
                     points.append(intersect[0])
             
         return intersections, points
     
     
+    # helper function to help determine the intersection point coordinate given two lines
     def getIntersection(self, line1, line2):
+
+        # line has the following structure ((x1,y1), (x2,y2))
         s1 = np.array(line1[0])
         e1 = np.array(line1[1])
 
         s2 = np.array(line2[0])
         e2 = np.array(line2[1])
 
+        # a1 is the slope of line1
         a1 = (s1[1] - e1[1]) / (s1[0] - e1[0])
         b1 = s1[1] - (a1 * s1[0])
 
+        # a2 is the slope of line2
         a2 = (s2[1] - e2[1]) / (s2[0] - e2[0])
         b2 = s2[1] - (a2 * s2[0])
 
