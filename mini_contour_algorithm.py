@@ -9,15 +9,24 @@ import params
 import math
 
 class MiniContoursAlgorithm():
-    
+    # applies hsv binarization to the image
+    # slices the image into horizontal strips and finds all the contours in each strip
+    # determines the centroids for all the mini-contours
+    # takes all theses centroids and applies hough transform to find the lines that pass through the centroids
     def __init__(self, max_vote=0):
 
+        # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
+
+        # thresholds for the color of the crop rows
         self.low_green = np.array([25, 52, 72])
         self.high_green = np.array([102, 255, 255])
+        
+        # random colors for drawing lines etc
         self.color1 = (255, 255, 0) #blue
         self.color2 = (200, 200, 255) #pink
         
+        # parameters for HoughLinesPointSet
         self.max_vote = max_vote
         self.num_strips=60
         self.lines_max=30
@@ -30,6 +39,8 @@ class MiniContoursAlgorithm():
         self.theta_step=math.pi/180
 
     def apply_filters(self, originalframe):
+        # orginal_frame: BGR frame 
+        # returns frame: filtered BGR frame
 
         frame = cv2.filter2D(originalframe, -1, self.kernel)
         frame = cv2.bilateralFilter(frame, 9, 10, 75)    
@@ -38,8 +49,9 @@ class MiniContoursAlgorithm():
 
     def getCentroids(self, mask, num_strips):
 
-        # insert binary mask, int number of strips
-        # returns list of all the centroids obtained from slicing the mask into strips
+        # mask is a binary mask of the image
+        # number of strips is the number of strips to divide the image into for finding centroids
+        # returns list [(x1, y1), (x2, y2), ...] of all the centroids obtained
         
         strips = []
         width = int(mask.shape[0]/num_strips)
@@ -63,8 +75,13 @@ class MiniContoursAlgorithm():
     
     
     def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
-        # input BGR frame
-        # returns frame: original frame with hough lines drawn on, lines: list of [[votes, rho, theta]] of all lines, point_lines: list of [votes, pt1, pt2] of all lines        
+        # frame: BGR frame 
+        # num_strips: number of strips for centroid calculation
+        # other parameters for HoughLinesPointSet
+        # returns: 
+        # frame: original frame with hough lines drawn on
+        # lines: list of [[votes, rho, theta]] of all lines
+        # point_lines: list of [votes, pt1, pt2] of all lines        
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
@@ -90,9 +107,7 @@ class MiniContoursAlgorithm():
             except:
                 pass
         points_vector = np.array([points_vector])
-        lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, 
-                                    min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
-
+        lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
 
         point_lines = []
         if lines is not None:
@@ -115,6 +130,8 @@ class MiniContoursAlgorithm():
 
     def process_frame(self, originalframe):
         
+        # original_frame: BGR frame
+        # returns frame: original_frame with the lines and centroids drawn on
         frame = self.apply_filters(originalframe)
         
         frame, lines, point_lines = self.getCenterHoughLines(frame, 
