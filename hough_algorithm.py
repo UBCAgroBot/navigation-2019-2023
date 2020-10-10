@@ -57,12 +57,8 @@ class hough_algorithm:
     
         intersections, points = self.intersectPoint(frame, lines)
 
-        # print(intersections)
-        if len(points) is not 0:
-            IntersectingX = np.average(points)
-            cv2.circle(frame, (int(IntersectingX), frame.shape[0]/2), 8, (255, 255, 255), -1)
-
-        
+        vPoint = self.vanishingPoint(frame, points)
+       
         cv2.imshow('mask',mask)
         cv2.imshow('edges',edges)
         cv2.imshow('lineimg',lineimg)
@@ -194,3 +190,10 @@ class hough_algorithm:
         # y coordinate is just obtained by plugging in one of the slope equations (since point must be on both lines)
         y = a1 * x + b1
         return (x, y)
+
+    def vanishingPoint(self, frame, points):
+        if len(points) is not 0:
+            IntersectingX = np.average(points)
+            cv2.circle(frame, (int(IntersectingX), 200), 8, (255, 255, 255), -1)
+ 
+        return (int(IntersectingX), 200)
