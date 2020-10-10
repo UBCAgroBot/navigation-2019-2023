@@ -115,6 +115,9 @@ class contour_algorithm:
  
  
     def intersectPoint(self, frame, lines):
+    #Takes in a list of lines as parameters (each line is defined in the form (x1,y1,x2,y2)
+    #Categorizes each line, and creates a list of intersection points between relevant pairs of lines
+    #Returns a list of the intersection points, and an array with the x-values of the points
         intersections = []
         points = []
         lines_left = []
@@ -123,10 +126,13 @@ class contour_algorithm:
         if lines is not None:
             for line in lines:
                 x1, y1, x2, y2 = line
+                
                 if x2 == x1:
                     continue
                 else:
                     slope = (y2-y1)/(x2-x1)
+                #create two lists of lines, one for lines with negative slope (on the right side of image)
+                # and another list for lines with positive slope (on the left side of the image)
                 if slope > 1 or slope < -1:
                     cv2.line(frame, (x1,y1), (x2,y2), (0,0,255), 1)
                     if slope > 0:
@@ -135,6 +141,8 @@ class contour_algorithm:
                         lines_left.append(line)
  
             for lineL in lines_left:
+                #Uses the getIntersection helper function to find the intersection between every possible pair of 
+                #left and right line
                 for lineR in lines_right:
                     x1L, y1L, x2L, y2L = lineL
                     x1R, y1R, x2R, y2R = lineR
@@ -142,12 +150,15 @@ class contour_algorithm:
                     if type(intersect) is bool:
                         continue
                     intersections.append(intersect)
+                    #The points array stores the x-coordinate of each intersection point
                     points.append(intersect[0])
             
         return intersections, points
     
     
     def getIntersection(self, line1, line2):
+    #Takes in two lines as parameters (each line is defined in the form (x1,y1,x2,y2)
+    #Finds the intersection point of the two lines and returns this point as a tuple
         s1 = np.array(line1[0])
         e1 = np.array(line1[1])
  
@@ -169,6 +180,9 @@ class contour_algorithm:
  
  
     def vanishingPoint(self, frame, points):
+    #Takes in a frame and an array of values (points - where points is an array of the x-coordinate values of all the intersection points) 
+    #Calculates the average of the x-coordinates, and draws a white circle on frame at point the (X_average, 200)
+    #Returns the vanishing point (X_average, 200) as a tuple
         if len(points) is not 0:
             IntersectingX = np.average(points)
             cv2.circle(frame, (int(IntersectingX), 200), 8, (255, 255, 255), -1)
