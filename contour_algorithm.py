@@ -4,7 +4,7 @@ import sys
  
 class contour_algorithm:
     def __init__(self):
-        #constructor -- assigns the following parameters
+    #constructor -- assigns the following parameters
         
         #HSV green thresholds
         self.low_green = np.array([25, 52, 72])
@@ -31,10 +31,10 @@ class contour_algorithm:
         
  
     def processFrame(self, frame):
-        #This function uses contouring to create contours around each crop row
-        #and uses these contours to find centroid lines, and the correspond row vanishing point
-        #This function takes in the current frame (mat) as a parameter, and returns the 
-        #vanishing point (tuple)
+    #This function uses contouring to create contours around each crop row
+    #and uses these contours to find centroid lines, and the correspond row vanishing point
+    #This function takes in the current frame (mat) as a parameter, and returns the 
+    #vanishing point (tuple)
         
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
         mask = self.createBinaryMask(frame) 
@@ -60,9 +60,9 @@ class contour_algorithm:
  
  
     def createBinaryMask(self, frame):
-        #Current frame is input as a parameter
-        #The function uses HSV filtering with the specificed low_green to high_green HSV range
-        #to binarize the image and returns the binary frame
+    #Current frame is input as a parameter
+    #The function uses HSV filtering with the specificed low_green to high_green HSV range
+    #to binarize the image and returns the binary frame
         
         # Run averaging filter to blur the frame 
         kernel = np.ones((5,5),np.float32)/25
@@ -76,17 +76,17 @@ class contour_algorithm:
         return mask
  
     def gaussianBlur(self, frame):
-        # Current frame is input as a parameter
-        # This function applies gaussian blurring to the frame
-        # And returns the resulting blurred frame
+    # Current frame is input as a parameter
+    # This function applies gaussian blurring to the frame
+    # And returns the resulting blurred frame
         mask = cv2.GaussianBlur(frame, self.gaussKernelSize, self.sigmaX)
         return mask
  
     def ellipseSlopes(self, cnt, black_frame):
-        #Takes in the list of contours on the frame and the frame with contours (black frame) as parameters
-        #This function draws ellipses around each contour on black_frame using the fitEllipse function
-        #Uses the fitline function with the list of contours to create a set of lines
-        #Returns an array of lines, an array of slopes and an updated frame with ellipses and lines
+    #Takes in the list of contours on the frame and the frame with contours (black frame) as parameters
+    #This function draws ellipses around each contour on black_frame using the fitEllipse function
+    #Uses the fitline function with the list of contours to create a set of lines
+    #Returns an array of lines, an array of slopes and an updated frame with ellipses and lines
         slopes = []
         lines = []
         for cnt in cnt:
@@ -177,8 +177,8 @@ class contour_algorithm:
         x = (b2 - b1) / (a1 - a2)
         y = a1 * x + b1
         return (x, y)
- 
- 
+
+
     def vanishingPoint(self, frame, points):
     #Takes in a frame and an array of values (points - where points is an array of the x-coordinate values of all the intersection points) 
     #Calculates the average of the x-coordinates, and draws a white circle on frame at point the (X_average, 200)
