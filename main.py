@@ -15,8 +15,8 @@ while(vid.isOpened()):
         break
     
     ################### ADD ALGORITHM HERE ###################
-    #h = hough_algorithm.hough_algorithm()
-    h = contour_algorithm.contour_algorithm()
+    h = hough_algorithm.hough_algorithm()
+    # h = contour_algorithm.contour_algorithm()
     h.processFrame(frame)
 
 

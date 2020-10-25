@@ -26,7 +26,7 @@ class hough_algorithm:
              
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def process_frame(self, frame):
+    def processFrame(self, frame):
 
         # create mask by filtering image colors
         mask = self.createMask(frame)
@@ -94,7 +94,7 @@ class hough_algorithm:
     def resize(self, frame, factor):
 
         # resize frame to smaller size to allow faster processing
-        return cv2.resize(frame, (frame.shape[1]/factor, frame.shape[0]/factor))
+        return cv2.resize(frame, (int(frame.shape[1]/factor), int(frame.shape[0]/factor)))
 
     # helper function to draw lines on given frame
     def drawp(self, lines, frame):
@@ -194,7 +194,7 @@ class hough_algorithm:
 
     # helper function to draw the vanishing point on frame
     def vanishingPoint(self, frame, points):
-        if len(points) is not 0:
+        if len(points) != 0:
             IntersectingX = np.average(points)
             cv2.circle(frame, (int(IntersectingX), int(frame.shape[1]/2)), 8, (255, 255, 255), -1)
             return (int(IntersectingX), int(frame.shape[1]/2))
