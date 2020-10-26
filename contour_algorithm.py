@@ -30,7 +30,7 @@ class contour_algorithm:
         self.WIDTH = 1280
         
  
-    def processFrame(self, frame):
+    def process_frame(self, frame):
     #This function uses contouring to create contours around each crop row
     #and uses these contours to find centroid lines, and the correspond row vanishing point
     #This function takes in the current frame (mat) as a parameter, and returns the 

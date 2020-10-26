@@ -22,7 +22,7 @@ class hough_algorithm:
         self.MAX_LINE_GAP = 10
 
         # resize factor
-        self.resizeFactor = 2
+        self.resizeFactor = 1
              
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
@@ -94,7 +94,7 @@ class hough_algorithm:
     def resize(self, frame, factor):
 
         # resize frame to smaller size to allow faster processing
-        return cv2.resize(frame, (frame.shape[1]/factor, frame.shape[0]/factor))
+        return cv2.resize(frame, (int(frame.shape[1]/factor), int(frame.shape[0]/factor)))
 
     # helper function to draw lines on given frame
     def drawp(self, lines, frame):

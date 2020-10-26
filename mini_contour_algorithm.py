@@ -3,12 +3,9 @@ import numpy as np
 import time
 import operator
 import sys
-from pid import PID as pid
-import functions as fn
-import params
 import math
 
-class MiniContoursAlgorithm():
+class mini_contour_algorithm():
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
     # determines the centroids for all the mini-contours
@@ -60,7 +57,7 @@ class MiniContoursAlgorithm():
 
         centroids = []
         for i, strip in enumerate(strips):
-            _, contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
@@ -144,6 +141,8 @@ class MiniContoursAlgorithm():
                                                              min_theta=self.min_theta,
                                                              max_theta=self.max_theta,
                                                              theta_step=self.theta_step)
+
+        cv2.imshow('frame', frame)
 
         return frame
         
