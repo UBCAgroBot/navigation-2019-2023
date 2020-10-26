@@ -3,7 +3,7 @@ import numpy as np
 import hough_algorithm
 import contour_algorithm
 import mini_contour_algorithm
-vid = cv2.VideoCapture("videos/videos/cropVid2.mp4")
+vid = cv2.VideoCapture("videos/cropVid2.mp4")
  
 if(vid.isOpened() == False):
     print("Error Opening Video File")
