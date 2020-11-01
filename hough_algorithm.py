@@ -195,6 +195,6 @@ class hough_algorithm:
     # helper function to draw the vanishing point on frame
     def vanishingPoint(self, frame, points):
         if len(points) != 0:
-            IntersectingX = np.average(points)
+            IntersectingX = np.median(points)
             cv2.circle(frame, (int(IntersectingX), int(frame.shape[1]/2)), 8, (255, 255, 255), -1)
             return (int(IntersectingX), int(frame.shape[1]/2))

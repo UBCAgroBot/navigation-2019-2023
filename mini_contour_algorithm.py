@@ -3,9 +3,6 @@ import numpy as np
 import time
 import operator
 import sys
-from pid import PID as pid
-import functions as fn
-import params
 import math
 
 class MiniContoursAlgorithm():
@@ -60,7 +57,8 @@ class MiniContoursAlgorithm():
 
         centroids = []
         for i, strip in enumerate(strips):
-            _, contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            #the below line works for some versions of cv2, add an "_," to the start if it receives 3 values
+            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
@@ -128,7 +126,7 @@ class MiniContoursAlgorithm():
 
         return frame, lines, point_lines
 
-    def process_frame(self, originalframe):
+    def processFrame(self, originalframe):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
@@ -145,6 +143,7 @@ class MiniContoursAlgorithm():
                                                              max_theta=self.max_theta,
                                                              theta_step=self.theta_step)
 
+        cv2.imshow('mini-contour',frame)
         return frame
         
    

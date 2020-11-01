@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import hough_algorithm
 import contour_algorithm
+import mini_contour_algorithm
 vid = cv2.VideoCapture("/home/lolmaker/Documents/Agrobots/Codebase official/videos/cropVid2.mp4")
  
 if(vid.isOpened() == False):
@@ -15,8 +16,9 @@ while(vid.isOpened()):
         break
     
     ################### ADD ALGORITHM HERE ###################
-    h = hough_algorithm.hough_algorithm()
-    # h = contour_algorithm.contour_algorithm()
+    #h = hough_algorithm.hough_algorithm()
+    #h = contour_algorithm.contour_algorithm()
+    h = mini_contour_algorithm.MiniContoursAlgorithm()
     h.processFrame(frame)
 
 

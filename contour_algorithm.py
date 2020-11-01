@@ -184,7 +184,7 @@ class contour_algorithm:
     #Calculates the average of the x-coordinates, and draws a white circle on frame at point the (X_average, 200)
     #Returns the vanishing point (X_average, 200) as a tuple
         if len(points) is not 0:
-            IntersectingX = np.average(points)
+            IntersectingX = np.median(points)
             cv2.circle(frame, (int(IntersectingX), 200), 8, (255, 255, 255), -1)
  
             return (int(IntersectingX), 200)
