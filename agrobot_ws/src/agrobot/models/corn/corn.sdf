@@ -20,7 +20,7 @@
             <geometry>
                 <mesh>
                     <uri>model://corn/meshes/corn_row.dae</uri>
-                    <scale>0.3 0.2 0.25</scale>
+                    <scale>0.3 0.15 0.25</scale>
                 </mesh>
             </geometry>
             <material>

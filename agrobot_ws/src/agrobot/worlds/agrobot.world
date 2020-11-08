@@ -11,13 +11,31 @@
       <uri>model://corn</uri>
       <name>corn_row_1</name>
       <static>true</static>
-      <pose> -5 0.1 0 0 0 0</pose>
+      <pose> 0 -2 0 0 0 0</pose>
     </include>
     <include>
       <uri>model://corn</uri>
       <name>corn_row_2</name>
       <static>true</static>
-      <pose> -5 1 0 0 0 0</pose>
+      <pose> 0 -1 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://corn</uri>
+      <name>corn_row_3</name>
+      <static>true</static>
+      <pose> 0 0 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://corn</uri>
+      <name>corn_row_4</name>
+      <static>true</static>
+      <pose> 0 1 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://corn</uri>
+      <name>corn_row_5</name>
+      <static>true</static>
+      <pose> 0 2 0 0 0 0</pose>
     </include>
     <gui>
       <camera name="user_camera">
