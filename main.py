@@ -1,4 +1,4 @@
-import cv2
+from cv2 import cv2
 import numpy as np
 import hough_algorithm
 import contour_algorithm
@@ -16,9 +16,9 @@ while (vid.isOpened()):
         break
 
     ################### ADD ALGORITHM HERE ###################
-    # h = hough_algorithm.hough_algorithm()
-    h = contour_algorithm.contour_algorithm()
-    # h = mini_contour_algorithm.MiniContoursAlgorithm()
+    #h = hough_algorithm.hough_algorithm()
+    #h = contour_algorithm.contour_algorithm()
+    #h = mini_contour_algorithm.MiniContoursAlgorithm()
     h.processFrame(frame)
 
     key = cv2.waitKey(25)

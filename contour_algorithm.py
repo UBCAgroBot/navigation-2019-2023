@@ -2,8 +2,11 @@ import numpy as np
 import cv2
 import sys
 
+import Lines
+
 
 class contour_algorithm:
+
     def __init__(self):
         # constructor -- assigns the following parameters
 
@@ -47,8 +50,8 @@ class contour_algorithm:
         # fillPoly fills in the polygons in the frame
         cv2.fillPoly(black_frame, pts=cnt, color=self.contourColor)
         lines, slopes, ellipseFrame = self.ellipseSlopes(cnt, black_frame)
-        intersections, points = self.intersectPoint(ellipseFrame, lines)
-        vanishpoint = self.vanishingPoint(ellipseFrame, points)
+        intersections, points = Lines.getIntersections(lines)
+        vanishpoint = Lines.drawVanishingPoint(ellipseFrame, points)
 
         cv2.imshow("contours", black_frame)
         cv2.imshow("ellipses", ellipseFrame)
