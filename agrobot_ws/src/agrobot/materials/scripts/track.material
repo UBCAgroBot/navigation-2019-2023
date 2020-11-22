@@ -5,7 +5,7 @@ material track{
         {
             texture_unit
             {
-                texture dirt.png
+                texture black_dirt.png
             }
         }   
     }
