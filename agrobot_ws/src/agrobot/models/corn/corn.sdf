@@ -19,8 +19,8 @@
             <pose>0 0 0 0 0 0</pose>
             <geometry>
                 <mesh>
-                    <uri>model://corn/meshes/corn_row.dae</uri>
-                    <scale>0.3 0.15 0.25</scale>
+                    <uri>model://corn/meshes/corn_group.dae</uri>
+                    <scale>1.1 0.6 0.4</scale>
                 </mesh>
             </geometry>
             <material>

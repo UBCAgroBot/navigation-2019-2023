@@ -174,11 +174,16 @@ def main(args):
     
     try:
         rospy.spin()
+        stop_velocity = Twist()
+        stop_velocity.linear.x = 0
+        stop_velocity.angular.z = 0
+        rospy.Publisher('/cmd_vel', Twist, queue_size=1).publish(stop_velocity)
+        print('published')
+
     except KeyboardInterrupt:
         print("Shutting down")
     cv2.destroyAllWindows()
     
-
 if __name__ == '__main__':
     print('started adjust_velocity')
     main(sys.argv)
