@@ -16,10 +16,13 @@ while (vid.isOpened()):
         break
 
     ################### ADD ALGORITHM HERE ###################
-    #h = hough_algorithm.hough_algorithm()
-    #h = contour_algorithm.contour_algorithm()
-    #h = mini_contour_algorithm.MiniContoursAlgorithm()
-    h.processFrame(frame)
+    # Uncomment the required algorithm
+    a = hough_algorithm.hough_algorithm()
+    # b = contour_algorithm.contour_algorithm()
+    # c = mini_contour_algorithm.MiniContoursAlgorithm()
+    a.processFrame(frame)
+    # b.processFrame(frame)
+    # c.processFrame(frame)
 
     key = cv2.waitKey(25)
     # If Enter is pressed capture current frames

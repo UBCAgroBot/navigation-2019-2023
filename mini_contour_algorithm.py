@@ -107,18 +107,7 @@ class MiniContoursAlgorithm:
                                        max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta,
                                        theta_step=theta_step)
 
-        point_lines = []
-        if lines is not None:
-            for line in lines:
-                if line[0][0] > self.max_vote:
-                    points = Lines.polar2points(line[0][1], line[0][2])
-                    pt1 = points[0]
-                    pt2 = points[1]
-                    point_lines.append([line[0][0], pt1, pt2])
-                    cv2.line(frame, pt1, pt2, 255, 6, cv2.LINE_AA)
-                    cv2.line(frame, pt1, pt2, (0, 0, 255), 6, cv2.LINE_AA)
-
-        return frame, lines, point_lines
+        return frame, lines
 
     def processFrame(self, originalframe):
 
@@ -126,7 +115,7 @@ class MiniContoursAlgorithm:
         # returns frame: original_frame with the lines and centroids drawn on
         frame = self.apply_filters(originalframe)
 
-        frame, lines, point_lines = self.getCenterHoughLines(frame,
+        frame, lines = self.getCenterHoughLines(frame,
                                                              num_strips=100,
                                                              lines_max=self.lines_max,
                                                              threshold=self.threshold,
@@ -138,13 +127,14 @@ class MiniContoursAlgorithm:
                                                              theta_step=self.theta_step)
 
         # draw detected lines on a frame
-        lineimg = Lines.drawLinesOnFrame(point_lines, originalframe.copy())
+        lineimg = Lines.drawLinesOnFrame(lines, originalframe.copy())
 
         # Calculate intersection points
-        intersections, points = Lines.getIntersections(point_lines)
+        intersections, points = Lines.getIntersections(lines)
 
         # Draw vanishing point
         Lines.drawVanishingPoint(lineimg, points)
 
-        cv2.imshow('lineimg', lineimg)
+        cv2.imshow('mini contour algorithm', lineimg)
         return lineimg
+
