@@ -13,16 +13,16 @@ class hough_algorithm:
         self.UPPER_GREEN = np.array([55, 190, 177])
 
         # gaussian blur / dilate
-        self.K_SIZE = (5, 5)
+        self.K_SIZE = (3, 3)
 
         # canny edge
-        self.CANNY_THRESH_1 = 100
-        self.CANNY_THRESH_2 = 200
+        self.CANNY_THRESH_1 = 600
+        self.CANNY_THRESH_2 = 400
 
         # prob. hough
-        self.THRESHOLD = 30
-        self.MIN_LINE_LENGTH = 25
-        self.MAX_LINE_GAP = 10
+        self.THRESHOLD = 40
+        self.MIN_LINE_LENGTH = 40
+        self.MAX_LINE_GAP = 15
 
         # resize factor
         self.resizeFactor = 2
