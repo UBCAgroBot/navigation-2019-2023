@@ -11,33 +11,16 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
-def process_frame(frame, last_cX):
-    original_frame = frame
-    height = frame.shape[0]
-    width = frame.shape[1]
-
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(gray_frame, 80, 90, cv2.THRESH_BINARY_INV)
-    cv2.imshow('threshold', thresh)
-    cv2.waitKey(1)
-    M = cv2.moments(thresh)
-    if M["m00"] != 0:
-        cX = int(M["m10"] / M["m00"])
-    else:
-        cX = last_cX
-    cY = height/2
-
-    cv2.circle(original_frame,(cX,cY), 10, (0,0,255), -1)
-
-    return original_frame, cX
+import hough_algorithm
 
 class image_converter:
 
   def __init__(self):
     self.centroid_location_pub = rospy.Publisher("centroid_location", Float32)
-    self.last_location = 400
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("/robot/camera/image_raw",Image,self.callback)
+    self.h = hough_algorithm.hough_algorithm()
+    self.last_location = 100
 
 
   def callback(self,data):
@@ -46,12 +29,17 @@ class image_converter:
     except CvBridgeError as e:
       print(e)
 
-    processed_image, location = process_frame(cv_image, self.last_location)
-    self.last_location = location
+    processed_image, intersect_point = self.h.processFrame(cv_image)
+
     cv2.imshow("Image window", processed_image)
     cv2.waitKey(1)
 
-    self.centroid_location_pub.publish(location)
+    if intersect_point is not None:
+        self.centroid_location_pub.publish(intersect_point[0])
+        self.last_location = intersect_point[0]
+    else:
+        self.centroid_location_pub.publish(self.last_location)
+
 
 def main(args):
   rospy.init_node('image_converter', anonymous=True)

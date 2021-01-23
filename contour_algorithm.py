@@ -31,16 +31,6 @@ class contour_algorithm:
         # dimensions
         self.HEIGHT = 720
         self.WIDTH = 1280
-<<<<<<< HEAD
-        
- 
-    def process_frame(self, frame):
-    #This function uses contouring to create contours around each crop row
-    #and uses these contours to find centroid lines, and the correspond row vanishing point
-    #This function takes in the current frame (mat) as a parameter, and returns the 
-    #vanishing point (tuple)
-        
-=======
 
     def processFrame(self, frame):
         # This function uses contouring to create contours around each crop row
@@ -48,7 +38,6 @@ class contour_algorithm:
         # This function takes in the current frame (mat) as a parameter, and returns the
         # vanishing point (tuple)
 
->>>>>>> origin/RithinBranch
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
         mask = self.createBinaryMask(frame)
 
@@ -65,8 +54,9 @@ class contour_algorithm:
         intersections, points = Lines.getIntersections(lines)
         vanishpoint = Lines.drawVanishingPoint(ellipseFrame, points)
 
+        return ellipseFrame, vanishpoint
         #cv2.imshow("contours", black_frame)
-        cv2.imshow("contour algorithm", ellipseFrame)
+        # cv2.imshow("contour algorithm", ellipseFrame)
 
     # return vanishpoint
 

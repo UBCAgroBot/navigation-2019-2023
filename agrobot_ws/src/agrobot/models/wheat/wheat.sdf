@@ -24,7 +24,7 @@
                 </mesh>
             </geometry>
             <material>
-            <ambient>0.9 0.76 0.61 1</ambient>
+            <ambient>12 129 12 1</ambient>
             <diffuse>1 1 1 1</diffuse>
             <specular>0 0.5 0 0</specular>
             <emissive>0 0 0 1</emissive>

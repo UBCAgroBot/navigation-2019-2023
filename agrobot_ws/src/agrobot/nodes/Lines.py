@@ -13,7 +13,7 @@ Every Algorithm calls functions from this class to:
 """
 
 
-def polar2points(rho: float, theta: float):
+def polar2points(rho, theta):
     """
     Helper function that,
     converts a polar definition of a line to a 2 point definition.

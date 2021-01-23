@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-import cv2
-import numpy as np
-import time
-import operator
-import sys
-=======
 from cv2 import cv2
 from numpy import array, ones, float32, zeros
->>>>>>> origin/RithinBranch
 import math
 import Lines
 
-<<<<<<< HEAD
-class mini_contour_algorithm():
-=======
 
 class MiniContoursAlgorithm:
->>>>>>> origin/RithinBranch
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
     # determines the centroids for all the mini-contours
@@ -68,10 +56,7 @@ class MiniContoursAlgorithm:
 
         centroids = []
         for i, strip in enumerate(strips):
-<<<<<<< HEAD
-=======
             # the below line works for some versions of cv2, add an "_," to the start if it receives 3 values
->>>>>>> origin/RithinBranch
             contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
@@ -141,13 +126,6 @@ class MiniContoursAlgorithm:
                                                              max_theta=self.max_theta,
                                                              theta_step=self.theta_step)
 
-<<<<<<< HEAD
-        cv2.imshow('frame', frame)
-
-        return frame
-        
-   
-=======
         # draw detected lines on a frame
         lineimg = Lines.drawLinesOnFrame(lines, originalframe.copy())
 
@@ -160,4 +138,3 @@ class MiniContoursAlgorithm:
         cv2.imshow('mini contour algorithm', lineimg)
         return lineimg
 
->>>>>>> origin/RithinBranch

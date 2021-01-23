@@ -128,7 +128,7 @@ class velocity_control:
         self.pid_controller.setKd(cv2.getTrackbarPos('derivative', "PID Controller"))
         self.pid_controller.setKi(cv2.getTrackbarPos('integral', "PID Controller"))
         
-        error = centroid - 640
+        error = centroid - 200
         self.pid_controller.update(error, time.time())
 
         scaling_factor = cv2.getTrackbarPos('scale factor', "PID Controller")

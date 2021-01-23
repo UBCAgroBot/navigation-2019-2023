@@ -2,7 +2,7 @@
 <include file="$(find gazebo_ros)/launch/empty_world.launch">
 	<env name="GAZEBO_RESOURCE_PATH" value="$(find agrobot)"/>
 	<env name="GAZEBO_MODEL_PATH" value="$(find agrobot)/models"/>
-	<arg name="world_name" value="$(find agrobot)/worlds/agrobot.world"/>
+	<arg name="world_name" value="$(find agrobot)/worlds/corn.world"/>
 	<arg name="gui" value="true"/>
 </include>
 <include file="$(find agrobot)/launch/robot.launch">
