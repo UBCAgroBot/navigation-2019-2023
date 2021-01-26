@@ -8,6 +8,9 @@ Run the following commands to open the world:
 -	Go to agrobot_ws/src folder
 -	Run bash script (start_corn_field.bash or start_wheat_field.bash)
 
+To run PID, open a new terminal:
+- Run run_controller bash script
+
 To reset the position of the robot:
 -	Edit > Reset model poses (to reset the position of your robot to the start position)
 
