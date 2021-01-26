@@ -6,7 +6,7 @@ Run the following Commands the first time:
 
 Run the following commands to open the world:
 -	Go to agrobot_ws/src folder
--	Run bash script (start_corn_field.bash or start_wheat_field.bash)
+-	Run bash script (start_corn_field.sh or start_wheat_field.sh)
 
 To run PID, open a new terminal:
 - Run run_controller bash script
