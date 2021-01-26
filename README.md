@@ -1,3 +1,17 @@
+#Commands to Start World in Gazebo
+
+Run the following Commands the first time:
+-	source ~/AgroBot/Navigation/agrobot_ws/devel/setup.bash
+-	In agrobot_ws folder run catkin_make
+
+Run the following commands to open the world:
+-	Go to agrobot_ws/src folder
+-	Run bash script (start_corn_field.bash or start_wheat_field.bash)
+
+To reset the position of the robot:
+-	Edit > Reset model poses (to reset the position of your robot to the start position)
+
+
 # Navigation
 <table>
 <tr>
