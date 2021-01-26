@@ -1,4 +1,4 @@
-#Commands to Start World in Gazebo
+# Commands to Start World in Gazebo
 
 Run the following Commands the first time:
 -	source ~/AgroBot/Navigation/agrobot_ws/devel/setup.bash
