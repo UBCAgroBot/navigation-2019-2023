@@ -8,14 +8,14 @@ import rospy
 import sys
 import numpy as np
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, String
 
 import time
 
 # taken from https://github.com/ivmech/ivPID
 class PID:
 
-    def __init__(self, P=0.2, I=0.0, D=0.0, current_time=None):
+    def __init__(self, P=0.0, I=0.0, D=0.0, current_time=None):
 
         self.Kp = P
         self.Ki = I
@@ -115,31 +115,57 @@ class velocity_control:
         self.centroid_location = 0
         self.velocity_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         self.centroid_location_sub = rospy.Subscriber('/centroid_location', Float32, self.callback)
+        self.collisions_sub = rospy.Subscriber('corner_collisions', String, self.corner_collisions_callback)
         self.pid_controller = PID(0,0,0,time.time())
+        self.velocity = Twist()
+        self.collisions = [0,0,0,0]
         
     def get_velocity(self, centroid):
 
-        # turning_factor = pid_control(centroid)
-        turning_factor = 1
-        driving_speed = cv2.getTrackbarPos('driving speed', "PID Controller") / 10.0
-        turning_speed = cv2.getTrackbarPos('turning speed', "PID Controller") / 10.0
+        self.velocity.linear.x = cv2.getTrackbarPos('driving speed', "PID Controller") / 25
         
         self.pid_controller.setKp(cv2.getTrackbarPos('proportional', "PID Controller"))
         self.pid_controller.setKd(cv2.getTrackbarPos('derivative', "PID Controller"))
         self.pid_controller.setKi(cv2.getTrackbarPos('integral', "PID Controller"))
         
+        
         error = centroid - 200
+        if self.collisions[0] or self.collisions[2]:
+            error -= 60
+        elif self.collisions[1] or self.collisions[3]:
+            error += 60
+
         self.pid_controller.update(error, time.time())
 
         scaling_factor = cv2.getTrackbarPos('scale factor', "PID Controller")
         pid_factor = self.pid_controller.output / scaling_factor
         # print("pid factor ", pid_factor)
 
-        velocity = Twist()
-        velocity.linear.x = driving_speed
-        velocity.angular.z = turning_speed*pid_factor
-        
-        return velocity
+        speed_change = 0.1*pid_factor
+        max_change = 0.1
+        if speed_change > 0:
+            speed_change = max(speed_change, max_change)
+        else:
+            speed_change = min(speed_change, -max_change)
+
+        self.velocity.angular.z += speed_change
+
+        max_turning_speed = 5
+        if self.velocity.angular.z > 0:
+            self.velocity.angular.z = min(self.velocity.angular.z, max_turning_speed)
+        elif self.velocity.angular.z < 0:
+            self.velocity.angular.z = max(self.velocity.angular.z, -max_turning_speed)
+
+        if self.collisions[0] or self.collisions[3]:
+            self.velocity.angular.z += 0.5
+        elif self.collisions[1] or self.collisions[2]:
+            self.velocity.angular.z -= 0.5
+
+        if self.velocity.linear.x == 0:
+            self.velocity.angular.z = 0
+        # print('error', error)
+        # print('driving: ', self.velocity.linear.x, 'angular', self.velocity.angular.z)
+        return self.velocity
     
 
 
@@ -147,25 +173,33 @@ class velocity_control:
         self.centroid_location = data.data
         cv2.imshow("PID Controller", np.zeros((1,400,3), np.uint8))
         cv2.waitKey(1)
-        cv2.createTrackbar('driving speed','PID Controller',0,100,nothing)   
-        cv2.createTrackbar('turning speed','PID Controller',0,100,nothing)
-        cv2.createTrackbar('proportional','PID Controller',0,100,nothing)
-        cv2.createTrackbar('derivative','PID Controller',0,100,nothing)
-        cv2.createTrackbar('integral','PID Controller',0,100,nothing)
-        cv2.createTrackbar('scale factor','PID Controller',1000,5000,nothing)
+        cv2.createTrackbar('driving speed','PID Controller',0,10,nothing)   
+        cv2.createTrackbar('proportional','PID Controller',0,200,nothing)
+        cv2.createTrackbar('derivative','PID Controller',0,200,nothing)
+        cv2.createTrackbar('integral','PID Controller',0,200,nothing)
+        cv2.createTrackbar('scale factor','PID Controller',1,5000,nothing)
         
         if (time.time() - self.init_time) < 2.0:
             # initial values for PID control
-            cv2.setTrackbarPos('driving speed', 'PID Controller', 1)
-            cv2.setTrackbarPos('turning speed', 'PID Controller', 1)
-            cv2.setTrackbarPos('proportional', 'PID Controller', 1)
-            cv2.setTrackbarPos('derivative', 'PID Controller', 0)
-            cv2.setTrackbarPos('integral', 'PID Controller', 0)
+            cv2.setTrackbarPos('driving speed', 'PID Controller', 0)
+            cv2.setTrackbarPos('proportional', 'PID Controller', 31)
+            cv2.setTrackbarPos('derivative', 'PID Controller', 97)
+            cv2.setTrackbarPos('integral', 'PID Controller', 5)
             cv2.setTrackbarPos('scale factor', 'PID Controller', 1000)
 
         velocity = self.get_velocity(self.centroid_location)
         # print("speed: " + str(velocity.linear.x) + "  turn: " + str(velocity.angular.z) + "\n")
         self.velocity_pub.publish(velocity)
+    
+    def corner_collisions_callback(self, data):
+        array_string = data.data
+        self.collisions[0] = int(array_string[1])
+        self.collisions[1] = int(array_string[4])
+        self.collisions[2] = int(array_string[7])
+        self.collisions[3] = int(array_string[10])
+
+        
+
 
     
 def main(args):
