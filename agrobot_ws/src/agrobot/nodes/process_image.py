@@ -84,7 +84,7 @@ class image_converter:
         # end_point = (int(m*800 + b), 800)
         # image = cv2.line(image, start_point, end_point, (255,0,0), 4)
 
-        cv2.imshow('mask', closed)
+        # cv2.imshow('mask', closed)
 
         def cut_rectangle_mask(c1, c2):
             return closed[c1[1]:c2[1],c1[0]:c2[0]]
@@ -123,10 +123,10 @@ class image_converter:
             collisions[3] = 1
         
         
-        cv2.imshow('front left', front_left)
-        cv2.imshow('front right', front_right)
-        cv2.imshow('back left', back_left)
-        cv2.imshow('back right', back_right)
+        # cv2.imshow('front left', front_left)
+        # cv2.imshow('front right', front_right)
+        # cv2.imshow('back left', back_left)
+        # cv2.imshow('back right', back_right)
 
         
 

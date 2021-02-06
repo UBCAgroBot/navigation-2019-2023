@@ -142,7 +142,7 @@ class velocity_control:
         # print("pid factor ", pid_factor)
 
         speed_change = 0.1*pid_factor
-        max_change = 0.1
+        max_change = 0.3
         if speed_change > 0:
             speed_change = max(speed_change, max_change)
         else:
@@ -164,7 +164,7 @@ class velocity_control:
         if self.velocity.linear.x == 0:
             self.velocity.angular.z = 0
         # print('error', error)
-        # print('driving: ', self.velocity.linear.x, 'angular', self.velocity.angular.z)
+        print('driving: ', self.velocity.linear.x, 'angular', self.velocity.angular.z)
         return self.velocity
     
 
@@ -175,7 +175,7 @@ class velocity_control:
         cv2.waitKey(1)
         cv2.createTrackbar('driving speed','PID Controller',0,10,nothing)   
         cv2.createTrackbar('proportional','PID Controller',0,200,nothing)
-        cv2.createTrackbar('derivative','PID Controller',0,200,nothing)
+        cv2.createTrackbar('derivative','PID Controller',0,700,nothing)
         cv2.createTrackbar('integral','PID Controller',0,200,nothing)
         cv2.createTrackbar('scale factor','PID Controller',1,5000,nothing)
         
