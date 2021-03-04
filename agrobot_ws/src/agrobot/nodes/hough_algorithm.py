@@ -10,9 +10,14 @@ class hough_algorithm:
     def __init__(self):
         # Files, setup, OpenCV Tutorial
         # Master, demo
-        # green filter
-        self.LOWER_GREEN = np.array([31, 43, 23])
-        self.UPPER_GREEN = np.array([255, 255, 100])
+
+        # filter for corn
+        self.LOWER_GREEN = np.array([17, 26, 0])
+        self.UPPER_GREEN = np.array([93, 255, 255])
+
+        # filter for wheat
+        # self.LOWER_GREEN = np.array([31, 43, 23])
+        # self.UPPER_GREEN = np.array([255, 255, 100])
 
         # gaussian blur / dilate
         self.K_SIZE = (3, 3)
@@ -27,7 +32,7 @@ class hough_algorithm:
         self.MAX_LINE_GAP = 15
 
         # resize factor
-        self.resizeFactor = 2
+        self.resizeFactor = 1
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
@@ -64,12 +69,15 @@ class hough_algorithm:
         intersections, points = Lines.getIntersections(lines)
         vPoint = Lines.drawVanishingPoint(lineimg, points)
 
-        return lineimg, vPoint
+        
         # show the frames on screen for debugging
-        # cv2.imshow('frame', frame)
-        # cv2.imshow('mask', mask)
-        # cv2.imshow('edges', edges)
-        # cv2.imshow('hough algorithm', lineimg)
+        cv2.imshow('frame', frame)
+        cv2.imshow('mask_hough', mask)
+        cv2.imshow('edges', edges)
+        cv2.imshow('hough algorithm', lineimg)
+        cv2.waitKey(1)
+
+        return lineimg, vPoint
 
     # helper function to create a mask
     # takes in frame mat object, returns mask mat object
