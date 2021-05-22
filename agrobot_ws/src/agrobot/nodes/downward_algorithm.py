@@ -5,4 +5,5 @@ class downward_algorithm():
 
     def processFrame(self, frame):
         # what should we do here?
+        
         return frame

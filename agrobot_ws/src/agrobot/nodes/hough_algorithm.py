@@ -1,7 +1,6 @@
 from cv2 import cv2
 import numpy as np
 import sys
-
 import Lines
 
 
@@ -12,15 +11,15 @@ class hough_algorithm:
         # Master, demo
 
         # filter for corn
-        self.LOWER_GREEN = np.array([17, 26, 0])
-        self.UPPER_GREEN = np.array([93, 255, 255])
+        # self.LOWER_GREEN = np.array([17, 26, 0])
+        # self.UPPER_GREEN = np.array([93, 255, 255])
 
         # filter for wheat
-        # self.LOWER_GREEN = np.array([31, 43, 23])
-        # self.UPPER_GREEN = np.array([255, 255, 100])
+        self.LOWER_GREEN = np.array([31, 43, 23])
+        self.UPPER_GREEN = np.array([255, 255, 100])
 
         # gaussian blur / dilate
-        self.K_SIZE = (3, 3)
+        self.K_SIZE = (7, 7)
 
         # canny edge
         self.CANNY_THRESH_1 = 600
@@ -36,7 +35,7 @@ class hough_algorithm:
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def processFrame(self, frame):
+    def processFrame(self, frame, show=False):
         # create mask by filtering image colors
         mask = self.createMask(frame)
 
@@ -46,7 +45,7 @@ class hough_algorithm:
         # Resize frame to smaller size to allow faster processing
         frame = self.resize(frame, self.resizeFactor)
         mask = self.resize(mask, self.resizeFactor)
-
+    
         # Perform Canny Edge Detection
         edges = cv2.Canny(mask, self.CANNY_THRESH_1, self.CANNY_THRESH_2)
 
@@ -71,11 +70,12 @@ class hough_algorithm:
 
         
         # show the frames on screen for debugging
-        cv2.imshow('frame', frame)
-        cv2.imshow('mask_hough', mask)
-        cv2.imshow('edges', edges)
-        cv2.imshow('hough algorithm', lineimg)
-        cv2.waitKey(1)
+        if show:
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask_hough', mask)
+            cv2.imshow('edges', edges)
+            cv2.imshow('hough algorithm', lineimg)
+            cv2.waitKey(1)
 
         return lineimg, vPoint
 
@@ -98,7 +98,7 @@ class hough_algorithm:
         # In addition it helps blend rows that are far from the camera together
         # Hence, we get cleaner edges when we perform Canny edge detection
         kernel = np.ones(self.K_SIZE, np.uint8)
-        mask = cv2.dilate(mask, kernel, iterations=4)
+        mask = cv2.dilate(mask, kernel, iterations=2)
 
         return mask
 

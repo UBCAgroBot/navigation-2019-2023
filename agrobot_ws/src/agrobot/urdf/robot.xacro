@@ -222,6 +222,21 @@
     </visual>
   </link>
 
+<link name='back_camera_link'>
+    <xacro:box_inertial name="back_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='back_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${5*camera_length} ${2*camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
 
   <joint name="wheel_FR_joint" type="continuous">
     <parent link="chassis"/>
@@ -353,6 +368,54 @@
     </plugin>
   </sensor>
   </gazebo>
+
+  <joint name="back_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_camera_link"/>
+    <origin xyz="${-chassis_length/2} 0 ${chassis_height/2+camera_height/2}" rpy="0 .5 3.1415"/>
+  </joint>
+
+  <gazebo reference="back_camera_link">
+    <material>Gazebo/Red</material>
+    <sensor type="camera" name="back_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/back_camera</cameraName>
+      <imageTopicName>back_image_raw</imageTopicName>
+      <cameraInfoTopicName>back_camera_info</cameraInfoTopicName>
+      <frameName>back_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
 
   <gazebo reference="wheel_FL">
     <material>Gazebo/Yellow</material>

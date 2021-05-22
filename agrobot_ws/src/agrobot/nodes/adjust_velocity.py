@@ -120,7 +120,7 @@ class velocity_control:
         self.centroid_location_sub = rospy.Subscriber('/centroid_location', Float32, self.callback)
         self.pid_controller = PID(0,0,0,time.time())
         self.velocity = Twist()
-        self.collisions = [0,0,0,0]
+        # self.collisions = [0,0,0,0]
         
     def get_velocity(self):
 
@@ -133,7 +133,7 @@ class velocity_control:
         error = self.centroid_location - WIDTH/2 
 
         # # maybe try using average of this error and error from bottom camera
-        print("pid error:", error)
+        # print("pid error:", error)
 
         self.pid_controller.update(error, time.time())
 
@@ -164,7 +164,7 @@ class velocity_control:
 
     def callback(self, data):
         self.centroid_location = data.data
-        print(self.centroid_location, '=centroid location')
+        # print(self.centroid_location, '=centroid location')
         cv2.imshow("PID Controller", np.zeros((1,400,3), np.uint8))
         cv2.waitKey(1)
         cv2.createTrackbar('driving speed','PID Controller',0,10,nothing)   
@@ -182,11 +182,14 @@ class velocity_control:
             cv2.setTrackbarPos('scale factor', 'PID Controller', 1000)
 
         self.get_velocity()
-        print("speed: " + str(self.velocity.linear.x) + "  turn: " + str(self.velocity.angular.z) + "\n")
+        # print("speed: " + str(self.velocity.linear.x) + "  turn: " + str(self.velocity.angular.z) + "\n")
+        
+        self.velocity_pub.publish(self.velocity)
+
         # test_vel = Twist()
         # test_vel.linear.x = 0.0
-        # test_vel.angular.z = 0.5
-        self.velocity_pub.publish(self.velocity)
+        # test_vel.angular.z = -0.5
+        # self.velocity_pub.publish(test_vel)
       
     
 def main(args):
