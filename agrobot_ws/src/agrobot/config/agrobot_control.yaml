@@ -1,0 +1,11 @@
+agrobot:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  wheel_FL_velocity_controller:
+    type: effort_controllers/JointPositionController
+    joint: wheel_FL_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  
+  

@@ -60,7 +60,11 @@ class scanning_algorithm(object):
         # mask = cv2.erode(mask, kernel, iterations= 1)
         # print(mask.shape)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
+        
         # mask = ~mask
+        # array to hold (percentage, line) pairs
+        # percentage is the percentage of the line that is white when overlaying mask
+        # line is the (x1, y1, x2, y2) definition of the line
         lines_array = []
 
         # find_lines_time = time.time()
@@ -72,6 +76,7 @@ class scanning_algorithm(object):
             lines_array.append((np.sum(extracted)/len(extracted), line))
         lines_array = np.array(lines_array)
 
+        # finds the lines 
         values = lines_array[:, 0]
         largest_indices = (-values).argsort()[:self.num_of_lines]
         most_prominent_lines = lines_array[:, 1][largest_indices]

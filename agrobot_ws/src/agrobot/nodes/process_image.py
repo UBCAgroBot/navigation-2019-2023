@@ -47,16 +47,17 @@ class image_converter:
         self.scanning_algorithm = scanning_algorithm.scanning_algorithm(WIDTH, LENGTH)
         
         
-        # for recording video
-        # self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        # self.out = cv2.VideoWriter('/home/davidw0311/AgroBot/Navigation/agrobot_ws/src/agrobot/nodes/downwards_vid.mp4',self.fourcc, 20.0, (800,800))
+        #for recording video
+        self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.out = cv2.VideoWriter('/home/davidw0311/AgroBot/scanning_algorithm/forward_vid_for_scan.mp4',self.fourcc, 20.0, (800,800))
     
     def callback(self,data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
-        
+            
+        self.out.write(cv_image)
         # cv2.imshow("original frame", cv_image)
         
         if PROCESS_FRONT:
@@ -103,7 +104,7 @@ class image_converter:
         if PROCESS_BACK:
             cv2.imshow("back image", back_processed_image)
         # for recording video
-        # self.out.write(self.downward_image)
+        
         cv2.waitKey(1)
 
     def downward_callback(self,data):

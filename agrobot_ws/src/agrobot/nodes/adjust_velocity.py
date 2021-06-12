@@ -184,7 +184,7 @@ class velocity_control:
         self.get_velocity()
         # print("speed: " + str(self.velocity.linear.x) + "  turn: " + str(self.velocity.angular.z) + "\n")
         
-        self.velocity_pub.publish(self.velocity)
+        # self.velocity_pub.publish(self.velocity)
 
         # test_vel = Twist()
         # test_vel.linear.x = 0.0

@@ -11,12 +11,12 @@ class hough_algorithm:
         # Master, demo
 
         # filter for corn
-        # self.LOWER_GREEN = np.array([17, 26, 0])
-        # self.UPPER_GREEN = np.array([93, 255, 255])
+        self.LOWER_GREEN = np.array([17, 26, 0])
+        self.UPPER_GREEN = np.array([93, 255, 255])
 
         # filter for wheat
-        self.LOWER_GREEN = np.array([31, 43, 23])
-        self.UPPER_GREEN = np.array([255, 255, 100])
+        # self.LOWER_GREEN = np.array([31, 43, 23])
+        # self.UPPER_GREEN = np.array([255, 255, 100])
 
         # gaussian blur / dilate
         self.K_SIZE = (7, 7)
