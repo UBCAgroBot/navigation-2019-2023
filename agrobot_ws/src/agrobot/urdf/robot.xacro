@@ -9,7 +9,7 @@
   <xacro:property name="chassis_width" value="0.65"/>
   <xacro:property name="chassis_length" value="1"/>
   <xacro:property name="chassis_height" value="0.05"/>
-  <xacro:property name="chassis_mass" value="1.0"/>
+  <xacro:property name="chassis_mass" value="0.1"/>
   <xacro:property name="wheel_radius" value="0.1"/>
   <!-- 0.0425 -->
   <xacro:property name="wheel_width" value="0.03"/>
@@ -307,13 +307,22 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <joint name="wheel_FL_joint" type="continuous">
+  <joint name="wheel_FL_velocity_joint" type="continuous">
     <parent link="chassis"/>
     <child link="wheel_FL"/>
     <origin xyz="${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} ${chassis_height - leg_height - wheel_radius*2.1}"
             rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
+
+   <joint name="wheel_FL_position_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_FL"/>
+    <origin xyz="${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} ${chassis_height - leg_height - wheel_radius*2.1}"
+            rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
 
   <joint name="wheel_RR_joint" type="continuous">
     <parent link="chassis"/>
@@ -331,22 +340,36 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <transmission name="wheel_FL_transmission">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="wheel_FL_joint">
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="FL_motor">
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
-        <mechanicalReduction>1</mechanicalReduction>
-    </actuator>
-  </transmission>
-
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
         <robotNamespace>/agrobot</robotNamespace>
     </plugin>
   </gazebo>
+
+  <transmission name="wheel_FL_velocity_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_velocity_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_velocity_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="wheel_FL_position_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_position_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_position_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
   
   <joint name="camera_joint" type="fixed">
     <parent link="chassis"/>
@@ -719,7 +742,7 @@
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <updateRate>100.0</updateRate>
       <robotNamespace>/</robotNamespace>
-      <leftFrontJoint>wheel_FL_joint</leftFrontJoint>
+      <leftFrontJoint>wheel_FL_velocity_joint</leftFrontJoint>
       <rightFrontJoint>wheel_FR_joint</rightFrontJoint>
       <leftRearJoint>wheel_RL_joint</leftRearJoint>
       <rightRearJoint>wheel_RR_joint</rightRearJoint>

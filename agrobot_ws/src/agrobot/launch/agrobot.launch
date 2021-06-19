@@ -1,8 +1,6 @@
 <launch>
-
   <arg name="init_pose"/>
-
-  <arg name="model" default="$(find agrobot)/urdf/robot.xacro"/>
+  <arg name="model" default="$(find agrobot)/urdf/agrobot.xacro"/>
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
 
@@ -10,9 +8,8 @@
         args="$(arg init_pose) -unpause -urdf -model lab_robot -param robot_description" respawn="false" output="screen" />
   
   <rosparam file="$(find agrobot)/config/agrobot_control.yaml" command="load" />
-
   <node name="controller_spawner" pkg ="controller_manager" type="spawner" respawn="false"
-    output="screen" ns="/agrobot" args="wheel_FL_velocity_controller wheel_FL_position_controller joint_state_controller"/>
+    output="screen" ns="/agrobot" args="wheel_FL_position_controller wheel_FL_velocity_controller joint_state_controller"/>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="false" output="screen">

@@ -1,0 +1,194 @@
+<?xml version='1.0'?>
+
+<robot name="agrobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="chassis_x" value="1"/>
+  <xacro:property name="chassis_y" value="0.65"/>
+  <xacro:property name="chassis_z" value="0.1"/>
+  <xacro:property name="chassis_mass" value="50"/>
+  <xacro:property name="wheel_radius" value="0.1"/>
+  <xacro:property name="wheel_width" value="0.05"/>
+  <xacro:property name="wheel_mass" value="5"/>
+  <xacro:property name="leg_x" value="0.1"/>
+  <xacro:property name="leg_y" value="0.1"/>
+  <xacro:property name="leg_z" value="0.75"/>
+  <xacro:property name="leg_mass" value="10"/>
+  <xacro:property name="steerer_size" value="0.1"/>
+  <xacro:property name="steerer_mass" value="2"/>
+
+  <xacro:include filename="$(find agrobot)/urdf/macros.xacro"/>
+  <xacro:include filename="$(find agrobot)/urdf/materials.xacro"/>
+
+  <link name='chassis'>
+    
+    <collision name='chassis_collision'>
+      <geometry>
+        <box size="${chassis_x} ${chassis_y} ${chassis_z}"/>
+      </geometry>
+    </collision>
+    <visual name='chassis_visual'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size="${chassis_x} ${chassis_y} ${chassis_z}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='stand'>
+    <xacro:box_inertial name="stand" m="${100}" x="${leg_x}" y="${leg_y}" z="${leg_z}"/>
+    <collision name='stand_collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>    
+      <geometry>
+        <box size="${chassis_x/1.5} ${chassis_y*3} ${leg_z*1.5}"/>
+      </geometry>
+    </collision>
+    <visual name='stand_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${leg_x/3} ${leg_y/3} ${leg_z*1.5}"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="stand_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="stand"/>
+    <origin xyz="${0} ${0} ${-chassis_z/2 - leg_z*1.5/2}"/>
+  </joint>
+
+  <link name='leg_FL'>
+    <xacro:box_inertial name="leg_FL" m="${leg_mass}" x="${leg_x}" y="${leg_y}" z="${leg_z}"/>
+    <collision name='leg_FL_collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>    
+      <geometry>
+        <box size="${leg_x} ${leg_y} ${leg_z}"/>
+      </geometry>
+    </collision>
+    <visual name='leg_FL_visual'>
+      <origin xyz="0 0 ${wheel_radius*1.1/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${leg_x} ${leg_y} ${leg_z-wheel_radius*1.1}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="leg_FL_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="leg_FL"/>
+    <origin xyz="${chassis_x/2 - leg_x/2} ${chassis_y/2 - leg_y/2} ${-chassis_z/2 - leg_z/2}"/>
+  </joint>
+
+  <link name='steerer_FL'>
+    <xacro:box_inertial name="steerer_FL" m="${steerer_mass}" x="${steerer_size}" y="${steerer_size}" z="${steerer_size}"/>
+    
+    <collision name='steerer_FL_collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>    
+      <geometry>
+        <box size="${steerer_size} ${steerer_size} ${steerer_size}"/>
+      </geometry>
+    </collision>
+    <visual name='steerer_FL_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${steerer_size/5} ${steerer_size/5} ${steerer_size/5}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="wheel_FL_position_joint" type="continuous">
+    <parent link="leg_FL"/>
+    <child link="steerer_FL"/>
+    <origin xyz="${0} ${0} ${-leg_z/2 - leg_x/2}"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name='wheel_FL'>
+    <xacro:cylinder_inertial name="wheel_FL" m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
+    <dynamics damping="0.01" friction="1.0"/>
+    <collision name='wheel_FL_collision'>
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>    
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual name='wheel_FL_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://agrobot/models/tire/meshes/tire.dae" scale="0.5 0.5 0.5"/>
+
+        <!-- <cylinder radius="${wheel_radius}" length="${wheel_width}"/> -->
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="wheel_FL_velocity_joint" type="continuous">
+    <parent link="steerer_FL"/>
+    <child link="wheel_FL"/>
+    <origin xyz="0 0 0"
+            rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+
+  <gazebo reference="chassis">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="leg_FL">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="steerer_FL">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <!-- <gazebo reference="wheel_FL">
+    <material>Gazebo/Black</material>
+  </gazebo> -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/agrobot</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <transmission name="wheel_FL_steerer_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_position_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_position_motor">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="wheel_FL_velocity_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_velocity_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_velocity_motor">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission> 
+
+
+<!-- 
+  <gazebo reference="wheel_FL">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_FR">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_RL">
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+
+  <gazebo reference="wheel_RR">
+    <material>Gazebo/Black</material>
+  </gazebo> -->
+
+</robot>
