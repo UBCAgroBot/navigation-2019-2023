@@ -1,0 +1,16 @@
+<launch>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+	<env name="GAZEBO_RESOURCE_PATH" value="$(find agrobot)"/>
+	<env name="GAZEBO_MODEL_PATH" value="$(find agrobot)/models"/>
+	<arg name="world_name" value="$(find agrobot)/worlds/wheat.world"/>
+	<arg name="gui" value="true"/>
+</include>
+  <arg name="init_pose" value="-x 0.0 -y 0.0 -z 0 -R 0.0 -P 0.0 -Y 0.0" />
+  <arg name="model" default="$(find agrobot)/urdf/wheel.xacro"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="$(arg init_pose) -unpause -urdf -model lab_robot -param robot_description" respawn="false" output="screen" />
+
+</launch>

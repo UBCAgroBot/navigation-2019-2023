@@ -1,12 +1,17 @@
 <launch>
     <node pkg="agrobot"
-          type="process_image.py"
-          name="process_image"
+          type="process_sensor_data.py"
+          name="process_sensor_data"
           output="screen">
     </node>
-    <node pkg="agrobot"
+    <!-- <node pkg="agrobot"
           type="adjust_velocity.py"
           name="adjusts_robot_velocity"
           output="screen">
     </node>
+    <node pkg="agrobot"
+          type="wheel_steering.py"
+          name="adjusts_wheels"
+          output="screen">
+    </node> -->
 </launch>

@@ -9,14 +9,15 @@
   <xacro:property name="chassis_width" value="0.65"/>
   <xacro:property name="chassis_length" value="1"/>
   <xacro:property name="chassis_height" value="0.05"/>
-  <xacro:property name="chassis_mass" value="0.5"/>
-  <xacro:property name="wheel_radius" value="0.0425"/>
+  <xacro:property name="chassis_mass" value="0.1"/>
+  <xacro:property name="wheel_radius" value="0.1"/>
+  <!-- 0.0425 -->
   <xacro:property name="wheel_width" value="0.03"/>
-  <xacro:property name="wheel_mass" value="0.025"/>
+  <xacro:property name="wheel_mass" value="0.5"/>
   <xacro:property name="leg_length" value="0.05"/>
   <xacro:property name="leg_width" value="0.05"/>
   <xacro:property name="leg_height" value="0.75"/>
-  <xacro:property name="leg_mass" value="0.1"/>
+  <xacro:property name="leg_mass" value="0.4"/>
 
   <xacro:include filename="$(find agrobot)/urdf/macros.xacro"/>
   <xacro:include filename="$(find agrobot)/urdf/materials.xacro"/>
@@ -191,6 +192,7 @@
     </visual>
   </link>
 
+
   <link name='camera_link'>
     <xacro:box_inertial name="camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
     <collision name='camera_link_collision'>
@@ -206,6 +208,96 @@
     </visual>
   </link>
 
+  <link name='downward_camera_link'>
+    <xacro:box_inertial name="downward_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='downward_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='camera_link_visual'>
+      <origin xyz="0 0 0" rpy=" 0 ${3.1415926/2} 0"/>
+      <geometry>
+        <box size="${5*camera_length} ${2*camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+<link name='back_camera_link'>
+    <xacro:box_inertial name="back_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='back_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${5*camera_length} ${2*camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='front_left_camera_link'>
+    <xacro:box_inertial name="front_left_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='front_left_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='front_left_camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='front_right_camera_link'>
+    <xacro:box_inertial name="front_right_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='front_right_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='front_right_camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='back_left_camera_link'>
+    <xacro:box_inertial name="back_left_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='back_left_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='back_left_camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name='back_right_camera_link'>
+    <xacro:box_inertial name="back_right_camera_link" m="${camera_mass}" x="${camera_width}" y="${camera_length}" z="${camera_height}"/>
+    <collision name='back_right_camera_link_collision'>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </collision>
+    <visual name='back_right_camera_link_visual'>
+      <origin xyz="0 0 0" rpy="3.1415926 0 0"/>
+      <geometry>
+        <box size="${camera_length} ${camera_width} ${camera_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
 
   <joint name="wheel_FR_joint" type="continuous">
     <parent link="chassis"/>
@@ -215,13 +307,22 @@
     <axis xyz="0 1 0"/>
   </joint>
 
-  <joint name="wheel_FL_joint" type="continuous">
+  <joint name="wheel_FL_velocity_joint" type="continuous">
     <parent link="chassis"/>
     <child link="wheel_FL"/>
     <origin xyz="${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} ${chassis_height - leg_height - wheel_radius*2.1}"
             rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
+
+   <joint name="wheel_FL_position_joint" type="continuous">
+    <parent link="chassis"/>
+    <child link="wheel_FL"/>
+    <origin xyz="${chassis_length/2-wheel_radius} ${chassis_width/2+wheel_width/2} ${chassis_height - leg_height - wheel_radius*2.1}"
+            rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
 
   <joint name="wheel_RR_joint" type="continuous">
     <parent link="chassis"/>
@@ -239,6 +340,37 @@
     <axis xyz="0 1 0"/>
   </joint>
 
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/agrobot</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <transmission name="wheel_FL_velocity_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_velocity_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_velocity_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="wheel_FL_position_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_FL_position_joint">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_position_motor">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
+  
   <joint name="camera_joint" type="fixed">
     <parent link="chassis"/>
     <child link="camera_link"/>
@@ -290,6 +422,306 @@
   </sensor>
   </gazebo>
 
+
+  <joint name="downward_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="downward_camera_link"/>
+    <origin xyz="0 0 ${-3*camera_height}" rpy="0 1.57 0"/>
+  </joint>
+
+  <gazebo reference="downward_camera_link">
+    <material>Gazebo/Red</material>
+    <sensor type="camera" name="downward_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/downward_camera</cameraName>
+      <imageTopicName>downward_image_raw</imageTopicName>
+      <cameraInfoTopicName>downward_camera_info</cameraInfoTopicName>
+      <frameName>downward_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+  <joint name="back_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_camera_link"/>
+    <origin xyz="${-chassis_length/2} 0 ${chassis_height/2+camera_height/2}" rpy="0 .5 3.1415"/>
+  </joint>
+
+  <gazebo reference="back_camera_link">
+    <material>Gazebo/Red</material>
+    <sensor type="camera" name="back_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/back_camera</cameraName>
+      <imageTopicName>back_image_raw</imageTopicName>
+      <cameraInfoTopicName>back_camera_info</cameraInfoTopicName>
+      <frameName>back_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<joint name="front_left_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_left_camera_link"/>
+    <origin xyz="${chassis_length/2} ${chassis_width/2} ${chassis_height/2-leg_height+camera_height/2}" rpy="0 0 1.5708"/>
+</joint>
+
+<gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+</gazebo>
+
+<gazebo reference="front_left_camera_link">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="front_left_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/front_left_camera</cameraName>
+      <imageTopicName>front_left_image_raw</imageTopicName>
+      <cameraInfoTopicName>front_left_camera_info</cameraInfoTopicName>
+      <frameName>front_left_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<joint name="front_right_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="front_right_camera_link"/>
+    <origin xyz="${chassis_length/2} ${-chassis_width/2} ${chassis_height/2-leg_height+camera_height/2}" rpy="0 0 -1.5708"/>
+</joint>
+
+<gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+</gazebo>
+
+<gazebo reference="front_right_camera_link">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="front_right_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/front_right_camera</cameraName>
+      <imageTopicName>front_right_image_raw</imageTopicName>
+      <cameraInfoTopicName>front_right_camera_info</cameraInfoTopicName>
+      <frameName>front_right_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<joint name="back_left_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_left_camera_link"/>
+    <origin xyz="${-chassis_length/2} ${chassis_width/2} ${chassis_height/2-leg_height+camera_height/2}" rpy="0 0 1.5708"/>
+</joint>
+
+<gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+</gazebo>
+
+<gazebo reference="back_left_camera_link">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="back_left_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/back_left_camera</cameraName>
+      <imageTopicName>back_left_image_raw</imageTopicName>
+      <cameraInfoTopicName>back_left_camera_info</cameraInfoTopicName>
+      <frameName>back_left_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<joint name="back_right_camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="back_right_camera_link"/>
+    <origin xyz="${-chassis_length/2} ${-chassis_width/2} ${chassis_height/2-leg_height+camera_height/2}" rpy="0 0 -1.5708"/>
+</joint>
+
+<gazebo reference="chassis">
+    <material>Gazebo/Orange</material>
+</gazebo>
+
+<gazebo reference="back_right_camera_link">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="back_right_camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="head">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>800</width>
+        <height>800</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>robot/back_right_camera</cameraName>
+      <imageTopicName>back_right_image_raw</imageTopicName>
+      <cameraInfoTopicName>back_right_camera_info</cameraInfoTopicName>
+      <frameName>back_right_camera_link</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+
   <gazebo reference="wheel_FL">
     <material>Gazebo/Yellow</material>
   </gazebo>
@@ -303,23 +735,30 @@
   </gazebo>
 
   <gazebo reference="wheel_RR">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Black</material>
   </gazebo>
 
   <gazebo>
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <updateRate>100.0</updateRate>
       <robotNamespace>/</robotNamespace>
-      <leftFrontJoint>wheel_FL_joint</leftFrontJoint>
+      <leftFrontJoint>wheel_FL_velocity_joint</leftFrontJoint>
       <rightFrontJoint>wheel_FR_joint</rightFrontJoint>
       <leftRearJoint>wheel_RL_joint</leftRearJoint>
       <rightRearJoint>wheel_RR_joint</rightRearJoint>
-      <wheelSeparation>0.4</wheelSeparation>
+      <wheelSeparation>0.5</wheelSeparation>
+      <!-- 0.4 -->
       <wheelDiameter>0.215</wheelDiameter>
       <robotBaseFrame>base_link</robotBaseFrame>
-      <torque>20</torque>
+      <torque>1000</torque>
       <topicName>cmd_vel</topicName>
       <broadcastTF>false</broadcastTF>
+      <kp>1000000.0</kp> <!-- kp and kd for rubber -->
+      <kd>100.0</kd>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
+      <maxVel>1.0</maxVel>
+      <minDepth>0.00</minDepth>
     </plugin>
   </gazebo>
 
