@@ -1,0 +1,4 @@
+num_of_lines: 10
+gaussian_blur_kernel: 3
+morph_kernel: 5
+

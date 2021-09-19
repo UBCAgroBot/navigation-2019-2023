@@ -1,12 +1,19 @@
 <?xml version="1.0"?>
 <sdf version="1.4">
-  <world name="default">
+  <world name="wheat">
     <include>
       <uri>model://track</uri>
     </include>
     <include>
       <uri>model://sun</uri>
     </include>
+    <light type="directional" name="my_light">
+        <origin pose="0 0 30 0 0 0"/>
+        <diffuse rgba=".5 .5 .5 0.8"/>
+        <specular rgba=".1 .1 .1 1"/>
+        <attenuation range="200"/>
+        <direction xyz="0 0 -1"/>
+    </light>
 
     <include>
       <uri>model://wheat</uri>

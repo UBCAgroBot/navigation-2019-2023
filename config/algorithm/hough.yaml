@@ -1,0 +1,4 @@
+#### hough algorithm parameters
+
+canny_thresh_1: 600
+canny_thresh_2: 400

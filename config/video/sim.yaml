@@ -1,0 +1,7 @@
+#### size of frame
+frame_width: 800
+frame_length: 800
+
+#### hsv thresholds for wheat
+lower_hsv_threshold: [0, 0, 0]
+upper_hsv_threshold: [53, 187, 255]
