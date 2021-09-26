@@ -16,19 +16,19 @@ class HoughAlgorithm:
 
 
         # gaussian blur / dilate
-        self.K_SIZE = (3, 3)
+        self.K_SIZE = (config.blur_size_1, config.blur_size_2)
 
         # canny edge
-        self.CANNY_THRESH_1 = 600
-        self.CANNY_THRESH_2 = 400
+        self.CANNY_THRESH_1 = config.canny_thresh_1
+        self.CANNY_THRESH_2 = config.canny_thresh_2
 
         # prob. hough
-        self.THRESHOLD = 40
-        self.MIN_LINE_LENGTH = 40
-        self.MAX_LINE_GAP = 15
+        self.THRESHOLD = config.hough_threshold
+        self.MIN_LINE_LENGTH = config.hough_min_line_length
+        self.MAX_LINE_GAP = config.hough_max_line_gap
 
         # resize factor
-        self.resizeFactor = 1
+        self.RESIZE_FACTOR = config.resize_factor
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
@@ -40,8 +40,8 @@ class HoughAlgorithm:
         # mask = self.dilate(mask)
 
         # Resize frame to smaller size to allow faster processing
-        frame = self.resize(frame, self.resizeFactor)
-        # mask = self.resize(mask, self.resizeFactor)
+        frame = self.resize(frame, self.RESIZE_FACTOR)
+        # mask = self.resize(mask, self.RESIZE_FACTOR)
     
         # Perform Canny Edge Detection
         edges = cv2.Canny(mask, self.CANNY_THRESH_1, self.CANNY_THRESH_2)
