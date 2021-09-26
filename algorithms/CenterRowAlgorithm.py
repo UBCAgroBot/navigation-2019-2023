@@ -1,16 +1,17 @@
-import numpy as np
 import cv2
-import sys
+import numpy as np
+
 from algorithms.utils import Lines
+
 
 class CenterRowAlgorithm:
 
+    # constructor -- assigns the following parameters
     def __init__(self, config):
-        # constructor -- assigns the following parameters
-        
+
         # filter for wheat
-        self.low_green = np.array([31, 43, 23])
-        self.high_green = np.array([255, 255, 100])
+        self.low_green = np.array(config.lower_hsv_threshold)
+        self.high_green = np.array(config.upper_hsv_threshold)
 
         # filtering parameters
         self.averagingKernelSize = (5, 5)
@@ -37,31 +38,35 @@ class CenterRowAlgorithm:
         # vanishing point (tuple)
 
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
-        mask = self.createBinaryMask(frame)
+
+        # h, w, c = frame.shape
+        # frame = frame[h // 2:h, 0:w]
+
+        mask = self.create_binary_mask(frame)
 
         # Perform canny edge detection
         edges = cv2.Canny(mask, self.cannyLowThld, self.cannyHighThld)
-        blurred_edges = self.gaussianBlur(edges)
+        blurred_edges = self.gaussian_blur(edges)
 
-        cnt, contour_frame = self.getContours(mask)
+        cnt, contour_frame = self.get_contours(mask)
         cv2.drawContours(black_frame, cnt, -1, self.contourColor, 3)
         # fillPoly fills in the polygons in the frame
         cv2.fillPoly(black_frame, pts=cnt, color=self.contourColor)
-        lines, slopes, ellipseFrame = self.ellipseSlopes(cnt, black_frame)
+        lines, slopes, ellipse_frame = self.ellipse_slopes(cnt, black_frame)
         Lines.drawLinesOnFrame(lines, black_frame)
         intersections, points = Lines.getIntersections(lines)
-        vanishpoint = Lines.drawVanishingPoint(ellipseFrame, points)
+        vanishpoint = Lines.drawVanishingPoint(ellipse_frame, points)
 
         return black_frame, vanishpoint
 
     # return vanishpoint
 
-    def createBinaryMask(self, frame):
+    def create_binary_mask(self, frame):
         # Current frame is input as a parameter
         # The function uses HSV filtering with the specificed low_green to high_green HSV range
         # to binarize the image and returns the binary frame
 
-        # Run averaging filter to blur the frame 
+        # Run averaging filter to blur the frame
         kernel = np.ones((5, 5), np.float32) / 25
         frame = cv2.filter2D(frame, -1, kernel)
 
@@ -72,14 +77,14 @@ class CenterRowAlgorithm:
 
         return mask
 
-    def gaussianBlur(self, frame):
+    def gaussian_blur(self, frame):
         # Current frame is input as a parameter
         # This function applies gaussian blurring to the frame
         # And returns the resulting blurred frame
         mask = cv2.GaussianBlur(frame, self.gaussKernelSize, self.sigmaX)
         return mask
 
-    def ellipseSlopes(self, cnt, black_frame):
+    def ellipse_slopes(self, cnt, black_frame):
         # Takes in the list of contours on the frame and the frame with contours (black frame) as parameters
         # This function draws ellipses around each contour on black_frame using the fitEllipse function
         # Uses the fitline function with the list of contours to create a set of lines
@@ -103,19 +108,19 @@ class CenterRowAlgorithm:
                 # Finds two other points on the line using the slope
                 lefty = int((-x * vy / vx) + y)
                 righty = int(((cols - x) * vy / vx) + y)
-                #black_frame = cv2.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
+                # black_frame = cv2.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
                 # Appends a line to the lines array using the (x1,y1,x2,y2) definition
                 lines.append([cols - 1, righty, 0, lefty])
 
         return lines, slopes, black_frame
 
-    def getContours(self, binary_mask):
+    def get_contours(self, binary_mask):
         # Takes in a binary image as a parameter
         # Uses the cv2 findContours function to find the contours (creates closed shapes around connected pixels) in the image
         # returns a list of contours and blank frame with contours filled in
         frame = np.zeros((self.HEIGHT, self.WIDTH, 3))
         ret, thresh = cv2.threshold(binary_mask, 0, 254, 0)
-        _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cnt = contours
         cv2.drawContours(frame, cnt, -1, (0, 255, 0), 2)
         cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
