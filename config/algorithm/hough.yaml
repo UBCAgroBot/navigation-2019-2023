@@ -1,7 +1,4 @@
 #### hough algorithm parameters
-
-canny_thresh_1: 600
-canny_thresh_2: 400
 hough_threshold: 40
 hough_min_line_length: 40
 hough_max_line_gap: 15
