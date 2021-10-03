@@ -23,6 +23,7 @@ class HoughAlgorithm:
         self.THRESHOLD = config.hough_threshold
         self.MIN_LINE_LENGTH = config.hough_min_line_length
         self.MAX_LINE_GAP = config.hough_max_line_gap
+        self.HOUGH_RHO = config.hough_rho
 
         # resize factor
         self.RESIZE_FACTOR = config.resize_factor
@@ -49,7 +50,7 @@ class HoughAlgorithm:
         # Perform Hough Lines Probabilistic Transform
         lines = cv2.HoughLinesP(
             edges,
-            1,
+            self.HOUGH_RHO,
             np.pi / 180,
             self.THRESHOLD,
             np.array([]),
