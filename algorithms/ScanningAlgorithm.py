@@ -32,31 +32,53 @@ class ScanningAlgorithm(object):
         # The following loops create lines, 420 is hardcoded horizon that may need to 
         # be changed. Loops can be mixed and matched for different sets of lines.
 
-        # creates lines from the top of the horizon (in this case 420) to the bottom
-        for top_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
-            for bottom_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
-                line = self.create_line(top_x, self.upper_y_bound, bottom_x, self.lower_y_bound)
+        # # creates lines from the top of the horizon (in this case 420) to the bottom
+        # for top_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
+        #     for bottom_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
+        #         line = self.create_line(top_x, self.upper_y_bound, bottom_x, self.lower_y_bound)
+        #         self.lines.append(line)
+
+        # # creates lines from left side to right side
+        # for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #     for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line = self.create_line(self.left_x_bound, left_y, self.right_x_bound, right_y)
+        #         self.lines.append(line)
+
+        # # creates lines from horizon to the right side
+        # for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
+        #     for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line1 = self.create_line(top_x, self.upper_y_bound, self.right_x_bound, right_y)
+
+        #         self.lines.append(line1)
+
+        # # creates lines from horizon to the left side
+        # for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
+        #     for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line = self.create_line(top_x, self.upper_y_bound, self.left_x_bound, left_y)
+        #         self.lines.append(line)
+
+        left_border = []
+        right_border = []
+        bottom_border = []
+        dx = int((self.right_x_bound - self.left_x_bound) / 2 / config.points_per_line_side)
+        dy = int((self.lower_y_bound - self.upper_y_bound) / config.points_per_line_side)
+        for i in range(config.points_per_line_side):
+            left_border.append((self.left_x_bound+i*dx, self.upper_y_bound-i*dy))
+            right_border.append((self.right_x_bound-i*dx, self.upper_y_bound-i*dy))
+        dx = int((self.right_x_bound - self.left_x_bound) / config.points_per_line_bottom)
+        for i in range(config.points_per_line_bottom):
+            bottom_border.append((self.left_x_bound+i*dx, self.lower_y_bound))
+
+        for point1 in left_border:
+            for point2 in bottom_border + right_border:
+                line = self.create_line(point1[0], point1[1], point2[0], point2[1])
                 self.lines.append(line)
-
-        # creates lines from left side to right side
-        for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
-            for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
-                line = self.create_line(self.left_x_bound, left_y, self.right_x_bound, right_y)
+        
+        for point1 in right_border:
+            for point2 in bottom_border:
+                line = self.create_line(point1[0], point1[1], point2[0], point2[1])
                 self.lines.append(line)
-
-        # creates lines from horizon to the right side
-        for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
-            for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
-                line1 = self.create_line(top_x, self.upper_y_bound, self.right_x_bound, right_y)
-
-                self.lines.append(line1)
-
-        # creates lines from horizon to the left side
-        for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
-            for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
-                line = self.create_line(top_x, self.upper_y_bound, self.left_x_bound, left_y)
-                self.lines.append(line)
-
+        
         self.lines = np.array(self.lines)
 
     # creates an array of x,y points for a line starting from a point on the top edge extedning to a point on the bottom edge
