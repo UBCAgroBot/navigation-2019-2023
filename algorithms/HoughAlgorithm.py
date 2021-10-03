@@ -11,8 +11,8 @@ class HoughAlgorithm:
         # Master, demo
         self.config = config
 
-        self.LOWER_GREEN = np.array(config.lower_hsv_threshold)
-        self.UPPER_GREEN = np.array(config.upper_hsv_threshold)
+        self.LOWER_GREEN = np.array(config.lower_hsv_threshold_hough)
+        self.UPPER_GREEN = np.array(config.upper_hsv_threshold_hough)
 
 
         # gaussian blur / dilate
