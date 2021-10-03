@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-
-[requires]
-python_version = "3.7"
+opencv-python = "*"
+omegaconf = "*"
+numpy = "*"
 
 [dev-packages]
+
+[requires]
+python_version = "3.9"
