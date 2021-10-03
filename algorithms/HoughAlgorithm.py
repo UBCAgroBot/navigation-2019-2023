@@ -14,6 +14,7 @@ class HoughAlgorithm:
         self.LOWER_GREEN = np.array(config.lower_hsv_threshold_hough)
         self.UPPER_GREEN = np.array(config.upper_hsv_threshold_hough)
 
+        self.CANNY_SIGMA = config.canny_sigma
 
         # gaussian blur / dilate
         self.K_SIZE = (config.blur_size_1, config.blur_size_2)
@@ -39,10 +40,9 @@ class HoughAlgorithm:
         # mask = self.resize(mask, self.RESIZE_FACTOR)
     
         # Perform Canny Edge Detection
-        sigma=0.33
         v = np.median(mask)
-        self.CANNY_THRESH_1 = int(max(0, (1.0 - sigma) * v))
-        self.CANNY_THRESH_2 = int(min(255, (1.0 + sigma) * v))
+        self.CANNY_THRESH_1 = int(max(0, (1.0 - self.CANNY_SIGMA) * v))
+        self.CANNY_THRESH_2 = int(min(255, (1.0 + self.CANNY_SIGMA) * v))
 
         edges = cv2.Canny(mask, self.CANNY_THRESH_1, self.CANNY_THRESH_2)
 
