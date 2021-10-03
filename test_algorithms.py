@@ -69,7 +69,7 @@ def run_algorithm(alg, vid_file):
             print("No More Frames Remaining")
             break
 
-        processed_image, intersection_point = alg.processFrame(frame)
+        processed_image, intersection_point = alg.processFrame(frame, show=True)
 
         cv2.imshow("%s agorithm on %s video"%(args.alg, args.vid), processed_image)
         key = cv2.waitKey(25)

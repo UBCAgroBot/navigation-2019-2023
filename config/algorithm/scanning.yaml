@@ -1,4 +1,12 @@
-num_of_lines: 10
+num_of_lines: 50
 gaussian_blur_kernel: 3
 morph_kernel: 5
+
+### how many pixels between each line
+pixel_gap: 30
+### the percentage of width we don't want 
+bounding_box_x: 0.3
+
+### percentage of height to keep at the bottom
+bounding_box_y: 0.6
 
