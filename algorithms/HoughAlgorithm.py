@@ -32,12 +32,9 @@ class HoughAlgorithm:
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def processFrame(self, frame, show=False):
+    def processFrame(self, frame, show=True):
         # create mask by filtering image colors
         mask = self.createMask(frame)
-
-        # dilate the mask
-        # mask = self.dilate(mask)
 
         # Resize frame to smaller size to allow faster processing
         frame = self.resize(frame, self.RESIZE_FACTOR)
@@ -69,7 +66,7 @@ class HoughAlgorithm:
         # show the frames on screen for debugging
         if show:
             cv2.imshow('frame', frame)
-            cv2.imshow('mask_hough', mask)
+            cv2.imshow('mask_hough',mask)
             cv2.imshow('edges', edges)
             cv2.imshow('hough algorithm', lineimg)
             cv2.waitKey(1)
@@ -84,7 +81,9 @@ class HoughAlgorithm:
         # Filter image and allow only shades of green to pass
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
         # Apply gaussian blur (can be removed)
-        # mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
+        mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
+        # dilate the mask
+        mask = self.dilate(mask)
 
         return mask
 
