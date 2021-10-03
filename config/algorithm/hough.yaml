@@ -1,6 +1,6 @@
 #### hough algorithm parameters
-hough_threshold: 40
-hough_min_line_length: 100
+hough_threshold: 45 # 35 - 55
+hough_min_line_length: 50
 hough_max_line_gap: 70
 hough_rho: 1
 canny_sigma: 0.33

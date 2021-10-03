@@ -32,6 +32,13 @@ class HoughAlgorithm:
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
     def processFrame(self, frame, show=True):
+        #pts = [(0, 400), (400,800), (0, 800)]
+        #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
+        #pts = [(800, 400), (400,800), (800, 800)]
+        #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
+
+
+
         # create mask by filtering image colors
         mask = self.createMask(frame)
 
