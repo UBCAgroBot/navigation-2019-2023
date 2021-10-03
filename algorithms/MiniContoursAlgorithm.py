@@ -15,10 +15,11 @@ class MiniContoursAlgorithm:
         self.config = config
         # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
+        self.morphologyKernel = np.ones((9,9),np.float32)
 
         # thresholds for the color of the crop rows
-        self.low_green = np.array([31, 43, 23])
-        self.high_green = np.array([255, 255, 100])
+        self.low_green = np.array([36,25,25])
+        self.high_green = np.array([70,255,255])
 
         # random colors for drawing lines etc
         self.color1 = (255, 255, 0) #blue
@@ -55,6 +56,7 @@ class MiniContoursAlgorithm:
         width = int(mask.shape[0]/num_strips)
         for i in range (num_strips):
             strips.append(mask[i*width:(i+1)*width, 0:mask.shape[1]])
+            # cv2.line(mask, (0,i*width), (mask.shape[1],i*width), (255,0,255), 1, cv2.LINE_AA)
 
         centroids = []
         for i, strip in enumerate(strips):
@@ -82,7 +84,7 @@ class MiniContoursAlgorithm:
         # point_lines: list of [votes, pt1, pt2] of all lines        
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.morphologyKernel)
         
         centroids = self.getCentroids(mask, num_strips=num_strips)
         
@@ -124,9 +126,16 @@ class MiniContoursAlgorithm:
                     cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
 
 
+        cv2.imshow('frame', frame)
+        cv2.imshow('mask', mask)
+        cv2.imshow('c_mask', c_mask)
+        cv2.imshow('points', points)
+        # cv2.waitKey(1)
+
+
         return frame, lines, point_lines
 
-    def processFrame(self, originalframe, num_strips=10):
+    def processFrame(self, originalframe, num_strips=60):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
