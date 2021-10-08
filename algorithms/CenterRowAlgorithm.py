@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+# from helper_scripts import hsv_threshold
 from algorithms.utils import Lines
 
 
@@ -98,6 +98,7 @@ class CenterRowAlgorithm:
                 box = np.int0(box)
                 black_frame = cv2.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
                 ellipse = cv2.fitEllipse(cnt)
+                print(ellipse)
                 cv2.ellipse(black_frame, ellipse, (255, 255, 255), 2)
                 rows, cols = black_frame.shape[:2]
                 # Defines a line for the contour using the fitLine function
@@ -126,3 +127,5 @@ class CenterRowAlgorithm:
         cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
 
         return cnt, frame
+
+    

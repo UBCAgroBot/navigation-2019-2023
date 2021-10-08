@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--alg', default='hough')
 parser.add_argument('--vid', default='crop')
 
+
 def main():
         
     if args.vid == 'crop':
@@ -23,6 +24,10 @@ def main():
         print('Using Sim Video')
         vid_config = OmegaConf.load('config/video/sim.yaml')
         vid_file = "videos/sim.mp4"
+    elif args.vid == 'grape3':
+        print('Using Grape Video')
+        vid_config = OmegaConf.load('config/video/grape_vines3.yaml')
+        vid_file = "videos/grape_vines3.mp4"
     else:
         print('--vid', args.vid, "is not defined, specify one of 'crop' or 'sim'")
         sys.exit()
