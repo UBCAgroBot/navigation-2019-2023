@@ -98,7 +98,7 @@ class CenterRowAlgorithm:
                 box = np.int0(box)
                 black_frame = cv2.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
                 ellipse = cv2.fitEllipse(cnt)
-                print(ellipse)
+                # print(ellipse) Armaan made this but is commenting it out for now. It is good to see the ellipse
                 cv2.ellipse(black_frame, ellipse, (255, 255, 255), 2)
                 rows, cols = black_frame.shape[:2]
                 # Defines a line for the contour using the fitLine function
