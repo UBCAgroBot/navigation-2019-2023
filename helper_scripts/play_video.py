@@ -1,5 +1,5 @@
 import cv2
-video = '../videos/sim.mp4'
+video = '../videos/grape_vines3.mp4'
 
 if __name__ == '__main__':
 
@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
     while (vid.isOpened()):
         ret, frame = vid.read()
+        print(frame.shape)
         if ret == False:
             print("No More Frames Remaining")
             break
