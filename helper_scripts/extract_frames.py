@@ -17,6 +17,7 @@ out = cv.VideoWriter(path + file + '_keyframes' + file_type, cv.VideoWriter_four
 
 while success:
     if count % 30 == 0:
+        frame = cv.line(frame, (w//2, 0), (w//2, h), (0, 0, 255), thickness=2)
         out.write(frame)
         cv.imwrite('../keyframes/' + file + '/frame%d.jpg' % count, frame)
         print('frame ', count)
