@@ -4,7 +4,7 @@ import numpy as np
 import cv2 as cv
 import time
 
-img = cv.imread('../images/random.jpg',cv.IMREAD_COLOR)
+img = cv.imread('../images/soybean.jpg',cv.IMREAD_COLOR)
 img = cv.medianBlur(img,5)
 
 # Convert BGR to HSV
@@ -25,7 +25,8 @@ window_name = "HSV Calibrator"
 cv.namedWindow(window_name)
 
 def nothing(x):
-    print("Trackbar value: " + str(x))
+    print('lower_hsv_threshold: [%i, %i, %i]'%(lh,ls,lv))
+    print('upper_hsv_threshold: [%i,%i,%i]'%(uh,us,uv))
     pass
 
 # create trackbars for Upper HSV
@@ -74,7 +75,8 @@ while(1):
     lv = cv.getTrackbarPos('LowerV',window_name)
     upper_hsv = np.array([uh,us,uv])
     lower_hsv = np.array([lh,ls,lv])
-
+    
+    
     time.sleep(.1)
 
 cv.destroyAllWindows()

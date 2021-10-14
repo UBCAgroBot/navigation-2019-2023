@@ -3,5 +3,6 @@ frame_width: 732
 frame_length: 414
 
 #### hsv thresholds for crop video
-lower_hsv_threshold: [18, 203, 12]
-upper_hsv_threshold: [248, 255, 200]
+lower_hsv_threshold: [17, 84, 116]
+upper_hsv_threshold: [255,255,251]
+

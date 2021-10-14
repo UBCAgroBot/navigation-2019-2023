@@ -1,5 +1,5 @@
 import cv2
-video = '../videos/random.mp4'
+video = '../videos/sunflower.mp4'
 
 if __name__ == '__main__':
 
