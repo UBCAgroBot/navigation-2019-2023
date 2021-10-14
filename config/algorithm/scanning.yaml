@@ -1,15 +1,18 @@
-num_of_lines: 50
+num_of_lines: 10
 gaussian_blur_kernel: 3
 morph_kernel: 5
 
 ### how many pixels between each line
 pixel_gap: 30
 ### the percentage of width we don't want 
-bounding_box_x: 0.3
+bounding_box_x: 0.1
 
 ### percentage of height to keep at the bottom
-bounding_box_y: 0.6
+bounding_box_y: 0.2
 
 ### how many points to draw lines from
-points_per_line_side: 30
-points_per_line_bottom: 30
+points_per_line_side: 10
+points_per_line_bottom: 15
+
+### what is the minimum pixel length for a line
+min_line_length: 400

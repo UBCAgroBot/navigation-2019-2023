@@ -23,6 +23,10 @@ def main():
         print('Using Sim Video')
         vid_config = OmegaConf.load('config/video/sim.yaml')
         vid_file = "videos/sim.mp4"
+    elif args.vid == 'grape':
+        print('Using Grape Video')
+        vid_config = OmegaConf.load('config/video/grape.yaml')
+        vid_file = "videos/grape.mp4"
     else:
         print('--vid', args.vid, "is not defined, specify one of 'crop' or 'sim'")
         sys.exit()
