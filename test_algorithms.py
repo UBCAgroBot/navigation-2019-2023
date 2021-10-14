@@ -28,6 +28,18 @@ def main():
         print('Using Grape Video')
         vid_config = OmegaConf.load('config/video/grape_vines3.yaml')
         vid_file = "videos/grape_vines3.mp4"
+    elif args.vid == 'soybean':
+        print('Using Soybean Video')
+        vid_config = OmegaConf.load('config/video/soybean.yaml')
+        vid_file = "videos/soybean.mp4"
+    elif args.vid == 'sunflower':
+        print('Using Sunflower Video')
+        vid_config = OmegaConf.load('config/video/sunflower.yaml')
+        vid_file = "videos/sunflower.mp4"
+    elif args.vid == 'random':
+        print('Using Random Video')
+        vid_config = OmegaConf.load('config/video/random.yaml')
+        vid_file = "videos/random.mp4"
     else:
         print('--vid', args.vid, "is not defined, specify one of 'crop' or 'sim'")
         sys.exit()
