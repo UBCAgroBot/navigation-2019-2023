@@ -113,7 +113,7 @@ class DataExtractor:
                 while confirm != 'y' and confirm != 'n':
                     print('invalid input')
                     confirm = input(message)
-                if confirm == 'n':
+                if confirm == 'y':
                     sys.exit()
 
     def __click_handler(self, event, x, y, flags, param):

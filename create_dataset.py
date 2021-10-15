@@ -20,7 +20,6 @@ def main():
     video_name = args.vid
     frame_interval = int(args.interval)
     overwrite = args.overwrite
-    overwrite_data = args.overwrite_data
 
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{video_name}.mp4'):
