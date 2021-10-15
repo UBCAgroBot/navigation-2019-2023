@@ -1,94 +1,79 @@
+import argparse
+import os.path as path
 import sys
-import argparse 
+
 from cv2 import cv2
-import numpy as np
-import yaml
+from omegaconf import OmegaConf
+
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
 from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 
-from omegaconf import OmegaConf 
+# parser for command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--alg', default='hough')
 parser.add_argument('--vid', default='crop')
 
+# list of algorithms
+algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
+             ('scanning', ScanningAlgorithm)]
+
 
 def main():
-        
-    if args.vid == 'crop':
-        print('Using Crop Video')
-        vid_config = OmegaConf.load('config/video/crop.yaml')
-        vid_file = "videos/crop.mp4"
-    elif args.vid == 'sim':
-        print('Using Sim Video')
-        vid_config = OmegaConf.load('config/video/sim.yaml')
-        vid_file = "videos/sim.mp4"
-    elif args.vid == 'grape3':
-        print('Using Grape Video')
-        vid_config = OmegaConf.load('config/video/grape_vines3.yaml')
-        vid_file = "videos/grape_vines3.mp4"
-    elif args.vid == 'soybean':
-        print('Using Soybean Video')
-        vid_config = OmegaConf.load('config/video/soybean.yaml')
-        vid_file = "videos/soybean.mp4"
-    elif args.vid == 'sunflower':
-        print('Using Sunflower Video')
-        vid_config = OmegaConf.load('config/video/sunflower.yaml')
-        vid_file = "videos/sunflower.mp4"
-    elif args.vid == 'random':
-        print('Using Random Video')
-        vid_config = OmegaConf.load('config/video/random.yaml')
-        vid_file = "videos/random.mp4"
-    else:
-        print('--vid', args.vid, "is not defined, specify one of 'crop' or 'sim'")
+    # verify that video exists in ./videos
+    if not path.isfile(f'videos/{args.vid}.mp4'):
+        print('--vid', args.vid, "is an invalid video name, make sure video exists in ./videos")
         sys.exit()
 
-    if args.alg == 'hough':
-        print('Using Hough Algorithm')
-        alg_config = OmegaConf.load('config/algorithm/hough.yaml')
-        config = OmegaConf.merge(alg_config, vid_config)
-        alg = HoughAlgorithm(config)
-    elif args.alg == 'center_row':
-        print('Using Center Row Algorithm')
-        alg_config = OmegaConf.load('config/algorithm/center_row.yaml')
-        config = OmegaConf.merge(alg_config, vid_config)
-        alg = CenterRowAlgorithm(config)
-    elif args.alg == 'mini_contour':
-        print('Using Mini Contours Algorithm')
-        alg_config = OmegaConf.load('config/algorithm/mini_contour.yaml')
-        config = OmegaConf.merge(alg_config, vid_config)
-        print(config)
-        alg = MiniContoursAlgorithm(config)
-    elif args.alg == 'scanning':
-        print("Using Scanning Algorithm")
-        alg_config = OmegaConf.load('config/algorithm/scanning.yaml')
-        print(alg_config)
-        print(vid_config)
-        config = OmegaConf.merge(alg_config, vid_config)
-        alg = ScanningAlgorithm(config)
-    else:
-        print('--alg', args.alg, "is not defined, specify one of: 'hough', 'center_row', 'mini_contour', or 'scanning'")
+    # verify that config file for video exists
+    if not path.isfile(f'config/video/{args.vid}.yaml'):
+        print(f"--alg config for {args.vid} is not defined in ./config/video/")
         sys.exit()
 
+    # verify that config file for algorithm exists
+    if not path.isfile(f'config/algorithm/{args.alg}.yaml'):
+        print(f"--alg config for {args.alg} is not defined in ./config/algorithm/")
+        sys.exit()
 
-    run_algorithm(alg, vid_file)
+    # set video config
+    vid_config = OmegaConf.load(f'config/video/{args.vid}.yaml')
+    vid_file = f"videos/{args.vid}.mp4"
+
+    # set algorithm config
+    alg_config = OmegaConf.load(f'config/algorithm/{args.alg}.yaml')
+
+    # merge config files
+    config = OmegaConf.merge(alg_config, vid_config)
+
+    # run algorithm if it exists in algo_list, else print error message and exit
+    exists = False
+    for elem in algo_list:
+        if elem[0] == args.alg:
+            alg = elem[1](config)
+            run_algorithm(alg, vid_file)
+            exists = True
+
+    if not exists:
+        print(f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
+        sys.exit()
+
 
 def run_algorithm(alg, vid_file):
     vid = cv2.VideoCapture(vid_file)
 
-    if (vid.isOpened() == False):
+    if not vid.isOpened():
         print("Error Opening Video File")
 
-    while (vid.isOpened()):
+    while vid.isOpened():
         ret, frame = vid.read()
-        if ret == False:
+        if not ret:
             print("No More Frames Remaining")
             break
 
         processed_image, intersection_point = alg.processFrame(frame)
 
-        cv2.imshow("%s agorithm on %s video"%(args.alg, args.vid), processed_image)
+        cv2.imshow("%s algorithm on %s video" % (args.alg, args.vid), processed_image)
         key = cv2.waitKey(25)
 
         # Exit if Esc key is pressed
@@ -98,13 +83,7 @@ def run_algorithm(alg, vid_file):
     vid.release()
     cv2.destroyAllWindows()
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
     main()
-    
-
-    
-
-
-
-
