@@ -55,7 +55,7 @@ To reset the position of the robot:
 
 ## Demo
 
-![demo video](/readme_files/demo_vid.mp4)
+![](/readme_files/demo_vid.mp4)
 
 ### Colour Filtering
 
