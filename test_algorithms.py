@@ -2,7 +2,7 @@ import argparse
 import os.path as path
 import sys
 
-from cv2 import cv2
+import cv2 as cv
 from omegaconf import OmegaConf
 
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
@@ -12,8 +12,8 @@ from algorithms.ScanningAlgorithm import ScanningAlgorithm
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--alg', default='hough')
-parser.add_argument('--vid', default='crop')
+parser.add_argument('-a', '--alg', required=True)
+parser.add_argument('-v', '--vid', required=True)
 
 # list of algorithms
 algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
@@ -23,7 +23,7 @@ algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mi
 def main():
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
-        print('--vid', args.vid, "is an invalid video name, make sure video exists in ./videos")
+        print('--vid', args.vid, "is an invalid video name, make sure it video exists in ./videos")
         sys.exit()
 
     # verify that config file for video exists
@@ -60,28 +60,28 @@ def main():
 
 
 def run_algorithm(alg, vid_file):
-    vid = cv2.VideoCapture(vid_file)
+    vid = cv.VideoCapture(vid_file)
 
     if not vid.isOpened():
-        print("Error Opening Video File")
+        print('Error Opening Video File')
 
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
-            print("No More Frames Remaining")
+            print('No More Frames Remaining')
             break
 
         processed_image, intersection_point = alg.processFrame(frame)
 
-        cv2.imshow("%s algorithm on %s video" % (args.alg, args.vid), processed_image)
-        key = cv2.waitKey(25)
+        cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+        key = cv.waitKey(25)
 
         # Exit if Esc key is pressed
         if key == 27:
             break
 
     vid.release()
-    cv2.destroyAllWindows()
+    cv.destroyAllWindows()
 
 
 if __name__ == '__main__':
