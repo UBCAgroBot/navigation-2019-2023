@@ -15,23 +15,25 @@
 
 ### Scripts
 
-- `test_algorithms.py`
-
+`test_algorithms.py:`
   - runs any of the 4 algorithms against any video
-  - arguments:
-  - `-a/--alg` : name of algorithm
-    - `hough`, `center_row`, `mini_contour` or `scanning`
-  - `-v/--vid` : name of video
-    - video has to be stored in `./videos/`
-    - video configuration has to be stored as a `yaml` at `./config/video/`
+  - arguments :
+    - `-a/--alg` : name of algorithm
+      - `hough`, `center_row`, `mini_contour` or `scanning`
+    - `-v/--vid` : name of video
+      - video has to be stored in `./videos/`
+      - video configuration has to be stored as a `yaml` at `./config/video/`
+  - example : `python test_algorithms.py -a center_row -v crop`
 
-- `create_dataset.py`
+
+`create_dataset.py:`
   - aids in data extraction from any video
-  - arguments:
-  - `-v/--vid` : name of video
-    - video has to be stored in `./videos/`
-  - `-i/--interval (optional, default = 30)`: interval between keyframes
-  - `-o/--overwrite (optional, default = False)` : flag to indicate that you wish to overwrite files at `./extract/vid`
+  - arguments :
+    - `-v/--vid` : name of video
+      - video has to be stored in `./videos/`
+    - `-i/--interval (optional, default = 30)`: interval between keyframes
+    - `-o/--overwrite (optional, default = False)` : flag to indicate that you wish to overwrite files at `./extract/vid`
+  - example : `python create_dataset.py -v sim` or `python create_dataset.py -v crop -i 60 -o`
 
 ### Commands to Start World in Gazebo
 
