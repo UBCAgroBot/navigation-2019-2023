@@ -25,6 +25,7 @@ class MiniContoursAlgorithm:
         self.color1 = (255, 255, 0) #blue
         self.color2 = (200, 200, 255) #pink
         self.color3 = (0,0,255) #red (removed points)
+        self.contourColor = (0, 129, 255)
 
         # cutOff for points
         self.cutOffHeightFactor = self.config.cut_off_factor
@@ -88,28 +89,47 @@ class MiniContoursAlgorithm:
         # point_lines: list of [votes, pt1, pt2] of all lines        
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
-
-        
-
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.morphologyKernel)
-        
+        mask = cv2.medianBlur(mask, 9)
+        # mask = cv2.GaussianBlur(mask, (9,9), 10)
+        # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphologyKernel)
         centroids = self.getCentroids(mask, num_strips=num_strips)
         
         points = np.zeros(mask.shape, dtype=np.uint8)
         # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
         points_vector = []
         
+        # ret, thresh = cv2.threshold(mask, 0, 254, 0)
+        # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # cnt = contours
+        # cv2.drawContours(frame, cnt, -1, self.contourColor, 3)
+        # cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
+        # for c in cnt:
+        #     if cv2.contourArea(c) > 3000:
+        #         ellipse = cv2.fitEllipse(c)
+        #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
+                
+
+
+        height, width = frame.shape[0], frame.shape[1]
+        splitFactor = 10
+        segmentedPoints = [[] for _ in range(splitFactor)]
+        # print(segmentedPoints)
+        # print(height,width)
+        cutOffHeight = (int)(self.cutOffHeightFactor * height)
+        cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
+        cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
-                height, width = frame.shape[0], frame.shape[1]
-                # print(height,width)
-                cutOffHeight = (int)(self.cutOffHeightFactor * height)
-                cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
-                cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
 
                 for centroid in strip_centroid:
                     x,y = centroid[0], centroid[1]
                     if y > -(cutOffHeight/(width//2))*x + cutOffHeight and y > (cutOffHeight/(width//2))*x - cutOffHeight:
+
+                        # vertically split the points
+                        idx = int(x / width * splitFactor)
+                        segmentedPoints[idx].append([int(x),int(y)])
+
+
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
                         cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
@@ -117,9 +137,6 @@ class MiniContoursAlgorithm:
                     else:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
                         
-
-
-
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
         for point in points_vector:
@@ -139,21 +156,21 @@ class MiniContoursAlgorithm:
             max_theta=max_theta, 
             theta_step=theta_step
         )
-        # lines = None
-
-        # print(points.shape)
-        # points = cv2.Canny(mask, 50, 200)
-        
-        # lines = cv2.HoughLinesP( 
-        #     cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY),
-        #     rho=min_rho, 
-        #     theta=min_theta, 
-        #     threshold=threshold, 
-        #     minLineLength=10,
-        #     maxLineGap=20
-        # )
+        # print(segmentedPoints)
+        # lines = []
+        # for s in segmentedPoints:
+        #     print(s)
+        #     lines.append(cv2.fitLine(np.array(s), cv2.DIST_L2,0,0.01,0.01))
 
         point_lines = []
+        # if lines is not None:
+        #     for l in lines:
+        #         vx, vy, px, py = l[0],l[1],l[2],l[3]
+        #         p2x = px + width*vx
+        #         p2y = py + width*vy
+        #         p1,p2 = (px,py), (p2x, p2y)
+
+        #         cv2.line(frame, p1, p2, self.color2, 6, cv2.LINE_AA)
         if lines is not None:
             for line in lines:
                 if line[0][0] > self.max_vote:
