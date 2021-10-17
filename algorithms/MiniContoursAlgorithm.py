@@ -92,7 +92,7 @@ class MiniContoursAlgorithm:
         points_vector = []
         
         for i, strip_centroid in enumerate(centroids):
-            if i > int(0.3*len(centroids)):
+            if i > int(0.7*len(centroids)): # Get's rid of the dots in the top 30% of the screen.
                 for centroid in strip_centroid:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
                         
@@ -108,7 +108,7 @@ class MiniContoursAlgorithm:
                 pass
         points_vector = np.array([points_vector])
         lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
-
+        # Try to implement probabilistic hough line transform.
         point_lines = []
         if lines is not None:
             for line in lines:
