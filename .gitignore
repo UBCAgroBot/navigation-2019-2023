@@ -128,3 +128,5 @@ dmypy.json
 azcar_sim
 cat_sim_ws
 
+# extract contains generated files
+extract
