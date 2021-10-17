@@ -24,6 +24,7 @@ class MiniContoursAlgorithm:
         # random colors for drawing lines etc
         self.color1 = (255, 255, 0) #blue
         self.color2 = (200, 200, 255) #pink
+        self.color3 = (0,0,255) #red (removed points)
         
         # parameters for HoughLinesPointSet
         self.max_vote = self.config.max_vote
@@ -97,15 +98,25 @@ class MiniContoursAlgorithm:
         
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
+
+
+                height, width = frame.shape[0], frame.shape[1]
+                # print(height,width)
+                cutOffHeight = (int)(0.7 * height)
+                cv2.line(frame, (0, cutOffHeight), (width//2, 0), (255,255,0))
+                cv2.line(frame, (width, cutOffHeight), (width//2, 0), (255,255,0))
+                # cv2.line(frame, (height//2,0), (0, width//2), (0,255,255))
+
                 for centroid in strip_centroid:
-                    width = frame.shape[1]
                     x,y = centroid[0], centroid[1]
-                    if x + y > width // 2:
+                    if y + x > cutOffHeight and x - y < cutOffHeight:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
                         cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
+                        # print(x,y)
                     else:
-                        print(x,y)
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
+                        
 
 
 
