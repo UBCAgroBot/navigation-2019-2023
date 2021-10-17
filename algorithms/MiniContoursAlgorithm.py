@@ -98,9 +98,13 @@ class MiniContoursAlgorithm:
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
                 for centroid in strip_centroid:
+                    x,y = centroid[0], centroid[1]
+                    if x + y > frame.shape[1] // 2:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
                         cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
+                    else:
+                        print(x,y)
 
 
 
