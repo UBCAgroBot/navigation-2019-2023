@@ -117,10 +117,6 @@ class MiniContoursAlgorithm:
             except:
                 pass
         points_vector = np.array([points_vector])
-<<<<<<< HEAD
-        lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
-        # Try to implement probabilistic hough line transform.
-=======
         lines = cv2.HoughLinesPointSet(
             points_vector, 
             lines_max=lines_max, 
@@ -146,7 +142,6 @@ class MiniContoursAlgorithm:
         #     maxLineGap=20
         # )
 
->>>>>>> 91c66d3e6303fd553d3f2cfa6fa0dbeeea95e4d5
         point_lines = []
         if lines is not None:
             for line in lines:
