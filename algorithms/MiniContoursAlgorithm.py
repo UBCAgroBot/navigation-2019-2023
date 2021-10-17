@@ -18,8 +18,8 @@ class MiniContoursAlgorithm:
         self.morphologyKernel = np.ones((9,9),np.float32)
 
         # thresholds for the color of the crop rows
-        self.low_green = np.array([36,25,25])
-        self.high_green = np.array([70,255,255])
+        self.low_green = np.array(config.low_green)
+        self.high_green = np.array(config.high_green)
 
         # random colors for drawing lines etc
         self.color1 = (255, 255, 0) #blue
@@ -27,12 +27,12 @@ class MiniContoursAlgorithm:
         
         # parameters for HoughLinesPointSet
         self.max_vote = self.config.max_vote
-        self.num_strips=60
-        self.lines_max=30
-        self.threshold=4
-        self.min_rho=0
-        self.max_rho=1000
-        self.rho_step=1
+        self.num_strips=self.config.num_strips
+        self.lines_max=self.config.lines_max
+        self.threshold=self.config.threshold
+        self.min_rho=self.config.min_rho
+        self.max_rho=self.config.max_rho
+        self.rho_step=self.config.rho_step
         self.min_theta=-math.pi/4
         self.max_theta=math.pi/4
         self.theta_step=math.pi/180
@@ -84,19 +84,29 @@ class MiniContoursAlgorithm:
         # point_lines: list of [votes, pt1, pt2] of all lines        
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
+
+        
+
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.morphologyKernel)
         
         centroids = self.getCentroids(mask, num_strips=num_strips)
         
-        points = np.zeros(mask.shape)
+        points = np.zeros(mask.shape, dtype=np.uint8)
+        # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
         points_vector = []
         
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.7*len(centroids)): # Get's rid of the dots in the top 30% of the screen.
                 for centroid in strip_centroid:
+                    width = frame.shape[1]
+                    x,y = centroid[0], centroid[1]
+                    if x + y > width // 2:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                        
+                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
+                    else:
+                        print(x,y)
+
 
 
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -107,8 +117,36 @@ class MiniContoursAlgorithm:
             except:
                 pass
         points_vector = np.array([points_vector])
+<<<<<<< HEAD
         lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
         # Try to implement probabilistic hough line transform.
+=======
+        lines = cv2.HoughLinesPointSet(
+            points_vector, 
+            lines_max=lines_max, 
+            threshold=threshold, 
+            min_rho=min_rho, 
+            max_rho=max_rho, 
+            rho_step=rho_step, 
+            min_theta=min_theta, 
+            max_theta=max_theta, 
+            theta_step=theta_step
+        )
+        # lines = None
+
+        # print(points.shape)
+        # points = cv2.Canny(mask, 50, 200)
+        
+        # lines = cv2.HoughLinesP( 
+        #     cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY),
+        #     rho=min_rho, 
+        #     theta=min_theta, 
+        #     threshold=threshold, 
+        #     minLineLength=10,
+        #     maxLineGap=20
+        # )
+
+>>>>>>> 91c66d3e6303fd553d3f2cfa6fa0dbeeea95e4d5
         point_lines = []
         if lines is not None:
             for line in lines:
