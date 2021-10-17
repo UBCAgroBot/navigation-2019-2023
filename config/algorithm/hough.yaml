@@ -1,4 +1,12 @@
 #### hough algorithm parameters
+hough_threshold: 45 # 35 - 55
+hough_min_line_length: 50
+hough_max_line_gap: 70
+hough_rho: 1
+canny_sigma: 0.33
+resize_factor: 1
+blur_size_1: 3
+blur_size_2: 3
 
-canny_thresh_1: 600
-canny_thresh_2: 400
+lower_hsv_threshold_hough: [36, 25, 25]
+upper_hsv_threshold_hough: [70, 255, 255]
