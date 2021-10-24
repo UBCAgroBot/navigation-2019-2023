@@ -57,36 +57,42 @@ class ScanningAlgorithm(object):
         #         line = self.create_line(top_x, self.upper_y_bound, self.left_x_bound, left_y)
         #         self.lines.append(line)
 
+        # borders of a triangle that encapsulates the area being analyzed
         left_border = []
         right_border = []
         bottom_border = []
+
+        # determine the slope (space between each point on the left and right side)
         dx = int((self.right_x_bound - self.left_x_bound) / 2 / config.points_per_line_side)
         dy = int((self.lower_y_bound - self.upper_y_bound) / config.points_per_line_side)
+
+        # create points the left and right borders
         for i in range(config.points_per_line_side):
             left_border.append((self.left_x_bound+i*dx, self.lower_y_bound-i*dy))
             right_border.append((self.right_x_bound-i*dx, self.lower_y_bound-i*dy))
+
+        # determine the distance between points and create them along the bottom border
         dx = int((self.right_x_bound - self.left_x_bound) / config.points_per_line_bottom)
-        
         for i in range(config.points_per_line_bottom):
             bottom_border.append((self.left_x_bound+i*dx, self.lower_y_bound))
-        
+
+        # draw lines for all combinations of 2 points between the left border and
+        # the bottom and right border
         for point1 in left_border:
             for point2 in bottom_border + right_border:
-                len = np.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
-                if len > config.min_line_length:
-                    line = self.create_line(point1[0], point1[1], point2[0], point2[1])
-                    self.lines.append(line)
-        
+                line = self.create_line(point1[0], point1[1], point2[0], point2[1])
+                self.lines.append(line)
+
+        # draw lines for all combinations of 2 points between the right and bottom border
         for point1 in right_border:
             for point2 in bottom_border:
-                len = np.sqrt((point1[0]-point2[0])**2+(point1[1]-point2[1])**2)
-                if len > config.min_line_length:
-                    line = self.create_line(point1[0], point1[1], point2[0], point2[1])
-                    self.lines.append(line)
+                line = self.create_line(point1[0], point1[1], point2[0], point2[1])
+                self.lines.append(line)
         
+        # list of all lines created
         self.lines = np.array(self.lines)
 
-    # creates an array of x,y points for a line starting from a point on the top edge extending to a point on the bottom edge
+    # creates an array of x,y points for a line starting from a point on the top edge extedning to a point on the bottom edge
     def create_line(self, start_x, start_y, end_x, end_y):
         x_diff = abs(start_x - end_x)
         y_diff = abs(start_y - end_y)
@@ -121,22 +127,14 @@ class ScanningAlgorithm(object):
         lines_array = []
 
         for line in self.lines:
-
             row = line[:,0]
             col = line[:,1]
             extracted = mask[col, row]
             lines_array.append((np.sum(extracted)/len(extracted), line))
-
-      
         lines_array = np.array(lines_array)
 
-
         values = lines_array[:, 0]
-
-
-        all_indices = (-values).argsort()    
-        
-        largest_indices = all_indices[:self.num_of_lines]
+        largest_indices = (-values).argsort()[:self.num_of_lines]
         most_prominent_lines = lines_array[:, 1][largest_indices]
 
         # convert to lines as defined in Lines.py
@@ -150,10 +148,11 @@ class ScanningAlgorithm(object):
         for line in converted_lines:
             frame = cv2.line(frame, (line[0],line[1]), (line[2], line[3]), (255,255,255), 1) 
 
+
         if show:
             cv2.imshow('after scanning algorithm', frame)
             cv2.imshow('mask', mask)
-        frame = cv2.circle(frame, (self.left_x_bound, self.lower_y_bound), 20, (0,255,0), -1)
+
         # print('vanishing Point: ', vanishing_point)
         return frame, vanishing_point
 
