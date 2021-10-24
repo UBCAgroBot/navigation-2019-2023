@@ -4,8 +4,14 @@ import numpy as np
 import cv2 as cv
 import time
 
-img = cv.imread('../images/grape.jpg',cv.IMREAD_COLOR)
+from tkinter import Tk     # from tkinter import Tk for Python 3.x
+from tkinter.filedialog import askopenfilename
+Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+img_file = askopenfilename(initialdir='../images')
+
+img = cv.imread(img_file, cv.IMREAD_COLOR)
 img = cv.medianBlur(img,5)
+
 
 # Convert BGR to HSV
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
@@ -25,7 +31,8 @@ window_name = "HSV Calibrator"
 cv.namedWindow(window_name)
 
 def nothing(x):
-    print("Trackbar value: " + str(x))
+    print('lower_hsv_threshold: [%i, %i, %i]'%(lh,ls,lv))
+    print('upper_hsv_threshold: [%i,%i,%i]'%(uh,us,uv))
     pass
 
 # create trackbars for Upper HSV
@@ -74,7 +81,8 @@ while(1):
     lv = cv.getTrackbarPos('LowerV',window_name)
     upper_hsv = np.array([uh,us,uv])
     lower_hsv = np.array([lh,ls,lv])
-
+    
+    
     time.sleep(.1)
 
 cv.destroyAllWindows()
