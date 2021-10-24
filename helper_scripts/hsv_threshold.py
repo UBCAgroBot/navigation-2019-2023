@@ -4,8 +4,14 @@ import numpy as np
 import cv2 as cv
 import time
 
-img = cv.imread('../images/soybean.jpg',cv.IMREAD_COLOR)
+from tkinter import Tk     # from tkinter import Tk for Python 3.x
+from tkinter.filedialog import askopenfilename
+Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+img_file = askopenfilename(initialdir='../images')
+
+img = cv.imread(img_file, cv.IMREAD_COLOR)
 img = cv.medianBlur(img,5)
+
 
 # Convert BGR to HSV
 hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
