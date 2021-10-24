@@ -11,8 +11,11 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
+
 import os
-from algorithms import HoughAlgorithm, MiniContoursAlgorithm, ScanningAlgorithm, CenterRowAlgorithm
+from omegaconf import OmegaConf
+
+from algorithms.ScanningAlgorithm import ScanningAlgorithm
 class AgrobotSensors:
     ''' 
     performs image processing on camera input from agrobot
@@ -21,6 +24,14 @@ class AgrobotSensors:
         self.bridge = CvBridge()
         rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
         rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
+
+        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour.yaml')
+        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/sim.yaml')
+        self.vid_config.width = 400
+        self.vid_config.height = 400
+        self.config = OmegaConf.merge(self.config, self.vid_config)
+
+        self.algorithm = ScanningAlgorithm(self.config)
 
     def convert_cv_image(self, data):
         try:
@@ -45,11 +56,14 @@ class AgrobotSensors:
             print('did not see front or downward image')
             return
         
-        front_cx, front_cy = self.get_centroid(front_image)
+        processed_image, intersection_point = self.algorithm.processFrame(front_image)
+
+        print(intersection_point)
+        # front_cx, front_cy = self.get_centroid(front_image)
         
-        front_image = cv2.circle(front_image, (front_cx, front_cy), 10, (0,255,255), 1)
+        # front_image = cv2.circle(front_image, (front_cx, front_cy), 10, (0,255,255), 1)
         cv2.imshow('front image', front_image)
-        cv2.imshow('downward image', downward_image)
+        cv2.imshow('processed', processed_image)
         cv2.waitKey(1)
     
     def get_centroid(self, frame):
