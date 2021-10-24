@@ -7,8 +7,9 @@ name = "pypi"
 opencv-python = "*"
 omegaconf = "*"
 numpy = "*"
+tk = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3"
