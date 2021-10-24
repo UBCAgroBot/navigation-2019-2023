@@ -1,6 +1,10 @@
 import cv2
+<<<<<<< HEAD
+video = '../videos/grape.mp4'
+=======
 from tkinter import Tk     # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
+>>>>>>> 3f9053bf5d3251d9cbdfe2ffe8a86630cba44353
 
 if __name__ == '__main__':
     Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
