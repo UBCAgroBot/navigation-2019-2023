@@ -11,45 +11,53 @@ class HoughAlgorithm:
         # Master, demo
         self.config = config
 
-        self.LOWER_GREEN = np.array(config.lower_hsv_threshold)
-        self.UPPER_GREEN = np.array(config.upper_hsv_threshold)
+        self.LOWER_GREEN = np.array(config.lower_hsv_threshold_hough)
+        self.UPPER_GREEN = np.array(config.upper_hsv_threshold_hough)
 
+        self.CANNY_SIGMA = config.canny_sigma
 
         # gaussian blur / dilate
-        self.K_SIZE = (3, 3)
+        self.K_SIZE = (config.blur_size_1, config.blur_size_2)
 
-        # canny edge
-        self.CANNY_THRESH_1 = 600
-        self.CANNY_THRESH_2 = 400
 
         # prob. hough
-        self.THRESHOLD = 40
-        self.MIN_LINE_LENGTH = 40
-        self.MAX_LINE_GAP = 15
+        self.THRESHOLD = config.hough_threshold
+        self.MIN_LINE_LENGTH = config.hough_min_line_length
+        self.MAX_LINE_GAP = config.hough_max_line_gap
+        self.HOUGH_RHO = config.hough_rho
 
         # resize factor
-        self.resizeFactor = 1
+        self.RESIZE_FACTOR = config.resize_factor
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def processFrame(self, frame, show=False):
+    def processFrame(self, frame, show=True):
+        #pts = [(0, 400), (400,800), (0, 800)]
+        #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
+        #pts = [(800, 400), (400,800), (800, 800)]
+        #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
+
+
+
         # create mask by filtering image colors
         mask = self.createMask(frame)
 
-        # dilate the mask
-        # mask = self.dilate(mask)
-
         # Resize frame to smaller size to allow faster processing
-        frame = self.resize(frame, self.resizeFactor)
-        # mask = self.resize(mask, self.resizeFactor)
+        frame = self.resize(frame, self.RESIZE_FACTOR)
+        # mask = self.resize(mask, self.RESIZE_FACTOR)
     
         # Perform Canny Edge Detection
+        v = np.median(mask)
+        self.CANNY_THRESH_1 = int(max(0, (1.0 - self.CANNY_SIGMA) * v))
+        self.CANNY_THRESH_2 = int(min(255, (1.0 + self.CANNY_SIGMA) * v))
+
         edges = cv2.Canny(mask, self.CANNY_THRESH_1, self.CANNY_THRESH_2)
+
 
         # Perform Hough Lines Probabilistic Transform
         lines = cv2.HoughLinesP(
             edges,
-            1,
+            self.HOUGH_RHO,
             np.pi / 180,
             self.THRESHOLD,
             np.array([]),
@@ -69,7 +77,7 @@ class HoughAlgorithm:
         # show the frames on screen for debugging
         if show:
             cv2.imshow('frame', frame)
-            cv2.imshow('mask_hough', mask)
+            cv2.imshow('mask_hough',mask)
             cv2.imshow('edges', edges)
             cv2.imshow('hough algorithm', lineimg)
             cv2.waitKey(1)
@@ -84,7 +92,9 @@ class HoughAlgorithm:
         # Filter image and allow only shades of green to pass
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
         # Apply gaussian blur (can be removed)
-        # mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
+        mask = cv2.GaussianBlur(mask, self.K_SIZE, 2)
+        # dilate the mask
+        mask = self.dilate(mask)
 
         return mask
 

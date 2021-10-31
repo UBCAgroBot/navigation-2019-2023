@@ -32,7 +32,7 @@ class CenterRowAlgorithm:
         self.HEIGHT = config.frame_length
         self.WIDTH = config.frame_width
 
-    def processFrame(self, frame):
+    def processFrame(self, frame, show=True):
         # This function uses contouring to create contours around each crop row
         # and uses these contours to find centroid lines, and the correspond row vanishing point
         # This function takes in the current frame (mat) as a parameter, and returns the
