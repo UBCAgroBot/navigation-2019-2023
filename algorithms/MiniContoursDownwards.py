@@ -11,7 +11,8 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
     def __init__(self, config):
         MiniContoursAlgorithm.__init__(self,config)
 
-    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
+    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
+                            drawPoints=True):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -28,18 +29,21 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         points_vector = []
 
         height, width = frame.shape[0], frame.shape[1]
-        splitFactor = 0.3
+        splitFactor = 0.25
+        cv2.line(frame,(int(width*splitFactor), 0), (int(width*splitFactor), height), self.color3, thickness=2)
+        cv2.line(frame,(int(width*(1-splitFactor)), 0), (int(width*(1-splitFactor)), height), self.color3, thickness=2)
         for i, strip_centroid in enumerate(centroids):
             for centroid in strip_centroid:
                 x,y = centroid[0], centroid[1]
                 if x > width*splitFactor and x < width*(1-splitFactor):
                     # vertically split the points
-                    idx = int(x / width * splitFactor)
-                    cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                    cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
+                    if drawPoints:
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
+                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                     points_vector.append([int(centroid[0]), int(centroid[1])])
                 else:
-                    cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1)     
+                    if drawPoints:
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1)     
 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -50,7 +54,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
             except:
                 pass
         points_vector = np.array([points_vector])
-        line = cv2.fitLine(points_vector, cv2.DIST_HUBER, 0, 0.01, 0.01)
+        line = cv2.fitLine(points_vector, cv2.DIST_L1, 0, 0.01, 0.01)
         v1,v2,x1,x2 = np.float32(line)
         alpha = width
         p1, p2 = (int(x1-alpha*v1),int(x2-alpha*v2)), (int(x1+alpha*v1),int(x2+alpha*v2))
