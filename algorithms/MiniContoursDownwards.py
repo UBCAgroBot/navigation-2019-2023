@@ -59,6 +59,15 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         alpha = width
         p1, p2 = (int(x1-alpha*v1),int(x2-alpha*v2)), (int(x1+alpha*v1),int(x2+alpha*v2))
         cv2.line(frame, p1, p2, self.color3, thickness=3)
+
+        # up vector
+        up = [0,1]
+        dir = [v1,v2]
+        dot_product = np.dot(up/np.linalg.norm(up), dir/np.linalg.norm(dir))
+        angle = np.arccos(dot_product)
+        print(angle)
+
+
         lines = [line]
         point_lines = []
 
