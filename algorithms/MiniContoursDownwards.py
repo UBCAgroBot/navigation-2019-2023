@@ -88,9 +88,24 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         lines = [line]
         point_lines = []
 
-
+        deltas = (sign*deg, x)
         cv2.imshow('frame', frame)
         cv2.imshow('mask', mask)
         cv2.imshow('c_mask', c_mask)
         cv2.imshow('points', points)
-        return frame, lines, point_lines
+        return frame, point_lines, deltas
+    
+    def processFrame(self, originalframe, num_strips=60, show=False, delta=False):
+        
+        # original_frame: BGR frame
+        # returns frame: original_frame with the lines and centroids drawn on
+        frame = self.apply_filters(originalframe)
+        
+        frame, point_lines, deltas = self.getCenterHoughLines(frame, num_strips=num_strips)
+
+        # cv2.imshow('frame', frame)
+
+        if delta:
+            return frame, point_lines, deltas 
+        else:
+            return frame, point_lines
