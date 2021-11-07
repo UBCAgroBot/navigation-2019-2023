@@ -27,8 +27,9 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
         height, width = frame.shape[0], frame.shape[1]
         splitFactor = 0.25
-        cv2.line(frame,(int(width*splitFactor), 0), (int(width*splitFactor), height), self.color3, thickness=2)
-        cv2.line(frame,(int(width*(1-splitFactor)), 0), (int(width*(1-splitFactor)), height), self.color3, thickness=2)
+        if drawPoints:
+            cv2.line(frame,(int(width*splitFactor), 0), (int(width*splitFactor), height), self.color3, thickness=2)
+            cv2.line(frame,(int(width*(1-splitFactor)), 0), (int(width*(1-splitFactor)), height), self.color3, thickness=2)
         for i, strip_centroid in enumerate(centroids):
             for centroid in strip_centroid:
                 x,y = centroid[0], centroid[1]
@@ -81,7 +82,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         direction = "left" if u_angle > d_angle else "right"
         sign = 1 if u_angle > d_angle else -1
 
-        txt = "angle: " + str(deg) + "deg " + direction + " x offset: " + str(width//2-int(x)) + " pixels"
+        txt = "angle: " + str(np.round(deg[0], 3)) + " deg " + direction + " x offset: " + str(width//2-int(x)) + " pixels"
         cv2.putText(frame, txt,(0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
         lines = [line]
