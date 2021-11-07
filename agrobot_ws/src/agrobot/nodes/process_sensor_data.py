@@ -27,12 +27,13 @@ class AgrobotSensors:
         
         # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
         # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
-        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/sim.yaml')
+        print(os.listdir(os.getcwd()))
+        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/agrobot_ws/src/agrobot/nodes/config/video/sim.yaml')
         self.vid_config.frame_width = 400
         self.vid_config.frame_length = 400
         
         # print('\n\n\n', cv2.__version__)
-        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/scanning.yaml')
+        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/agrobot_ws/src/agrobot/nodes/config/algorithm/scanning.yaml')
         self.config = OmegaConf.merge(self.config, self.vid_config)
         self.algorithm = ScanningAlgorithm(self.config)
 

@@ -65,7 +65,7 @@ class MiniContoursAlgorithm:
 
         centroids = []
         for i, strip in enumerate(strips):
-            _, contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
