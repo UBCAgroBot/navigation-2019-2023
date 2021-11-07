@@ -1,8 +1,5 @@
 import cv2
 import numpy as np
-import time
-import operator
-import sys
 import math
 from .MiniContoursAlgorithm import MiniContoursAlgorithm
 
@@ -12,7 +9,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         MiniContoursAlgorithm.__init__(self,config)
 
     def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
-                            drawPoints=True):
+                            drawPoints=False):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -53,6 +50,8 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
                 points[point[1]][point[0]] = 255
             except:
                 pass
+
+        # linear regression best fit line
         points_vector = np.array([points_vector])
         line = cv2.fitLine(points_vector, cv2.DIST_L1, 0, 0.01, 0.01)
         v1,v2,x1,x2 = np.float32(line)
@@ -60,13 +59,30 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         p1, p2 = (int(x1-alpha*v1),int(x2-alpha*v2)), (int(x1+alpha*v1),int(x2+alpha*v2))
         cv2.line(frame, p1, p2, self.color3, thickness=3)
 
-        # up vector
-        up = [0,1]
-        dir = [v1,v2]
-        dot_product = np.dot(up/np.linalg.norm(up), dir/np.linalg.norm(dir))
-        angle = np.arccos(dot_product)
-        print(angle)
+        # calculate center point of best fit line
+        slope = v2/v1
+        x = (height//2 - x2)/slope + x1
+        cv2.circle(frame, (int(x), height // 2), 5, self.color1, -1)
 
+        # reference center line and point
+        centerP = (width // 2, height // 2)
+        cv2.line(frame, centerP, (width // 2, 0), self.color2, thickness=3)
+        cv2.circle(frame, centerP, 5, self.color2, -1)
+
+        # calculate angle
+        up = [0,-1]
+        down = [0,1]
+        dir = [v1,v2]
+        norm = np.linalg.norm(up) * np.linalg.norm(dir)
+        u_dp, d_dp = np.dot(up,dir)/norm, np.dot(down,dir)/norm
+        u_angle, d_angle = np.arccos(u_dp), np.arccos(d_dp)
+        angle = min(u_angle,d_angle)
+        deg = angle*180/np.pi
+        direction = "left" if u_angle > d_angle else "right"
+        sign = 1 if u_angle > d_angle else -1
+
+        txt = "angle: " + str(deg) + "deg " + direction + " x offset: " + str(width//2-int(x)) + " pixels"
+        cv2.putText(frame, txt,(0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
         lines = [line]
         point_lines = []
