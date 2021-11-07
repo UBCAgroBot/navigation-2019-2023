@@ -8,6 +8,7 @@ from omegaconf import OmegaConf
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
 from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
+from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 
 # parser for command line arguments
@@ -16,7 +17,7 @@ parser.add_argument('-a', '--alg', required=True)
 parser.add_argument('-v', '--vid', required=True)
 
 # list of algorithms
-algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
+algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm), ('mini_contour_downward', MiniContoursDownwards),
              ('scanning', ScanningAlgorithm)]
 
 
