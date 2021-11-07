@@ -24,10 +24,7 @@ class AgrobotSensors:
     '''
     def __init__(self):
         self.bridge = CvBridge()
-        rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
-        rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
         
-        self.sensor_data_pub = rospy.Publisher("agrobot/sensors_data", String, queue_size=5)
         # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
         # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
         self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/sim.yaml')
@@ -42,6 +39,11 @@ class AgrobotSensors:
         # self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour.yaml')
         # self.config = OmegaConf.merge(self.config, self.vid_config)
         # self.algorithm = MiniContoursAlgorithm(self.config)
+
+        rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
+        rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
+        
+        self.sensor_data_pub = rospy.Publisher("agrobot/sensors_data", String, queue_size=5)
 
     def convert_cv_image(self, data):
         try:
@@ -68,8 +70,11 @@ class AgrobotSensors:
         
         processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
 
-        front_cx = intersection_point[0]
-
+        if len(intersection_point) == 0:
+            front_cx = self.last_front_cx
+        else:
+            front_cx = intersection_point[0]
+        self.last_front_cx = front_cx
         message = String(str([front_cx, 2.0]))
         self.sensor_data_pub.publish(message)
         # front_cx, front_cy = self.get_centroid(front_image)

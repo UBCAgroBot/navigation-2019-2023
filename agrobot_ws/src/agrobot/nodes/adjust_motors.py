@@ -43,7 +43,7 @@ class WheelController():
         centroid = sensor_array[0]
         
         print(centroid)
-        alpha = 1.2
+        alpha = 1.5
         angle = alpha * (200 - centroid)/200 * np.pi/4
         fl_angle, fr_angle, bl_angle, br_angle = angle, angle, angle, angle
         #turning
