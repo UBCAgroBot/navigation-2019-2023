@@ -3,28 +3,93 @@ import numpy as np
 import time
 from algorithms.utils import Lines
 
-class ScanningAlgorithm:
+class ScanningAlgorithm(object):
     def __init__(self, config):
-        self.config=config
-        self.LENGTH = config['frame_length']
-        self.WIDTH = config['frame_width']
+        
+        self.config = config
+        self.WIDTH = config.frame_width
+        self.HEIGHT = config.frame_length
+        # filter for corn
+        # self.LOWER_GREEN = np.array([17, 26, 0])
+        # self.UPPER_GREEN = np.array([93, 255, 255])
 
-        self.LOWER_GREEN = np.array(config['lower_hsv_threshold'])
-        self.UPPER_GREEN = np.array(config['upper_hsv_threshold'])
+        # filter for wheat
+        self.LOWER_GREEN = np.array(config.lower_hsv_threshold)
+        self.UPPER_GREEN = np.array(config.upper_hsv_threshold)
+        
+        self.pixel_gap = config.pixel_gap
+        self.left_x_bound = int(self.WIDTH*self.config.bounding_box_x)
+        self.right_x_bound = int(self.WIDTH*(1-self.config.bounding_box_x))
+        self.upper_y_bound = int(self.HEIGHT*self.config.bounding_box_y)
+        self.lower_y_bound = self.HEIGHT-1
 
-        self.blur_kernel=config['gaussian_blur_kernel']
-        self.morph_kernel=np.ones((config['morph_kernel'],config['morph_kernel']), np.uint8)
+        self.kernel=np.ones((5,5), np.uint8)
 
-        self.num_of_lines = config['num_of_lines']
-        # gaussian blur / dilate
-        # generate_lines_time = time.time()
+        self.num_of_lines = config.num_of_lines
 
         self.lines = []
-        for top_x in range(0, self.WIDTH, 30):
-            for bottom_x in range(0, self.WIDTH, 30):
-                line = self.create_line(top_x, 0, bottom_x, self.LENGTH-1)
+
+        # The following loops create lines, 420 is hardcoded horizon that may need to 
+        # be changed. Loops can be mixed and matched for different sets of lines.
+
+        # creates lines from the top of the horizon (in this case 420) to the bottom
+        for top_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
+            for bottom_x in range(self.left_x_bound,self.right_x_bound, self.pixel_gap):
+                line = self.create_line(top_x, self.upper_y_bound, bottom_x, self.lower_y_bound)
                 self.lines.append(line)
 
+        # creates lines from left side to right side
+        # for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #     for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line = self.create_line(self.left_x_bound, left_y, self.right_x_bound, right_y)
+        #         self.lines.append(line)
+
+        # creates lines from horizon to the right side
+        # for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
+        #     for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line1 = self.create_line(top_x, self.upper_y_bound, self.right_x_bound, right_y)
+
+        #         self.lines.append(line1)
+
+        # # creates lines from horizon to the left side
+        # for top_x in range(self.left_x_bound, self.right_x_bound, self.pixel_gap):
+        #     for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+        #         line = self.create_line(top_x, self.upper_y_bound, self.left_x_bound, left_y)
+        #         self.lines.append(line)
+
+        # borders of a triangle that encapsulates the area being analyzed
+        # left_border = []
+        # right_border = []
+        # bottom_border = []
+
+        # # determine the slope (space between each point on the left and right side)
+        # dx = int((self.right_x_bound - self.left_x_bound) / 2 / config.points_per_line_side)
+        # dy = int((self.lower_y_bound - self.upper_y_bound) / config.points_per_line_side)
+
+        # # create points the left and right borders
+        # for i in range(config.points_per_line_side):
+        #     left_border.append((self.left_x_bound+i*dx, self.lower_y_bound-i*dy))
+        #     right_border.append((self.right_x_bound-i*dx, self.lower_y_bound-i*dy))
+
+        # # determine the distance between points and create them along the bottom border
+        # dx = int((self.right_x_bound - self.left_x_bound) / config.points_per_line_bottom)
+        # for i in range(config.points_per_line_bottom):
+        #     bottom_border.append((self.left_x_bound+i*dx, self.lower_y_bound))
+
+        # # draw lines for all combinations of 2 points between the left border and
+        # # the bottom and right border
+        # for point1 in left_border:
+        #     for point2 in bottom_border + right_border:
+        #         line = self.create_line(point1[0], point1[1], point2[0], point2[1])
+        #         self.lines.append(line)
+
+        # # draw lines for all combinations of 2 points between the right and bottom border
+        # for point1 in right_border:
+        #     for point2 in bottom_border:
+        #         line = self.create_line(point1[0], point1[1], point2[0], point2[1])
+        #         self.lines.append(line)
+        
+        # list of all lines created
         self.lines = np.array(self.lines)
 
     # creates an array of x,y points for a line starting from a point on the top edge extedning to a point on the bottom edge
@@ -44,28 +109,22 @@ class ScanningAlgorithm:
         return line
 
 
-    
-    # print('elapsed time to generate lines', time.time()-generate_lines_time)
-
     def processFrame(self, frame, show=False):
-        # cv2.imshow('original frame', frame)
+        cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        # Filter image and allow only shades of green to pass
+  
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
-        # Apply gaussian blur (can be removed)
-        mask = cv2.GaussianBlur(mask, (self.blur_kernel,self.blur_kernel), 2)
-        # mask = cv2.dilate(mask, kernel, iterations = 1)
-        # mask = cv2.erode(mask, kernel, iterations= 1)
-        # print(mask.shape)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.morph_kernel)
-        
+        mask = cv2.GaussianBlur(mask, (3,3), 2)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
+
+        # use this to invert the mask
         # mask = ~mask
+
+
         # array to hold (percentage, line) pairs
         # percentage is the percentage of the line that is white when overlaying mask
         # line is the (x1, y1, x2, y2) definition of the line
         lines_array = []
-
-        # find_lines_time = time.time()
 
         for line in self.lines:
             row = line[:,0]
@@ -74,12 +133,9 @@ class ScanningAlgorithm:
             lines_array.append((np.sum(extracted)/len(extracted), line))
         lines_array = np.array(lines_array)
 
-        # finds the lines 
         values = lines_array[:, 0]
         largest_indices = (-values).argsort()[:self.num_of_lines]
         most_prominent_lines = lines_array[:, 1][largest_indices]
-
-        # print('time to find lines', time.time()-find_lines_time)
 
         # convert to lines as defined in Lines.py
         converted_lines = []

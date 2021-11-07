@@ -8,6 +8,7 @@ opencv-python = "*"
 omegaconf = "*"
 numpy = "*"
 tk = "*"
+python-rospkg = "*"
 
 [dev-packages]
 
