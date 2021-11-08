@@ -40,13 +40,38 @@ class WheelController():
 
 
     def calculate_angles(self, sensor_array):
-        centroid = sensor_array[0]
+        # centroid = sensor_array[0]
         
-        print(centroid)
-        alpha = 1.5
-        angle = alpha * (200 - centroid)/200 * np.pi/4
-        fl_angle, fr_angle, bl_angle, br_angle = angle, angle, angle, angle
+        # print(centroid)
+        # alpha = 1.5
+        # angle = alpha * (200 - centroid)/200 * np.pi/4
+        # fl_angle, fr_angle, bl_angle, br_angle = angle, angle, angle, angle
+
+        dx, dtheta = sensor_array[0], sensor_array[1]
+
         #turning
+        beta = 3
+        angle = beta* dtheta*np.pi/180 
+        fl_angle, fr_angle = angle, angle
+        bl_angle, br_angle = 0, 0
+
+        
+        alpha = 2
+        shift =  alpha*dx/100 * np.pi/4
+
+        fl_angle += shift
+        fr_angle += shift
+        bl_angle += shift
+        br_angle += shift
+
+        print('dx', dx)
+        print('dtheta', dtheta)
+        print('shift:', shift)
+        print('angle:', angle)
+        print('fl angle, fr_angle:', fl_angle, fr_angle)
+        print('bl angle, br_angle:', bl_angle, br_angle)
+        print('\n\n')
+        # shift = - dx/200 * np.pi/4
         # fl_angle = np.pi/4+np.pi/2
         # bl_angle = fl_angle + np.pi/2
         # br_angle = bl_angle + np.pi/2
@@ -55,7 +80,7 @@ class WheelController():
     
     def calculate_speeds(self, sensor_array):
 
-        nominal_speed = 3.0
+        nominal_speed = 2.0
         return nominal_speed, nominal_speed, nominal_speed, nominal_speed
 
 
