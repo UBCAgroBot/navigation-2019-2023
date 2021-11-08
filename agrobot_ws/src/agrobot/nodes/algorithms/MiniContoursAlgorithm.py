@@ -65,7 +65,7 @@ class MiniContoursAlgorithm:
 
         centroids = []
         for i, strip in enumerate(strips):
-            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            _,contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
@@ -196,7 +196,7 @@ class MiniContoursAlgorithm:
 
         return frame, lines, point_lines
 
-    def processFrame(self, originalframe, num_strips=60):
+    def processFrame(self, originalframe, num_strips=60, show=False):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on

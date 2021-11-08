@@ -18,6 +18,7 @@ from omegaconf import OmegaConf
 
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
+from algorithms.MiniContoursDownwards import MiniContoursDownwards
 class AgrobotSensors:
     ''' 
     performs image processing on camera input from agrobot
@@ -27,16 +28,16 @@ class AgrobotSensors:
         
         # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
         # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
-        print(os.listdir(os.getcwd()))
-        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/agrobot_ws/src/agrobot/nodes/config/video/sim.yaml')
+
+        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/down1.yaml')
         self.vid_config.frame_width = 400
         self.vid_config.frame_length = 400
         
         # print('\n\n\n', cv2.__version__)
-        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/agrobot_ws/src/agrobot/nodes/config/algorithm/scanning.yaml')
+        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour_downward.yaml')
         self.config = OmegaConf.merge(self.config, self.vid_config)
-        self.algorithm = ScanningAlgorithm(self.config)
-
+        # self.algorithm = ScanningAlgorithm(self.config)
+        self.downward_algorithm = MiniContoursDownwards(self.config)
         # self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour.yaml')
         # self.config = OmegaConf.merge(self.config, self.vid_config)
         # self.algorithm = MiniContoursAlgorithm(self.config)
@@ -69,14 +70,13 @@ class AgrobotSensors:
             print('did not see front or downward image')
             return
         
-        processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
+        # processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
 
-        if len(intersection_point) == 0:
-            front_cx = self.last_front_cx
-        else:
-            front_cx = intersection_point[0]
-        self.last_front_cx = front_cx
-        message = String(str([front_cx, 2.0]))
+        processed_image, intersection_point, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True)
+    
+
+        message = String(str([delta[1][0], delta[0][0]]))
+        # print(message)
         self.sensor_data_pub.publish(message)
         # front_cx, front_cy = self.get_centroid(front_image)
         
