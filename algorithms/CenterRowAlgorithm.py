@@ -168,9 +168,9 @@ class CenterRowAlgorithm:
 
     def get_center_row_coords(self):
         """
-        :return: center coordinates of center row contour (x, y) for most recently processed frame.
+        :return: center coordinates of center row contour (x, y) for most recently processed frame. This is different
+        from the vanishing point.
         """
-        # x-value, self.center[0][0], is relevant for minimization, y-value is not that important
         return self.center[0]
 
     def get_angle_to_minimize(self):
