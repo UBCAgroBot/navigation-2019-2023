@@ -10,7 +10,6 @@ sigmaX: 0
 #contour parameters
 contour_color: 0,129,255
 min_contour_area: 3000
-max_contour_area: 20000
 
 
 #Canny edge parameters
