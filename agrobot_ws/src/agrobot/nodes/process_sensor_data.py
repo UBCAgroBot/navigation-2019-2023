@@ -6,21 +6,44 @@ roslib.load_manifest('agrobot')
 import sys
 import rospy
 import cv2
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, String
+
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
+from copy import copy
 import os
-from algorithms import HoughAlgorithm, MiniContoursAlgorithm, ScanningAlgorithm, CenterRowAlgorithm
+from omegaconf import OmegaConf
+
+from algorithms.ScanningAlgorithm import ScanningAlgorithm
+from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 class AgrobotSensors:
     ''' 
     performs image processing on camera input from agrobot
     '''
     def __init__(self):
         self.bridge = CvBridge()
+        
+        # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
+        # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
+        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/sim.yaml')
+        self.vid_config.frame_width = 400
+        self.vid_config.frame_length = 400
+        
+        # print('\n\n\n', cv2.__version__)
+        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/scanning.yaml')
+        self.config = OmegaConf.merge(self.config, self.vid_config)
+        self.algorithm = ScanningAlgorithm(self.config)
+
+        # self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour.yaml')
+        # self.config = OmegaConf.merge(self.config, self.vid_config)
+        # self.algorithm = MiniContoursAlgorithm(self.config)
+
         rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
         rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
+        
+        self.sensor_data_pub = rospy.Publisher("agrobot/sensors_data", String, queue_size=5)
 
     def convert_cv_image(self, data):
         try:
@@ -45,11 +68,20 @@ class AgrobotSensors:
             print('did not see front or downward image')
             return
         
-        front_cx, front_cy = self.get_centroid(front_image)
+        processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
+
+        if len(intersection_point) == 0:
+            front_cx = self.last_front_cx
+        else:
+            front_cx = intersection_point[0]
+        self.last_front_cx = front_cx
+        message = String(str([front_cx, 2.0]))
+        self.sensor_data_pub.publish(message)
+        # front_cx, front_cy = self.get_centroid(front_image)
         
-        front_image = cv2.circle(front_image, (front_cx, front_cy), 10, (0,255,255), 1)
-        cv2.imshow('front image', front_image)
-        cv2.imshow('downward image', downward_image)
+        # front_image = cv2.circle(front_image, (front_cx, front_cy), 10, (0,255,255), 1)
+        # cv2.imshow('front image', front_image)
+        cv2.imshow('processed', processed_image)
         cv2.waitKey(1)
     
     def get_centroid(self, frame):

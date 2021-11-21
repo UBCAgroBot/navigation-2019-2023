@@ -1,1 +1,16 @@
+
+# color thresholds
+low_green: [36, 25, 25]
+high_green: [70, 255, 255]
+
+# cutOff parameters
+cut_off_factor: 0.9
+
+# parameters for Hough Lines Point Set
 max_vote: 0
+num_strips: 60
+lines_max: 15
+threshold: 0
+min_rho: 0
+max_rho: 1000
+rho_step: 1

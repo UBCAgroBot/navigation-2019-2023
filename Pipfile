@@ -7,8 +7,10 @@ name = "pypi"
 opencv-python = "*"
 omegaconf = "*"
 numpy = "*"
+tk = "*"
+python-rospkg = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3"

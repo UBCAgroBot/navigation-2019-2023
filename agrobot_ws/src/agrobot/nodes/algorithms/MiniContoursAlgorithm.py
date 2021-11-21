@@ -15,23 +15,29 @@ class MiniContoursAlgorithm:
         self.config = config
         # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
+        self.morphologyKernel = np.ones((9,9),np.float32)
 
         # thresholds for the color of the crop rows
-        self.low_green = np.array([31, 43, 23])
-        self.high_green = np.array([255, 255, 100])
+        self.low_green = np.array(config.low_green)
+        self.high_green = np.array(config.high_green)
 
         # random colors for drawing lines etc
         self.color1 = (255, 255, 0) #blue
         self.color2 = (200, 200, 255) #pink
+        self.color3 = (0,0,255) #red (removed points)
+        self.contourColor = (0, 129, 255)
+
+        # cutOff for points
+        self.cutOffHeightFactor = self.config.cut_off_factor
         
         # parameters for HoughLinesPointSet
         self.max_vote = self.config.max_vote
-        self.num_strips=60
-        self.lines_max=30
-        self.threshold=4
-        self.min_rho=0
-        self.max_rho=1000
-        self.rho_step=1
+        self.num_strips=self.config.num_strips
+        self.lines_max=self.config.lines_max
+        self.threshold=self.config.threshold
+        self.min_rho=self.config.min_rho
+        self.max_rho=self.config.max_rho
+        self.rho_step=self.config.rho_step
         self.min_theta=-math.pi/4
         self.max_theta=math.pi/4
         self.theta_step=math.pi/180
@@ -55,6 +61,7 @@ class MiniContoursAlgorithm:
         width = int(mask.shape[0]/num_strips)
         for i in range (num_strips):
             strips.append(mask[i*width:(i+1)*width, 0:mask.shape[1]])
+            # cv2.line(mask, (0,i*width), (mask.shape[1],i*width), (255,0,255), 1, cv2.LINE_AA)
 
         centroids = []
         for i, strip in enumerate(strips):
@@ -82,21 +89,54 @@ class MiniContoursAlgorithm:
         # point_lines: list of [votes, pt1, pt2] of all lines        
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.kernel)
-        
+        mask = cv2.medianBlur(mask, 9)
+        # mask = cv2.GaussianBlur(mask, (9,9), 10)
+        # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphologyKernel)
         centroids = self.getCentroids(mask, num_strips=num_strips)
         
-        points = np.zeros(mask.shape)
+        points = np.zeros(mask.shape, dtype=np.uint8)
+        # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
         points_vector = []
         
+        # ret, thresh = cv2.threshold(mask, 0, 254, 0)
+        # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # cnt = contours
+        # cv2.drawContours(frame, cnt, -1, self.contourColor, 3)
+        # cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
+        # for c in cnt:
+        #     if cv2.contourArea(c) > 3000:
+        #         ellipse = cv2.fitEllipse(c)
+        #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
+                
+
+
+        height, width = frame.shape[0], frame.shape[1]
+        splitFactor = 10
+        segmentedPoints = [[] for _ in range(splitFactor)]
+        # print(segmentedPoints)
+        # print(height,width)
+        cutOffHeight = (int)(self.cutOffHeightFactor * height)
+        cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
+        cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
+
                 for centroid in strip_centroid:
+                    x,y = centroid[0], centroid[1]
+                    if y > -(cutOffHeight/(width//2))*x + cutOffHeight and y > (cutOffHeight/(width//2))*x - cutOffHeight:
+
+                        # vertically split the points
+                        idx = int(x / width * splitFactor)
+                        segmentedPoints[idx].append([int(x),int(y)])
+
+
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                        
+                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
-
-
+                        # print(x,y)
+                    else:
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
+                        
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
         for point in points_vector:
@@ -105,9 +145,32 @@ class MiniContoursAlgorithm:
             except:
                 pass
         points_vector = np.array([points_vector])
-        lines = cv2.HoughLinesPointSet(points_vector, lines_max=lines_max, threshold=threshold, min_rho=min_rho, max_rho=max_rho, rho_step=rho_step, min_theta=min_theta, max_theta=max_theta, theta_step=theta_step)
+        lines = cv2.HoughLinesPointSet(
+            points_vector, 
+            lines_max=lines_max, 
+            threshold=threshold, 
+            min_rho=min_rho, 
+            max_rho=max_rho, 
+            rho_step=rho_step, 
+            min_theta=min_theta, 
+            max_theta=max_theta, 
+            theta_step=theta_step
+        )
+        # print(segmentedPoints)
+        # lines = []
+        # for s in segmentedPoints:
+        #     print(s)
+        #     lines.append(cv2.fitLine(np.array(s), cv2.DIST_L2,0,0.01,0.01))
 
         point_lines = []
+        # if lines is not None:
+        #     for l in lines:
+        #         vx, vy, px, py = l[0],l[1],l[2],l[3]
+        #         p2x = px + width*vx
+        #         p2y = py + width*vy
+        #         p1,p2 = (px,py), (p2x, p2y)
+
+        #         cv2.line(frame, p1, p2, self.color2, 6, cv2.LINE_AA)
         if lines is not None:
             for line in lines:
                 if line[0][0] > self.max_vote:
@@ -122,6 +185,13 @@ class MiniContoursAlgorithm:
                     point_lines.append([line[0][0], pt1, pt2])
                     cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
                     cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
+
+
+        cv2.imshow('frame', frame)
+        cv2.imshow('mask', mask)
+        cv2.imshow('c_mask', c_mask)
+        cv2.imshow('points', points)
+        # cv2.waitKey(1)
 
 
         return frame, lines, point_lines
