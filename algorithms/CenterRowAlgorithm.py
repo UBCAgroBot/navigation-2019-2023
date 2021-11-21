@@ -1,5 +1,8 @@
+import math
+
 import cv2 as cv
 import numpy as np
+
 # from helper_scripts import hsv_threshold
 from algorithms.utils import Lines
 
@@ -32,6 +35,9 @@ class CenterRowAlgorithm:
         self.HEIGHT = config.frame_length
         self.WIDTH = config.frame_width
 
+        # contours
+        self.contours = []
+
     def processFrame(self, frame):
         # This function uses contouring to create contours around each crop row
         # and uses these contours to find centroid lines, and the correspond row vanishing point
@@ -39,6 +45,7 @@ class CenterRowAlgorithm:
         # vanishing point (tuple)
 
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
+        self.contours = []
 
         # h, w, c = frame.shape
         # frame = frame[h // 2:h, 0:w]
@@ -58,9 +65,30 @@ class CenterRowAlgorithm:
         intersections, points = Lines.getIntersections(lines)
         vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
 
+        # print("vanishing point", vanishing_point)
+        if vanishing_point:
+            min_contour, angle = self.get_min_angle(vanishing_point, black_frame)
+            cv.ellipse(black_frame, min_contour, (0, 255, 0), 2)
+
         return black_frame, vanishing_point
 
-    # return vanishing_point
+    def get_min_angle(self, vanishing_point, frame):
+
+        min_del_x = math.inf
+        min_angle = math.inf
+        min_contour = None
+
+        for contour in self.contours:
+            center = contour[0]
+            del_x = vanishing_point[0] - center[0]
+            if abs(del_x) < min_del_x:
+                del_y = vanishing_point[1] - 400 - center[1]
+                angle = math.atan(del_x / del_y)
+                min_angle = angle
+                min_contour = contour
+                min_del_x = abs(del_x)
+
+        return min_contour, min_angle
 
     def create_binary_mask(self, frame):
         # Current frame is input as a parameter
@@ -99,7 +127,8 @@ class CenterRowAlgorithm:
                 box = np.int0(box)
                 black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
                 ellipse = cv.fitEllipse(cnt)
-                # print(ellipse) Armaan made this but is commenting it out for now. It is good to see the ellipse
+                # print("center", ellipse[0])
+                self.contours.append(ellipse)
                 cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
                 rows, cols = black_frame.shape[:2]
                 # Defines a line for the contour using the fitLine function
@@ -128,5 +157,3 @@ class CenterRowAlgorithm:
         cv.fillPoly(frame, pts=cnt, color=(0, 255, 0))
 
         return cnt, frame
-
-    
