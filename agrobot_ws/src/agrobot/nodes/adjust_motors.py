@@ -9,9 +9,11 @@ from std_msgs.msg import Float64, String
 import numpy as np
 import ast
 
+from pid import PID
+
 class WheelController():
 
-    def __init__(self):
+    def __init__(self, P=0.0, I=0.0, D=0.0, current_time=None):
         self.FL_position_pub = rospy.Publisher('/agrobot/wheel_FL_position_controller/command', Float64, queue_size=1)
         self.FL_velocity_pub = rospy.Publisher('/agrobot/wheel_FL_velocity_controller/command', Float64, queue_size=1)
         self.FR_position_pub = rospy.Publisher('/agrobot/wheel_FR_position_controller/command', Float64, queue_size=1)
@@ -21,6 +23,8 @@ class WheelController():
         self.BR_position_pub = rospy.Publisher('/agrobot/wheel_BR_position_controller/command', Float64, queue_size=1)
         self.BR_velocity_pub = rospy.Publisher('/agrobot/wheel_BR_velocity_controller/command', Float64, queue_size=1)
         self.sensor_sub = rospy.Subscriber('/agrobot/sensors_data', String, self.sensor_callback)
+        self.x_pid = PID(P=0.5, I=0.05, D=0.005)
+        self.theta_pid = PID(P=1.0, I=0.1, D=0.01)
 
     def sensor_callback(self, data):
         sensor_array = ast.literal_eval(data.data)
@@ -49,15 +53,20 @@ class WheelController():
 
         dx, dtheta = sensor_array[0], sensor_array[1]
 
+        x_val = self.x_pid.update(-dx)
+        theta_val = self.theta_pid.update(-dtheta)
+
+        # x_val, theta_val = self.x_pid.output, self.theta_pid.output
+
         #turning
         beta = 3
-        angle = beta* dtheta*np.pi/180 
+        angle = beta* theta_val*np.pi/180 
         fl_angle, fr_angle = angle, angle
         bl_angle, br_angle = 0, 0
 
         
         alpha = 2
-        shift =  alpha*dx/100 * np.pi/4
+        shift =  alpha*x_val/100 * np.pi/4
 
         fl_angle += shift
         fr_angle += shift
@@ -66,6 +75,8 @@ class WheelController():
 
         print('dx', dx)
         print('dtheta', dtheta)
+        print('x_val', x_val)
+        print('theta_val', theta_val)
         print('shift:', shift)
         print('angle:', angle)
         print('fl angle, fr_angle:', fl_angle, fr_angle)

@@ -29,12 +29,13 @@ class AgrobotSensors:
         # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
         # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
 
-        self.vid_config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/video/down1.yaml')
+        self.vid_config = OmegaConf.load('/home/fizzer/Navigation/config/algorithm/mini_contour_downward.yaml')
+        # /home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour_downward.yaml
         self.vid_config.frame_width = 400
         self.vid_config.frame_length = 400
         
         # print('\n\n\n', cv2.__version__)
-        self.config = OmegaConf.load('/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour_downward.yaml')
+        self.config = OmegaConf.load('/home/fizzer/Navigation/config/algorithm/mini_contour_downward.yaml')
         self.config = OmegaConf.merge(self.config, self.vid_config)
         # self.algorithm = ScanningAlgorithm(self.config)
         self.downward_algorithm = MiniContoursDownwards(self.config)
@@ -72,7 +73,7 @@ class AgrobotSensors:
         
         # processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
 
-        processed_image, intersection_point, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True)
+        processed_image, intersection_point, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True, showFrames=False)
     
 
         message = String(str([delta[1][0], delta[0][0]]))
