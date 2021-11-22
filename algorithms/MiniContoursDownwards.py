@@ -9,7 +9,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         MiniContoursAlgorithm.__init__(self,config)
 
     def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
-                            drawPoints=False):
+                            drawPoints=False, showFrames=True):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -83,25 +83,25 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         sign = 1 if u_angle > d_angle else -1
 
         txt = "angle: " + str(np.round(deg[0], 3)) + " deg " + direction + " x offset: " + str(width//2-int(x)) + " pixels"
-        cv2.putText(frame, txt,(0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.putText(frame, txt,(0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 2, cv2.LINE_AA)
 
         lines = [line]
         point_lines = []
 
-        deltas = (sign*deg, x)
-        cv2.imshow('frame', frame)
-        cv2.imshow('mask', mask)
-        cv2.imshow('c_mask', c_mask)
-        cv2.imshow('points', points)
+        deltas = (sign*deg, width//2 - x)
+        if showFrames:
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask', mask)
+            cv2.imshow('points', points)
         return frame, point_lines, deltas
     
-    def processFrame(self, originalframe, num_strips=60, show=False, delta=False):
+    def processFrame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
         frame = self.apply_filters(originalframe)
         
-        frame, point_lines, deltas = self.getCenterHoughLines(frame, num_strips=num_strips)
+        frame, point_lines, deltas = self.getCenterHoughLines(frame, num_strips=num_strips, showFrames=showFrames)
 
         # cv2.imshow('frame', frame)
 
