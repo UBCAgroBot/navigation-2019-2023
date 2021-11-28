@@ -23,8 +23,8 @@ class WheelController():
         self.BR_position_pub = rospy.Publisher('/agrobot/wheel_BR_position_controller/command', Float64, queue_size=1)
         self.BR_velocity_pub = rospy.Publisher('/agrobot/wheel_BR_velocity_controller/command', Float64, queue_size=1)
         self.sensor_sub = rospy.Subscriber('/agrobot/sensors_data', String, self.sensor_callback)
-        self.x_pid = PID(P=0.5, I=0.05, D=0.005)
-        self.theta_pid = PID(P=1.0, I=0.1, D=0.01)
+        self.theta_pid = PID(P=0.5, I=0.05, D=0.005)
+        self.x_pid = PID(P=1.0, I=0.1, D=0.01)
 
     def sensor_callback(self, data):
         sensor_array = ast.literal_eval(data.data)
