@@ -73,8 +73,10 @@ class AgrobotSensors:
         
         # processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
 
-        processed_image, intersection_point, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True, showFrames=False)
+        processed_image, empty, endOfRow, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True, showFrames=False)
     
+        if empty:
+            return
 
         message = String(str([delta[1][0], delta[0][0]]))
         # print(message)
