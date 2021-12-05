@@ -29,9 +29,13 @@ class WheelController():
     def sensor_callback(self, data):
         sensor_array = ast.literal_eval(data.data)
         
-        fl_angle, fr_angle, bl_angle, br_angle  = self.calculate_angles(sensor_array)
-        fl_velocity, fr_velocity, bl_velocity, br_velocity = self.calculate_speeds(sensor_array) 
-
+        end_of_row_turning = sensor_array[2]
+        if not end_of_row_turning:
+            fl_angle, fr_angle, bl_angle, br_angle  = self.calculate_angles(sensor_array)
+            fl_velocity, fr_velocity, bl_velocity, br_velocity = self.calculate_speeds(sensor_array) 
+        else:
+            fl_angle, fr_angle, bl_angle, br_angle = 0., 0., 0., 0.
+            fl_velocity, fr_velocity, bl_velocity, br_velocity = -2.0, -2.0, -2.0 -2.0
         self.FL_position_pub.publish(Float64(fl_angle))
         self.FR_position_pub.publish(Float64(fr_angle))
         self.BL_position_pub.publish(Float64(bl_angle))
