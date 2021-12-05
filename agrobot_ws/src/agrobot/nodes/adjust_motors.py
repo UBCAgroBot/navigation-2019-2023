@@ -70,8 +70,8 @@ class WheelController():
 
         fl_angle += shift
         fr_angle += shift
-        bl_angle += shift
-        br_angle += shift
+        # bl_angle += shift
+        # br_angle += shift
 
         print('dx', dx)
         print('dtheta', dtheta)
