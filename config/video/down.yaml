@@ -1,0 +1,3 @@
+#### hsv thresholds for crop video
+lower_hsv_threshold: [35, 80, 80]
+upper_hsv_threshold: [80, 255, 255]
