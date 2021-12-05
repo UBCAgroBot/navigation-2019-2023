@@ -43,9 +43,11 @@ class AgrobotSensors:
         # self.config = OmegaConf.merge(self.config, self.vid_config)
         # self.algorithm = MiniContoursAlgorithm(self.config)
 
+        self.orientation_angle = 0
+
         rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
         rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
-        
+        rospy.Subscriber("agrobot/imu/orientation/w", Float32, self.imu_orientation_callback)
         self.sensor_data_pub = rospy.Publisher("agrobot/sensors_data", String, queue_size=5)
 
     def convert_cv_image(self, data):
@@ -56,13 +58,21 @@ class AgrobotSensors:
         return cv_image
  
     def front_camera_callback(self, data):
+        # print('in front cam callback')
         self.front_image = self.convert_cv_image(data)
         
 
     def downward_camera_callback(self, data):
         self.downward_image = self.convert_cv_image(data)
         self.process_sensor_data()
-        
+
+    def imu_orientation_callback(self, data):
+        # print('in imu callback')
+        quaternion = data.data
+        print('quaternion', quaternion)
+        angle = np.arccos(quaternion*np.pi/180)*2
+        self.orientation_angle = angle 
+
     def process_sensor_data(self):
         try:
             front_image = self.front_image
@@ -72,13 +82,12 @@ class AgrobotSensors:
             return
         
         # processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
-
-        processed_image, empty, endOfRow, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True, showFrames=False)
+        print("orientation angle", self.orientation_angle)
+        processed_image, intersection_point, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True)
     
-        if empty:
-            return
+        end_of_row_turning = self.check_end_of_row(copy(downward_image))
 
-        message = String(str([delta[1][0], delta[0][0]]))
+        message = String(str([delta[1][0], delta[0][0], end_of_row_turning]))
         # print(message)
         self.sensor_data_pub.publish(message)
         # front_cx, front_cy = self.get_centroid(front_image)
@@ -107,6 +116,9 @@ class AgrobotSensors:
         cX = int(M['m10'] / M['m00'])
         cY = int(M['m01'] / M['m00'])
         return cX, cY
+    
+    def check_end_of_row(self, downward_image):
+        return 0
  
 
 def main(args):

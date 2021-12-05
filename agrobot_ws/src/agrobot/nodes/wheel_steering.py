@@ -7,6 +7,7 @@ import sys
 import numpy as np
 from std_msgs.msg import Float64
 import numpy as np
+from pynput.keyboard import Key, Listener
 class WheelController():
 
     def __init__(self):
@@ -128,20 +129,46 @@ def control_individual_wheels(wc):
     wc.publish_velocity(BR_vel, {'BR'})
 
 def discrete_control(wc):
-    print('command:')
-    command = input()
-    vel = 1.0
-    if command == 8:
-        print('go forward')
-        wc.go_forward(vel*5)
-    elif command == 2:
-        wc.go_backward(vel)
-    elif command == 4:
-        wc.turn_left(vel*8)
-    elif command == 6:
-        wc.turn_right(vel*8)
-    elif command == 5:
-        wc.stop()
+
+    vel = 0.8
+
+    def show(key):
+        pressed_key = str(key).replace("'", "")
+        
+        if pressed_key == 'ui':
+            print('\n\n\ngo forward\n\n\n')
+            wc.go_forward(vel*5)
+        if pressed_key == 'u,':
+            print('\n\n\ngo backward\n\n\n')
+            wc.go_backward(vel*5)
+        if pressed_key == 'uk':
+            print('\n\n\nstop\n\n\n')
+            wc.stop()
+        if pressed_key == 'ul':
+            print('\n\n\nturning left\n\n\n') 
+            wc.turn_right(vel*10)
+        if pressed_key == 'uj':
+            print('\n\n\nturning right\n\n\n')
+            wc.turn_left(vel*10)
+
+    with Listener(on_press=show) as listener:
+        listener.join()
+
+
+    # print('command:')
+    # command = input()
+    
+    # if command == 8:
+    #     print('go forward')
+    #     wc.go_forward(vel*5)
+    # elif command == 2:
+    #     wc.go_backward(vel)
+    # elif command == 4:
+    #     wc.turn_left(vel*8)
+    # elif command == 6:
+    #     wc.turn_right(vel*8)
+    # elif command == 5:
+    #     wc.stop()
 
 def main(args):
     rospy.init_node('wheel steering', anonymous = True)
