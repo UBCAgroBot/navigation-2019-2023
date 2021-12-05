@@ -87,8 +87,9 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         u_angle, d_angle = np.arccos(u_dp), np.arccos(d_dp)
         angle = min(u_angle,d_angle)
         deg = angle*180/np.pi
-        direction = "left" if u_angle > d_angle else "right"
-        sign = 1 if u_angle > d_angle else -1
+        direction = "left" if u_angle>d_angle else "right"
+        sign = 1 if u_angle>d_angle else -1
+        # print(sign, deg)
 
         txt = "angle: " + str(np.round(deg[0], 3)) + " deg " + direction + " x offset: " + str(width//2-int(x)) + " pixels"
         cv2.putText(frame, txt,(0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 2, cv2.LINE_AA)
@@ -96,9 +97,8 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         lines = [line]
         points = points[0]
 
-        deltas = (sign*deg, width//2 - x)
+        deltas = (sign*deg, (width//2 - x)/width )
         if showFrames:
-            # cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
             cv2.imshow('points', points)
         return frame, points, deltas
@@ -107,16 +107,16 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
         height, width = frame.shape[0], frame.shape[1]
         if len(points) <= 0:
-            endOfRow = True
+            endOfRow = 1
             cv2.putText(frame, "end of row detected",(width // 2 , height // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 2, cv2.LINE_AA)
             return frame, endOfRow
 
         avg = np.sum(points, axis=0) / len(points)
         cv2.circle(frame, (avg[0], avg[1]), 5, self.color1, -1) 
 
-        endOfRow = False
+        endOfRow = 0
         if avg[1] > height*self.endOfRowCutOff:
-            endOfRow = True
+            endOfRow = 1
             cv2.putText(frame, "end of row detected",(width // 2 , height // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 2, cv2.LINE_AA)
 
         return frame, endOfRow
@@ -124,7 +124,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
 
     
-    def processFrame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True, speedUp=False):
+    def processFrame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
@@ -135,9 +135,9 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         # check if time to process a frame
         if self.frameCounter % self.speedUp != 0:
             if delta:
-                return self.lastValidFrame, True, False, (0,0)
+                return self.lastValidFrame, True, 0, ([0],[0])
             else:
-                return self.lastValidFrame, True, False
+                return self.lastValidFrame, True, 0
 
         # call processing functions
         frame = self.apply_filters(originalframe)
