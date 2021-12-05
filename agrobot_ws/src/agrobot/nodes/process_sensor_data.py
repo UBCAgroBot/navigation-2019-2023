@@ -15,7 +15,7 @@ import numpy as np
 from copy import copy
 import os
 from omegaconf import OmegaConf
-
+from sensor_msgs.msg import Imu
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
@@ -29,13 +29,15 @@ class AgrobotSensors:
         # self.front_x_pub = rospy.Publisher("agrobot/centroids/front_x", Float32, queue_size=5)
         # self.front_angle_pub = rospy.Publisher("agrobot/angles/front_angle", Float32, queue_size=5)
 
-        self.vid_config = OmegaConf.load('/home/fizzer/Navigation/config/algorithm/mini_contour_downward.yaml')
-        # /home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour_downward.yaml
+        config_path = "/home/davidw0311/AgroBot/Navigation/config/algorithm/mini_contour_downward.yaml"
+        # "/home/fizzer/Navigation/config/algorithm/mini_contour_downward.yaml"
+        self.vid_config = OmegaConf.load(config_path)
+        # 
         self.vid_config.frame_width = 400
         self.vid_config.frame_length = 400
         
         # print('\n\n\n', cv2.__version__)
-        self.config = OmegaConf.load('/home/fizzer/Navigation/config/algorithm/mini_contour_downward.yaml')
+        self.config = OmegaConf.load(config_path)
         self.config = OmegaConf.merge(self.config, self.vid_config)
         # self.algorithm = ScanningAlgorithm(self.config)
         self.downward_algorithm = MiniContoursDownwards(self.config)
@@ -47,7 +49,7 @@ class AgrobotSensors:
 
         rospy.Subscriber("agrobot/front_camera/image", Image, self.front_camera_callback)
         rospy.Subscriber("agrobot/downward_camera/image", Image, self.downward_camera_callback)
-        rospy.Subscriber("agrobot/imu/orientation/w", Float32, self.imu_orientation_callback)
+        rospy.Subscriber("/agrobot/imu", Imu, self.imu_orientation_callback)
         self.sensor_data_pub = rospy.Publisher("agrobot/sensors_data", String, queue_size=5)
 
     def convert_cv_image(self, data):
@@ -67,11 +69,12 @@ class AgrobotSensors:
         self.process_sensor_data()
 
     def imu_orientation_callback(self, data):
-        # print('in imu callback')
-        quaternion = data.data
-        print('quaternion', quaternion)
-        angle = np.arccos(quaternion*np.pi/180)*2
+        
+        quaternion = data.orientation.w
+        # print('quaternion', quaternion)
+        angle = np.arccos(quaternion)*180/np.pi*2
         self.orientation_angle = angle 
+        # print('angle',angle)
 
     def process_sensor_data(self):
         try:
