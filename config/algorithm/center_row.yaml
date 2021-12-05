@@ -2,15 +2,14 @@ var1: 1
 
 #filtering parameters
 averaging_kernel_size: (5,5)
-gauss_kernel_size: (3,3)
+gauss_kernel_size: 3,3
 dilate_kernel_size: (5,5)
 sigmaX: 0
 
 
 #contour parameters
-contour_color: (0, 129, 255)
+contour_color: 0,129,255
 min_contour_area: 3000
-max_contour_area: 20000
 
 
 #Canny edge parameters
