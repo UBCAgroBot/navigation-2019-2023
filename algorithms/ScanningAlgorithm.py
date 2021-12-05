@@ -39,14 +39,15 @@ class ScanningAlgorithm(object):
 
         # creates lines from horizon to the right side
         for top_x in range(0, self.WIDTH, self.pixel_gap):
-            for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+            for right_y in range(self.lower_y_bound - int(((self.lower_y_bound - self.upper_y_bound) / 2)),
+                                 self.lower_y_bound, self.pixel_gap):
                 line1 = self.create_line(top_x, self.upper_y_bound, self.WIDTH-1, right_y)
-
                 self.lines.append(line1)
 
         # creates lines from horizon to the left side
         for top_x in range(0, self.WIDTH, self.pixel_gap):
-            for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+            for left_y in range(self.lower_y_bound - int(((self.lower_y_bound - self.upper_y_bound) / 2)),
+                                self.lower_y_bound, self.pixel_gap):
                 line = self.create_line(top_x, self.upper_y_bound, 0, left_y)
                 self.lines.append(line)
 
@@ -84,20 +85,6 @@ class ScanningAlgorithm(object):
         # array to hold (percentage, line) pairs
         # percentage is the percentage of the line that is white when overlaying mask
         # line is the (x1, y1, x2, y2) definition of the line
-        # lines_array = []
-
-        # for line in self.lines:
-        #     row = line[:, 0]
-        #     col = line[:, 1]
-        #     extracted = mask[col, row]
-        #     lines_array.append((np.sum(extracted) / len(extracted), line))
-        # lines_array = np.array(lines_array)
-        #
-        # values = lines_array[:, 0]
-        # largest_indices = (-values).argsort()[:self.num_of_lines]
-        # most_prominent_lines = lines_array[:, 1][largest_indices]
-
-        # new test code
         pos_array = []
         neg_array = []
 
@@ -119,10 +106,11 @@ class ScanningAlgorithm(object):
 
         largest_pos_indices = (-pos_values).argsort()[:self.num_of_lines]
         largest_neg_indices = (-neg_values).argsort()[:self.num_of_lines]
+
         most_prominent_pos_lines = pos_array[:, 1][largest_pos_indices]
         most_prominent_neg_lines = neg_array[:, 1][largest_neg_indices]
+
         most_prominent_lines = numpy.concatenate((most_prominent_pos_lines, most_prominent_neg_lines), axis = None)
-        # end of new test code
 
         # convert to lines as defined in Lines.py
         converted_lines = []
@@ -130,10 +118,16 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.getIntersections(converted_lines)
+        intersections, points = Lines.getIntersections(converted_lines, 0.5)
         vanishing_point = Lines.drawVanishingPoint(frame, points)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
+
+        # frame = cv2.circle(frame, (self.left_x_bound, self.lower_y_bound), 20, (0,255,0), -1)
+        # frame = cv2.circle(frame, (self.left_x_bound, self.lower_y_bound -
+        #                            int(((self.lower_y_bound - self.upper_y_bound) / 2))), 20, (0, 255, 0), -1)
+        # frame = cv2.circle(frame, (self.left_x_bound, self.upper_y_bound), 20, (0, 255, 0), -1)
+        # frame = cv2.line(frame, (int(self.WIDTH / 2), self.HEIGHT), (int(self.WIDTH / 2), 0), (0, 0, 255), 1)
 
         if show:
             cv2.imshow('after scanning algorithm', frame)

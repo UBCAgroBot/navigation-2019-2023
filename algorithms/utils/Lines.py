@@ -40,7 +40,7 @@ def polar2points(rho, theta):
     return end_pts
 
 
-def getIntersections(lines):
+def getIntersections(lines, min_slope = 1):
     """
     Calculates and returns all the intersection points between positive and negative gradient lines
     also returns a set of only the x co-ordinates for the intersections, for easier processing in the main methods
@@ -71,7 +71,7 @@ def getIntersections(lines):
 
             # we only want to process lines that have a steep slope
             # keep in mind the x values increase to the right, y values increase downwards in an image
-            if slope > 1 or slope < -1:
+            if slope > min_slope or slope < -min_slope:
                 # cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 1)
 
                 # we split the lines into two different lists by their slopes (positive vs. negative)
