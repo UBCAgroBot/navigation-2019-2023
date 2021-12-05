@@ -85,7 +85,7 @@ class AgrobotSensors:
             return
         
         # processed_image, intersection_point = self.algorithm.processFrame(copy(front_image), show=False)
-        # print("orientation angle", self.orientation_angle)
+        print("orientation angle", self.orientation_angle)
         processed_image, speedUp, end_of_row_turning, delta = self.downward_algorithm.processFrame(copy(downward_image), delta=True, showFrames=False)
 
         if speedUp:
