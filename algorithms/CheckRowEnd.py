@@ -18,8 +18,8 @@ class CheckRowEnd:
 
     def processFrame(self, frame, show=True):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value
-        is greater than req_rows_empty, then frame is row end\n
-        :param frame: current frame (mat)
+        of zero is greater than req_rows_empty, then frame is row end\n
+        :zero m frame: current frame (mat)
         :param show: show/hide frames on screen for debugging
         :type show: bool
         :return: mask (2d array), is_end (bool)
