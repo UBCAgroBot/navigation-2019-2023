@@ -145,7 +145,7 @@ class ScanningAlgorithm(object):
         up = [0, 1]
         dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
         angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
-        print(angle)
+        # print(angle)
 
         if show:
             cv2.imshow('after scanning algorithm', frame)
