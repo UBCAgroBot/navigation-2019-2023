@@ -479,6 +479,7 @@
                                 Cameras and Sensors
 ############################################################################################ -->
 
+<!-- **************************** front camera ********************************************* -->
  <link name='front_camera'>
     <xacro:box_inertial name="front_camera" m="${camera_mass}" x="${camera_x}" y="${camera_y}" z="${camera_z}"/>
     <collision name='front_camera_collision'>
@@ -540,6 +541,7 @@
   </gazebo>
 
 
+<!-- **************************** downward camera ********************************************* -->
    <link name='downward_camera'>
     <xacro:box_inertial name="downward_camera" m="${camera_mass}" x="${camera_x}" y="${camera_y}" z="${camera_z}"/>
     <collision name='downward_camera_collision'>
@@ -599,6 +601,168 @@
       <distortionT2>0.0</distortionT2>
     </plugin>
   </sensor>
+  </gazebo>
+
+<!-- **************************** left side camera ********************************************* -->
+   <link name='left_side_camera'>
+    <xacro:box_inertial name="left_side_camera" m="${camera_mass}" x="${camera_x}" y="${camera_y}" z="${camera_z}"/>
+    <collision name='left_side_camera_collision'>
+      <geometry>
+        <box size="${camera_x} ${camera_y} ${camera_z}"/>
+      </geometry>
+    </collision>
+    <visual name='left_side_camera_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${camera_x} ${camera_y} ${camera_z}"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="left_side_camera_joint" type="fixed">
+    <parent link="leg_BL"/>
+    <child link="left_side_camera"/>
+    <origin xyz="0 ${leg_y/2} -${leg_z*1/3}" rpy="0 0 ${pi/2}"/>
+  </joint>
+  <gazebo reference="left_side_camera">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="left_side_camera">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>400</width>
+        <height>400</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>agrobot/left_side_camera</cameraName>
+      <imageTopicName>image</imageTopicName>
+      <cameraInfoTopicName>left_side_camera_info</cameraInfoTopicName>
+      <frameName>left_side_camera_frame</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<!-- **************************** right side camera ********************************************* -->
+<link name='right_side_camera'>
+    <xacro:box_inertial name="right_side_camera" m="${camera_mass}" x="${camera_x}" y="${camera_y}" z="${camera_z}"/>
+    <collision name='right_side_camera_collision'>
+      <geometry>
+        <box size="${camera_x} ${camera_y} ${camera_z}"/>
+      </geometry>
+    </collision>
+    <visual name='right_side_camera_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${camera_x} ${camera_y} ${camera_z}"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="right_side_camera_joint" type="fixed">
+    <parent link="leg_BR"/>
+    <child link="right_side_camera"/>
+    <origin xyz="0 -${leg_y/2} -${leg_z*1/3}" rpy="0 0 -${pi/2}"/>
+  </joint>
+  <gazebo reference="right_side_camera">
+    <material>Gazebo/Blue</material>
+    <sensor type="camera" name="camera_link">
+    <update_rate>30.0</update_rate>
+    <camera name="right_side_camera">
+      <horizontal_fov>1.3962634</horizontal_fov>
+      <image>
+        <width>400</width>
+        <height>400</height>
+        <format>R8G8B8</format>
+      </image>
+      <clip>
+        <near>0.02</near>
+        <far>300</far>
+      </clip>
+      <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+              That pixel's noise value is added to each of its color
+              channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+      </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>0.0</updateRate>
+      <cameraName>agrobot/right_side_camera</cameraName>
+      <imageTopicName>image</imageTopicName>
+      <cameraInfoTopicName>right_side_camera_info</cameraInfoTopicName>
+      <frameName>right_side_camera_frame</frameName>
+      <hackBaseline>0.07</hackBaseline>
+      <distortionK1>0.0</distortionK1>
+      <distortionK2>0.0</distortionK2>
+      <distortionK3>0.0</distortionK3>
+      <distortionT1>0.0</distortionT1>
+      <distortionT2>0.0</distortionT2>
+    </plugin>
+  </sensor>
+  </gazebo>
+
+<!-- **************************** imu sensor ********************************************* -->
+<joint name="imu_joint" type="fixed">
+    <axis xyz="1 0 0"/> <!-- 0 1 0 -->
+    <origin xyz="0 0 ${chassis_z}"/>
+    <parent link="chassis"/>
+    <child link="imu_link"/>
+  </joint>
+
+
+<link name="imu_link">
+  <inertial>
+    <mass value="0.001"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <box size="0.001 0.001 0.001"/>
+    </geometry>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <box size=".1 .1 .1"/>
+    </geometry>
+  </collision>
+</link>
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>imu_link</bodyName>
+      <topicName>agrobot/imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>20.0</updateRate>
+    </plugin>
   </gazebo>
 
 </robot>

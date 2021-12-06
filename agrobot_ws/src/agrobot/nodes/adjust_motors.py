@@ -23,15 +23,20 @@ class WheelController():
         self.BR_position_pub = rospy.Publisher('/agrobot/wheel_BR_position_controller/command', Float64, queue_size=1)
         self.BR_velocity_pub = rospy.Publisher('/agrobot/wheel_BR_velocity_controller/command', Float64, queue_size=1)
         self.sensor_sub = rospy.Subscriber('/agrobot/sensors_data', String, self.sensor_callback)
-        self.x_pid = PID(P=0.5, I=0.05, D=0.005)
-        self.theta_pid = PID(P=1.0, I=0.1, D=0.01)
+        self.theta_pid = PID(P=0.5, I=0, D=0.005)
+        self.x_pid = PID(P=1.0, I=0, D=0.01)
 
     def sensor_callback(self, data):
         sensor_array = ast.literal_eval(data.data)
         
-        fl_angle, fr_angle, bl_angle, br_angle  = self.calculate_angles(sensor_array)
-        fl_velocity, fr_velocity, bl_velocity, br_velocity = self.calculate_speeds(sensor_array) 
-
+        end_of_row_turning = sensor_array[2]
+        print("eor: " + str(end_of_row_turning))
+        if not end_of_row_turning:
+            fl_angle, fr_angle, bl_angle, br_angle  = self.calculate_angles(sensor_array)
+            fl_velocity, fr_velocity, bl_velocity, br_velocity = self.calculate_speeds(sensor_array) 
+        else:
+            fl_angle, fr_angle, bl_angle, br_angle = 0., 0., 0., 0.
+            fl_velocity, fr_velocity, bl_velocity, br_velocity = 0., 0., 0., 0.
         self.FL_position_pub.publish(Float64(fl_angle))
         self.FR_position_pub.publish(Float64(fr_angle))
         self.BL_position_pub.publish(Float64(bl_angle))
@@ -60,18 +65,26 @@ class WheelController():
 
         #turning
         beta = 3
-        angle = beta* theta_val*np.pi/180 
+        angle = beta*theta_val*np.pi/180
+
+        #regularize turning angle, can't be too big (> 90 degrees)
+        if angle > np.pi/2:
+            angle = np.pi/2
+        elif angle < -np.pi/2:
+            angle = -np.pi/2
+            
         fl_angle, fr_angle = angle, angle
         bl_angle, br_angle = 0, 0
 
         
         alpha = 2
-        shift =  alpha*x_val/100 * np.pi/4
+        shift = alpha*x_val*np.pi/4
 
         fl_angle += shift
         fr_angle += shift
-        bl_angle += shift
-        br_angle += shift
+        # bl_angle += shift
+            # cv2.imshow('frame', frame)
+        # br_angle += shift
 
         print('dx', dx)
         print('dtheta', dtheta)

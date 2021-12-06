@@ -1,0 +1,9 @@
+<launch>
+
+    <node pkg="agrobot"
+          type="wheel_steering.py"
+          name="manual_control_of_robot_velocity"
+          output="screen">
+    </node>
+
+</launch>
