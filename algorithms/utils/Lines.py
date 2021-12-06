@@ -40,12 +40,13 @@ def polar2points(rho, theta):
     return end_pts
 
 
-def getIntersections(lines, min_slope = 1):
+def getIntersections(lines, min_slope=1):
     """
     Calculates and returns all the intersection points between positive and negative gradient lines
     also returns a set of only the x co-ordinates for the intersections, for easier processing in the main methods
     Args:
         lines: [[votes, rho, theta]]
+        min_slope: minimum slope lines must greater than be for the intersection calculation, defaults to 1
 
     Returns:
         intersections: [(x,y)]
@@ -184,15 +185,20 @@ def drawLinesOnFrame(lines, frame):
     return frame
 
 
-def drawVanishingPoint(frame, points):
+def drawVanishingPoint(frame, points, use_median=True):
     """
     Function that draws the vanishing point onto a frame
     :param frame: the frame on which the point needs to be drawn
     :param points: a list of x co-ordinates from which the vanishing point will be calculated
-    :return: (x, y), where x is the median intersection point and y is a constant value
+    :param use_median: whether to use the mean or median intersection point, defaulting to True
+    :return: (x, y), where x is the median/mean intersection point and y is a constant value
     """
     if len(points) != 0:
-        IntersectingX = np.median(points)
+        if use_median:
+            IntersectingX = np.median(points)
+        else:
+            IntersectingX = np.mean(points)
+
         cv2.circle(frame, (int(IntersectingX), int(frame.shape[1] / 2)), 8, (255, 0, 0), -1)
 
         return (int(IntersectingX), int(frame.shape[1] / 2))
