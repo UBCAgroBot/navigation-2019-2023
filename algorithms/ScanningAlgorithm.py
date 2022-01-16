@@ -24,6 +24,7 @@ class ScanningAlgorithm(object):
         self.right_x_bound = int(self.WIDTH * (1 - self.config.bounding_box_x))
         self.upper_y_bound = int(self.HEIGHT * self.config.bounding_box_y)
         self.lower_y_bound = self.HEIGHT - 1
+        self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
 
         self.kernel = np.ones((5, 5), np.uint8)
 
@@ -39,14 +40,15 @@ class ScanningAlgorithm(object):
 
         # creates lines from horizon to the right side
         for top_x in range(0, self.WIDTH, self.pixel_gap):
-            for right_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+            for right_y in range(self.mid_y,
+                                 self.lower_y_bound, self.pixel_gap):
                 line1 = self.create_line(top_x, self.upper_y_bound, self.WIDTH-1, right_y)
-
                 self.lines.append(line1)
 
         # creates lines from horizon to the left side
         for top_x in range(0, self.WIDTH, self.pixel_gap):
-            for left_y in range(self.upper_y_bound, self.lower_y_bound, self.pixel_gap):
+            for left_y in range(self.mid_y,
+                                self.lower_y_bound, self.pixel_gap):
                 line = self.create_line(top_x, self.upper_y_bound, 0, left_y)
                 self.lines.append(line)
 
@@ -78,26 +80,17 @@ class ScanningAlgorithm(object):
         mask = cv2.GaussianBlur(mask, (3, 3), 2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
 
+        # finds the end of the crop row by using the y value of the first white pixel in the mask
+        white_pixels = np.array(np.where(mask == 255))
+        self.upper_y_bound = white_pixels[0][0]
+        self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
+
         # use this to invert the mask
         # mask = ~mask
 
         # array to hold (percentage, line) pairs
         # percentage is the percentage of the line that is white when overlaying mask
         # line is the (x1, y1, x2, y2) definition of the line
-        # lines_array = []
-
-        # for line in self.lines:
-        #     row = line[:, 0]
-        #     col = line[:, 1]
-        #     extracted = mask[col, row]
-        #     lines_array.append((np.sum(extracted) / len(extracted), line))
-        # lines_array = np.array(lines_array)
-        #
-        # values = lines_array[:, 0]
-        # largest_indices = (-values).argsort()[:self.num_of_lines]
-        # most_prominent_lines = lines_array[:, 1][largest_indices]
-
-        # new test code
         pos_array = []
         neg_array = []
 
@@ -119,10 +112,11 @@ class ScanningAlgorithm(object):
 
         largest_pos_indices = (-pos_values).argsort()[:self.num_of_lines]
         largest_neg_indices = (-neg_values).argsort()[:self.num_of_lines]
+
         most_prominent_pos_lines = pos_array[:, 1][largest_pos_indices]
         most_prominent_neg_lines = neg_array[:, 1][largest_neg_indices]
+
         most_prominent_lines = numpy.concatenate((most_prominent_pos_lines, most_prominent_neg_lines), axis = None)
-        # end of new test code
 
         # convert to lines as defined in Lines.py
         converted_lines = []
@@ -130,10 +124,28 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.getIntersections(converted_lines)
-        vanishing_point = Lines.drawVanishingPoint(frame, points)
+        intersections, points = Lines.getIntersections(converted_lines, 0.5)
+        vanishing_point = Lines.drawVanishingPoint(frame, points, False)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
+
+        # line for the middle of frame
+        frame = cv2.line(frame, (self.WIDTH // 2, self.HEIGHT), (self.WIDTH // 2, 0), (0, 0, 255), 1)
+
+        # point with x coordinate of the vanishing point and y coordinate of the end of the crop row
+        frame = cv2.circle(frame, (vanishing_point[0], self.upper_y_bound), 5, (0, 255, 0), -1)
+
+        # point in the middle of frame at midpoint between the horizon and bottom of the screen
+        frame = cv2.circle(frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
+
+        # line between the two points above
+        frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
+
+        # finding the angle between the center of the frame and the line drawn to the vanishing point
+        up = [0, 1]
+        dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
+        angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
+        # print(angle)
 
         if show:
             cv2.imshow('after scanning algorithm', frame)
@@ -145,4 +157,4 @@ class ScanningAlgorithm(object):
     # helper function to resize a frame mat object
     def resize(self, frame, factor):
         # resize frame to smaller size to allow faster processing
-        return cv2.resize(frame, (int(frame.shape[1] / factor), int(frame.shape[0] / factor)))
+        return cv2.resize(frame, (frame.shape[1] // factor, frame.shape[0] // factor))
