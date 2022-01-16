@@ -6,6 +6,7 @@ import cv2 as cv
 from omegaconf import OmegaConf
 
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
+from algorithms.CheckRowEnd import CheckRowEnd
 from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
@@ -18,7 +19,7 @@ parser.add_argument('-v', '--vid', required=True)
 
 # list of algorithms
 algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm), ('mini_contour_downward', MiniContoursDownwards),
-             ('scanning', ScanningAlgorithm)]
+             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd)]
 
 
 def main():
