@@ -130,3 +130,6 @@ cat_sim_ws
 
 # extract contains generated files
 extract
+
+/videos/**
+.mp4
