@@ -1,7 +1,0 @@
-<launch>
-    <node pkg="agrobot"
-          type="process_sensor_data.py"
-          name="process_sensor_data"
-          output="screen">
-    </node>
-</launch>

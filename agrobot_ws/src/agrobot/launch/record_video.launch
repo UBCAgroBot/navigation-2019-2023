@@ -1,7 +1,0 @@
-<launch>
-    <node pkg="agrobot"
-          type="record_video.py"
-          name="record_video"
-          output="screen">
-    </node>
-</launch>

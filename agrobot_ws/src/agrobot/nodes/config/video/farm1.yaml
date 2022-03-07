@@ -1,6 +1,0 @@
-#### size of frame
-frame_width: 1080
-frame_length: 1920
-
-lower_hsv_threshold: [32, 31, 0]
-upper_hsv_threshold: [151,249,255]

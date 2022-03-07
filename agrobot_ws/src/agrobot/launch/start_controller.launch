@@ -1,9 +1,0 @@
-<launch>
-
-    <node pkg="agrobot"
-          type="adjust_motors.py"
-          name="adjusts_robot_velocity"
-          output="screen">
-    </node>
-
-</launch>
