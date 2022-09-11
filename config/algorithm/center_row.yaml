@@ -11,3 +11,11 @@ min_contour_area: 3000
 #Canny edge parameters
 canny_low_threshold: 75
 canny_high_threshold: 150
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
+
+#### hsv thresholds for crop video
+lower_hsv_threshold: [35, 80, 80]
+upper_hsv_threshold: [80, 255, 255]

@@ -2,20 +2,17 @@ import math
 
 import cv2 as cv
 import numpy as np
+from Navigation.algorithms.Algorithm import Algorithm
 
 from algorithms.utils import Lines
 
 
-class CenterRowAlgorithm:
+class CenterRowAlgorithm(Algorithm):
 
     def __init__(self, config):
         """Sets center row algorithm configurations\n
         :param config: config params
         """
-
-        # hsv mask
-        self.low_green = np.array(config.lower_hsv_threshold)
-        self.high_green = np.array(config.upper_hsv_threshold)
 
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
@@ -41,6 +38,9 @@ class CenterRowAlgorithm:
         # center contour
         self.center = None
         self.center_angle = 0
+        
+        # initialize super
+        super().__init__(config)
 
     def processFrame(self, frame, show=True):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
