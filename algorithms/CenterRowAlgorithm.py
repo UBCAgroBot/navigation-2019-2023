@@ -2,7 +2,7 @@ import math
 
 import cv2 as cv
 import numpy as np
-from Navigation.algorithms.Algorithm import Algorithm
+from algorithms.Algorithm import Algorithm
 
 from algorithms.utils import Lines
 
