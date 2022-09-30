@@ -1,11 +1,22 @@
 import time
 
 class PIDController:
-
+    """ Use the PID controller to control wheels according to intersection point.
+    """
     previous = 0.0
     integral = 0.0
 
-    def __init__(self, Kp=0.1, Ki=0.1, Kd=0.1, useP=True, useI=True, useD=True):
+    def __init__(self, Kp=0.1, Ki=0.0, Kd=0.0, useP=True, useI=True, useD=True):
+        """
+        Parameters
+        ----------
+        - Kp : float, constant for P (proportional) section of the PID. Default is 0.1
+        - Ki : float, constant for I (integral) section of the PID. Default is 0.0
+        - Kd : float, constant for D (derivative) section of the PID. Default is 0.0
+        - useP, useI, useD : boolean, PID controller can work as P, PI etc. 
+                             Turn these to False to not use that part of the PID.
+                             Default is True. It is usually a good practice to use P.
+        """
         self.Kp = Kp 
         self.Ki = Ki 
         self.Kd = Kd
@@ -28,14 +39,12 @@ class PIDController:
         Returns
         ----------
         float, angle to set for the front wheels (if constants are set correctly when initializing the controller)
-
+        
         """
         output = 0.0
         error = target - current
         dt = time.time() - self.lasttime
-
-        # Integral 
-        self.integral = self.integral + error * dt 
+        self.integral += error * dt 
         derivative = float(error - self.previous) / float(dt)
         self.previous = error
         if self.useP:
