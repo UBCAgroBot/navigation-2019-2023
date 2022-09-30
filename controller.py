@@ -53,5 +53,6 @@ class PIDController:
             output += self.Ki * self.integral
         if self.useD:
             output += self.Kd * derivative
+        self.lasttime = time.time()
         return output
 
