@@ -1,4 +1,4 @@
-from cv2 import cv2
+import cv2 as cv2
 import numpy as np
 import sys
 from algorithms.utils import Lines

@@ -59,7 +59,11 @@ class CenterRowAlgorithm:
         # current frame is a 720 x 1280 black frame
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
 
-        contours, contour_frame = self.get_contours(mask)
+        #contour frame is never used, and we already draw contours and fillpoly in the get contours function. So could we perhaps
+        #get rid of the frame return from contours function and return a number instead
+        #in countour function, remove any code that generates frame, since we already do that here
+
+        contours = self.get_contours(mask)
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
@@ -98,13 +102,11 @@ class CenterRowAlgorithm:
         :param binary_mask: binary mask of current frame
         :return: list of contours, blank frame with contours filled in
         """
-        frame = np.zeros((self.HEIGHT, self.WIDTH, 3))
         ret, thresh = cv.threshold(binary_mask, 0, 254, 0)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        cv.drawContours(frame, contours, -1, (0, 255, 0), 2)
-        cv.fillPoly(frame, pts=contours, color=(0, 255, 0))
-
-        return contours, frame
+        
+        #get rid of all frame code, return thresh instead of frame
+        return contours
 
     def ellipse_slopes(self, contours, black_frame):
         """Draws ellipses around each contour on black_frame using cv.fitEllipse,
