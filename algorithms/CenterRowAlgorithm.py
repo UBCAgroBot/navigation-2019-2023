@@ -2,6 +2,7 @@ import math
 
 import cv2 as cv
 import numpy as np
+import math
 
 from algorithms.utils import Lines
 
@@ -59,10 +60,6 @@ class CenterRowAlgorithm:
         # current frame is a 720 x 1280 black frame
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
 
-        #contour frame is never used, and we already draw contours and fillpoly in the get contours function. So could we perhaps
-        #get rid of the frame return from contours function and return a number instead
-        #in countour function, remove any code that generates frame, since we already do that here
-
         contours = self.get_contours(mask)
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         # fillPoly fills in the polygons in the frame
@@ -72,11 +69,24 @@ class CenterRowAlgorithm:
         intersections, points = Lines.getIntersections(lines)
         vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
 
+        #angle must be between -90 and 90 degrees. Positive values indicate the vanishing point is on the left of center, negative values indicate the vanishing point is on the right of center
+        angle = 0
+        #draws a reference line straight down the center of the screen from top to bottom (blue color to distinguish from ellipses and other lines)
+        cv.line(black_frame, (640, 720), (640, 0), (255, 0, 0), 2, cv.LINE_AA)
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
+            #draws line between the center of the frame and the vanishing point (blue color to distinguish from ellipses and other lines)
+            cv.line(black_frame, (640, 720), (vanishing_point[0], vanishing_point[1]), (255, 0, 0), 2, cv.LINE_AA)
+            
+            #calculates the angle between the two lines
+            angle = math.degrees(math.atan((vanishing_point[0]-640)/(vanishing_point[1]-720)))
 
-        return black_frame, vanishing_point
+        else:
+            angle = None
+
+        print(angle)
+        return black_frame, angle
 
     def create_binary_mask(self, frame):
         """
@@ -105,7 +115,6 @@ class CenterRowAlgorithm:
         ret, thresh = cv.threshold(binary_mask, 0, 254, 0)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         
-        #get rid of all frame code, return thresh instead of frame
         return contours
 
     def ellipse_slopes(self, contours, black_frame):
