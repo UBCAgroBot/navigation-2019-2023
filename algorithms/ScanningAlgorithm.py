@@ -142,16 +142,18 @@ class ScanningAlgorithm(object):
         # line between the two points above
         frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
 
-        # finding the angle between the center of the frame and the line drawn to the vanishing point
-        up = [0, 1]
-        dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
-        angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
+
+        # Commenting out because angle is not consistent with other algos
+        # # finding the angle between the center of the frame and the line drawn to the vanishing point
+        # up = [0, 1]
+        # dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
+        # angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
 
         dwVP = vanishing_point[0] - (self.WIDTH // 2)
         dhVP = vanishing_point[1]
-        print(round(math.degrees(math.atan(dwVP/dhVP)), 2))
+        angle = round(math.degrees(math.atan(dwVP/dhVP)), 2)
 
-        return frame, round(angle, 2)
+        return frame, angle
 
 
     # helper function to resize a frame mat object

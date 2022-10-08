@@ -77,9 +77,9 @@ class HoughAlgorithm:
 
         dwVP = vPoint[0] - (self.WIDTH // 2)
         dhVP = vPoint[1]
-
-        print(round(math.degrees(math.atan(dwVP/dhVP)), 2))
+        angle = round(math.degrees(math.atan(dwVP/dhVP)), 2)
         
+        # Commenting out cuz it's annoying seeing 5 screens pop up
         # show the frames on screen for debugging
         #if show:
             # cv2.imshow('frame', frame)
@@ -88,7 +88,7 @@ class HoughAlgorithm:
             # cv2.imshow('hough algorithm', lineimg)
             # cv2.waitKey(1)
 
-        return lineimg, round(math.degrees(math.atan(dwVP/dhVP)), 2)
+        return lineimg, angle
 
     # helper function to create a mask
     # takes in frame mat object, returns mask mat object
