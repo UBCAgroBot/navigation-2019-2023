@@ -10,7 +10,8 @@ from algorithms.utils import Lines
 class CenterRowAlgorithm(Algorithm):
 
     def __init__(self, config):
-        """Sets center row algorithm configurations\n
+        """
+        Sets center row algorithm configurations\n
         :param config: config params
         """
 
@@ -48,7 +49,7 @@ class CenterRowAlgorithm(Algorithm):
         :param frame: current frame (mat)
         :param show: show/hide frames on screen for debugging
         :type show: bool
-        :return: processed frame (mat), vanishing point (tuple)
+        :return: processed frame (mat), angle [-90, 90]
         """
         mask = self.create_binary_mask(frame)
 
