@@ -187,10 +187,10 @@ class MiniContoursAlgorithm:
                     cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
 
 
-        cv2.imshow('frame', frame)
-        cv2.imshow('mask', mask)
-        cv2.imshow('c_mask', c_mask)
-        cv2.imshow('points', points)
+        # cv2.imshow('frame', frame)
+        # cv2.imshow('mask', mask)
+        # cv2.imshow('c_mask', c_mask)
+        # cv2.imshow('points', points)
         # cv2.waitKey(1)
 
 
