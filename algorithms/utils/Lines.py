@@ -194,7 +194,7 @@ def filterPoints(numArray):
     filtered = []
     
     for num in numArray:
-        if num > low and num < high:
+        if num >= low and num <= high:
             filtered.append(num)
         
     return filtered
@@ -207,10 +207,11 @@ def drawVanishingPoint(frame, xPoints, yPoints, use_median=True):
     :param use_median: whether to use the mean or median intersection point, defaulting to True
     :return: (x, y), where x is the median/mean intersection point and y is a constant value
     """
+
     filteredX = filterPoints(xPoints)
     filteredY = filterPoints(yPoints)
 
-    if len(xPoints) != 0:
+    if len(filteredX) != 0:
         if use_median:
             IntersectingX = np.median(filteredX)
             IntersectingY = np.median(filteredY)

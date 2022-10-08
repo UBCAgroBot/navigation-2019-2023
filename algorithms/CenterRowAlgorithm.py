@@ -65,14 +65,24 @@ class CenterRowAlgorithm(Algorithm):
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
         Lines.drawLinesOnFrame(lines, black_frame)
-        intersections, points = Lines.getIntersections(lines)
-        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
+
+        intersections = Lines.getIntersections(lines)
+        xPoints = [point[0] for point in intersections]
+        yPoints = [point[1] for point in intersections]
+        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, xPoints, yPoints)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
+        
+            # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+            deltaWVanishPoint = vanishing_point[0] - (self.WIDTH // 2)
+            deltaHVanishPoint = vanishing_point[1]
+            angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
 
-        return black_frame, vanishing_point
+            return black_frame, angle
+        else:
+            return black_frame, None
 
     def create_binary_mask(self, frame):
         """
