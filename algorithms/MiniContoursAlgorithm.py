@@ -79,7 +79,7 @@ class MiniContoursAlgorithm:
         return centroids
     
     
-    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
+    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180, show=False):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -187,12 +187,12 @@ class MiniContoursAlgorithm:
                     cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
 
 
-        # cv2.imshow('frame', frame)
-        # cv2.imshow('mask', mask)
-        # cv2.imshow('c_mask', c_mask)
-        # cv2.imshow('points', points)
-        # cv2.waitKey(1)
-
+        if show:
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask', mask)
+            cv2.imshow('c_mask', c_mask)
+            cv2.imshow('points', points)
+            cv2.waitKey(1)
 
         return frame, lines, point_lines
 

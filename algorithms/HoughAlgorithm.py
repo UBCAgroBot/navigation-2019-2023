@@ -83,12 +83,12 @@ class HoughAlgorithm:
         angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
         
         # show the frames on screen for debugging
-        # if show:
-        #     cv2.imshow('frame', frame)
-        #     cv2.imshow('mask_hough',mask)
-        #     cv2.imshow('edges', edges)
-        #     cv2.imshow('hough algorithm', lineimg)
-        #     cv2.waitKey(1)
+        if show:
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask_hough',mask)
+            cv2.imshow('edges', edges)
+            cv2.imshow('hough algorithm', lineimg)
+            cv2.waitKey(1)
 
         return lineimg, angle
 

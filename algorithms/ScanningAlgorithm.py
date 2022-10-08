@@ -74,7 +74,8 @@ class ScanningAlgorithm(object):
         return line
 
     def processFrame(self, frame, show=False):
-        #cv2.imshow('original frame', frame)
+        if show:
+            cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
