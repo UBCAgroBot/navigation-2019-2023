@@ -72,14 +72,16 @@ class HoughAlgorithm:
 
         # Draw the vanishing point obtained fromm all the lines
         # intersections, points = self.intersectPoint( frame, lines)
-        intersections, points = Lines.getIntersections(lines)
-        vPoint = Lines.drawVanishingPoint(lineimg, points)
+        intersections = Lines.getIntersections(lines)
+        xPoints = [point[0] for point in intersections]
+        yPoints = [point[1] for point in intersections]
+        vPoint = Lines.drawVanishingPoint(lineimg, xPoints, yPoints)
 
-        dwVP = vPoint[0] - (self.WIDTH // 2)
-        dhVP = vPoint[1]
-        angle = round(math.degrees(math.atan(dwVP/dhVP)), 2)
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        deltaWVanishPoint = vPoint[0] - (self.WIDTH // 2)
+        deltaHVanishPoint = vPoint[1]
+        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
         
-        # Commenting out cuz it's annoying seeing 5 screens pop up
         # show the frames on screen for debugging
         # if show:
         #     cv2.imshow('frame', frame)

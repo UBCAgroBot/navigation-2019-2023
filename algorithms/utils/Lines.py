@@ -53,7 +53,8 @@ def getIntersections(lines, min_slope=1):
         points: [x]
     """
     intersections = []
-    points = []
+    # xPoints = []
+    # yPoints = []
     lines_left = []
     lines_right = []
 
@@ -97,9 +98,11 @@ def getIntersections(lines, min_slope=1):
                 # the intersections array is an array of points coordinates (x, y)
                 # the points array is an array of the x coordinates of the points
                 intersections.append(intersect)
-                points.append(intersect[0])
+                # xPoints.append(intersect[0])
+                # yPoints.append(intersect[1])
 
-    return intersections, points
+    # return intersections, xPoints, yPoints
+    return intersections
 
 
 def assignCoordinateValues(line):
@@ -185,7 +188,18 @@ def drawLinesOnFrame(lines, frame):
     return frame
 
 
-def drawVanishingPoint(frame, points, use_median=True):
+def filterPoints(numArray):
+    low = np.percentile(numArray, 20)
+    high = np.percentile(numArray, 80)
+    filtered = []
+    
+    for num in numArray:
+        if num > low and num < high:
+            filtered.append(num)
+        
+    return filtered
+
+def drawVanishingPoint(frame, xPoints, yPoints, use_median=True):
     """
     Function that draws the vanishing point onto a frame
     :param frame: the frame on which the point needs to be drawn
@@ -193,12 +207,17 @@ def drawVanishingPoint(frame, points, use_median=True):
     :param use_median: whether to use the mean or median intersection point, defaulting to True
     :return: (x, y), where x is the median/mean intersection point and y is a constant value
     """
-    if len(points) != 0:
+    filteredX = filterPoints(xPoints)
+    filteredY = filterPoints(yPoints)
+
+    if len(xPoints) != 0:
         if use_median:
-            IntersectingX = np.median(points)
+            IntersectingX = np.median(filteredX)
+            IntersectingY = np.median(filteredY)
         else:
-            IntersectingX = np.mean(points)
+            IntersectingX = np.mean(filteredX)
+            IntersectingY = np.mean(filteredY)
 
-        cv2.circle(frame, (int(IntersectingX), int(frame.shape[1] / 2)), 8, (255, 0, 0), -1)
+        cv2.circle(frame, (int(IntersectingX), int(IntersectingY)), 8, (255, 0, 0), -1)
 
-        return (int(IntersectingX), int(frame.shape[1] / 2))
+        return (int(IntersectingX), int(IntersectingY))

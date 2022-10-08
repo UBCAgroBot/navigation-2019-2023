@@ -125,8 +125,12 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.getIntersections(converted_lines, 0.5)
-        vanishing_point = Lines.drawVanishingPoint(frame, points, False)
+        # intersections, points = Lines.getIntersections(converted_lines, 0.5)
+        intersections = Lines.getIntersections(converted_lines, 0.5)
+        xPoints = [point[0] for point in intersections]
+        yPoints = [point[1] for point in intersections]
+        # vanishing_point = Lines.drawVanishingPoint(frame, points, False)
+        vanishing_point = Lines.drawVanishingPoint(frame, xPoints, yPoints, False)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
@@ -149,9 +153,10 @@ class ScanningAlgorithm(object):
         # dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
         # angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
 
-        dwVP = vanishing_point[0] - (self.WIDTH // 2)
-        dhVP = vanishing_point[1]
-        angle = round(math.degrees(math.atan(dwVP/dhVP)), 2)
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        deltaWVanishPoint = vanishing_point[0] - (self.WIDTH // 2)
+        deltaHVanishPoint = vanishing_point[1]
+        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
 
         return frame, angle
 
