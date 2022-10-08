@@ -4,6 +4,7 @@ import time
 import operator
 import sys
 import math
+from algorithms.utils import Lines
 
 class MiniContoursAlgorithm:
     # applies hsv binarization to the image
@@ -13,6 +14,8 @@ class MiniContoursAlgorithm:
     def __init__(self, config):
         
         self.config = config
+        self.WIDTH = config.frame_width
+        self.HEIGHT = config.frame_length
         # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
         self.morphologyKernel = np.ones((9,9),np.float32)
@@ -213,8 +216,14 @@ class MiniContoursAlgorithm:
                                                              max_theta=self.max_theta,
                                                              theta_step=self.theta_step)
 
-        # cv2.imshow('frame', frame)
+        intersections = Lines.getIntersections(lines)
+        xPoints = [point[0] for point in intersections]
+        yPoints = [point[1] for point in intersections]
+        vPoint = Lines.drawVanishingPoint(frame, xPoints, yPoints)
 
-        return frame, point_lines
-        
-   
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        deltaWVanishPoint = vPoint[0] - (self.WIDTH // 2)
+        deltaHVanishPoint = vPoint[1]
+        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
+
+        return frame, angle
