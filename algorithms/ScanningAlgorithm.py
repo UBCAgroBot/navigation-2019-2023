@@ -2,6 +2,7 @@ import cv2
 import numpy
 import numpy as np
 import time
+import math
 from algorithms.utils import Lines
 
 
@@ -73,7 +74,7 @@ class ScanningAlgorithm(object):
         return line
 
     def processFrame(self, frame, show=False):
-        cv2.imshow('original frame', frame)
+        #cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
@@ -145,14 +146,13 @@ class ScanningAlgorithm(object):
         up = [0, 1]
         dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
         angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
-        # print(angle)
 
-        if show:
-            cv2.imshow('after scanning algorithm', frame)
-            cv2.imshow('mask', mask)
+        dwVP = vanishing_point[0] - (self.WIDTH // 2)
+        dhVP = vanishing_point[1]
+        print(round(math.degrees(math.atan(dwVP/dhVP)), 2))
 
-        # print('vanishing Point: ', vanishing_point)
-        return frame, vanishing_point
+        return frame, round(angle, 2)
+
 
     # helper function to resize a frame mat object
     def resize(self, frame, factor):

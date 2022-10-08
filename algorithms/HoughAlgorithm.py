@@ -1,6 +1,7 @@
-from cv2 import cv2
+import cv2 as cv2
 import numpy as np
 import sys
+import math
 from algorithms.utils import Lines
 
 
@@ -10,6 +11,8 @@ class HoughAlgorithm:
         # Files, setup, OpenCV Tutorial
         # Master, demo
         self.config = config
+        self.WIDTH = config.frame_width
+        self.HEIGHT = config.frame_length
 
         self.LOWER_GREEN = np.array(config.lower_hsv_threshold_hough)
         self.UPPER_GREEN = np.array(config.upper_hsv_threshold_hough)
@@ -36,7 +39,6 @@ class HoughAlgorithm:
         #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
         #pts = [(800, 400), (400,800), (800, 800)]
         #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
-
 
 
         # create mask by filtering image colors
@@ -73,16 +75,20 @@ class HoughAlgorithm:
         intersections, points = Lines.getIntersections(lines)
         vPoint = Lines.drawVanishingPoint(lineimg, points)
 
+        dwVP = vPoint[0] - (self.WIDTH // 2)
+        dhVP = vPoint[1]
+
+        print(round(math.degrees(math.atan(dwVP/dhVP)), 2))
         
         # show the frames on screen for debugging
-        if show:
-            cv2.imshow('frame', frame)
-            cv2.imshow('mask_hough',mask)
-            cv2.imshow('edges', edges)
-            cv2.imshow('hough algorithm', lineimg)
-            cv2.waitKey(1)
+        #if show:
+            # cv2.imshow('frame', frame)
+            # cv2.imshow('mask_hough',mask)
+            # cv2.imshow('edges', edges)
+            # cv2.imshow('hough algorithm', lineimg)
+            # cv2.waitKey(1)
 
-        return lineimg, vPoint
+        return lineimg, round(math.degrees(math.atan(dwVP/dhVP)), 2)
 
     # helper function to create a mask
     # takes in frame mat object, returns mask mat object
