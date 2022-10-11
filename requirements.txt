@@ -1,0 +1,5 @@
+antlr4-python3-runtime==4.9.3
+numpy==1.23.3
+omegaconf==2.2.3
+opencv-python==4.6.0.66
+PyYAML==6.0
