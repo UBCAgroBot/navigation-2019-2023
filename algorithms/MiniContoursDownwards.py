@@ -50,7 +50,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1)     
 
                         
-        c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR) 
 
         for point in points:
             try:
@@ -148,7 +148,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         # store frames
         self.lastValidFrame = frame
 
-        if delta:
-            return frame, False, endOfRow, deltas 
+        if delta: #commented out False
+            return frame, deltas #endOfRow
         else:
-            return frame, False, endOfRow
+            return frame, None

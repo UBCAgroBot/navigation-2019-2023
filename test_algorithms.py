@@ -14,7 +14,7 @@ from algorithms.ScanningAlgorithm import ScanningAlgorithm
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-a', '--alg', required=True)
+parser.add_argument('-a', '--alg', required=True) 
 parser.add_argument('-v', '--vid', required=True)
 
 # list of algorithms
