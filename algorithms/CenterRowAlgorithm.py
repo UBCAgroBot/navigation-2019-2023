@@ -6,7 +6,7 @@ import numpy as np
 from algorithms.utils import Lines
 
 
-class CenterRowAlgorithm():
+class CenterRowAlgorithm:
 
     def __init__(self, config):
         """Sets center row algorithm configurations\n
