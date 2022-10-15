@@ -1,6 +1,6 @@
 import pyrealsense2 as rs
 import numpy as np
-import cv2 as cv
+import cv2
 
 # Pipeline and config parts are copied from https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/opencv_viewer_example.py
 
@@ -55,8 +55,8 @@ try:
         thresh[depth_image<1] = depth_image.max()
 
         # Show images
-        cv.imshow('RealSense', thresh)
-        cv.waitKey(1)
+        cv2.imshow('RealSense', thresh)
+        cv2.waitKey(1)
 
 finally:
 

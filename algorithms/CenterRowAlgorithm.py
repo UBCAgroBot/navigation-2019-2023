@@ -42,7 +42,7 @@ class CenterRowAlgorithm(Algorithm):
         # initialize super
         super().__init__(config)
 
-    def process_frame(self, frame, show=True):
+    def processFrame(self, frame, show=True):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -64,9 +64,9 @@ class CenterRowAlgorithm(Algorithm):
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
-        Lines.draw_lines_on_frame(lines, black_frame)
-        intersections, points = Lines.get_intersections(lines)
-        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, points)
+        Lines.drawLinesOnFrame(lines, black_frame)
+        intersections, points = Lines.getIntersections(lines)
+        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
@@ -133,11 +133,11 @@ class CenterRowAlgorithm(Algorithm):
                 slope = vy / vx
                 slopes.append(slope)
                 # Finds two other points on the line using the slope
-                left_y = int((-x * vy / vx) + y)
-                right_y = int(((cols - x) * vy / vx) + y)
-                # black_frame = cv.line(black_frame, (cols - 1, right_y), (0, left_y), (255, 255, 0), 9)
+                lefty = int((-x * vy / vx) + y)
+                righty = int(((cols - x) * vy / vx) + y)
+                # black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
                 # Appends a line to the lines array using the (x1,y1,x2,y2) definition
-                lines.append([cols - 1, right_y, 0, left_y])
+                lines.append([cols - 1, righty, 0, lefty])
 
         return lines, slopes, black_frame
 

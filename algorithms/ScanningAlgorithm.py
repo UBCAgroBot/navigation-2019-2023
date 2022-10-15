@@ -124,8 +124,8 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.get_intersections(converted_lines, 0.5)
-        vanishing_point = Lines.draw_vanishing_point(frame, points, False)
+        intersections, points = Lines.getIntersections(converted_lines, 0.5)
+        vanishing_point = Lines.drawVanishingPoint(frame, points, False)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
