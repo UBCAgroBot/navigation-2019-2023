@@ -15,20 +15,20 @@ class MiniContoursAlgorithm:
         self.config = config
         # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
-        self.morphologyKernel = np.ones((9,9),np.float32)
+        self.morphology_kernel = np.ones((9,9),np.float32)
 
         # thresholds for the color of the crop rows
         self.low_green = np.array(config.low_green)
         self.high_green = np.array(config.high_green)
 
         # random colors for drawing lines etc
-        self.color1 = (255, 255, 0) #blue
-        self.color2 = (200, 200, 255) #pink
-        self.color3 = (0,0,255) #red (removed points)
-        self.contourColor = (0, 129, 255)
+        self.color_1 = (255, 255, 0) #blue
+        self.color_2 = (200, 200, 255) #pink
+        self.color_3 = (0,0,255) #red (removed points)
+        self.contour_color = (0, 129, 255)
 
         # cutOff for points
-        self.cutOffHeightFactor = self.config.cut_off_factor
+        self.cut_off_height_factor = self.config.cut_off_factor
         
         # parameters for HoughLinesPointSet
         self.max_vote = self.config.max_vote
@@ -42,16 +42,16 @@ class MiniContoursAlgorithm:
         self.max_theta=math.pi/4
         self.theta_step=math.pi/180
 
-    def apply_filters(self, originalframe):
+    def apply_filters(self, original_frame):
         # orginal_frame: BGR frame 
         # returns frame: filtered BGR frame
 
-        frame = cv2.filter2D(originalframe, -1, self.kernel)
+        frame = cv2.filter2D(original_frame, -1, self.kernel)
         frame = cv2.bilateralFilter(frame, 9, 10, 75)    
 
         return frame
 
-    def getCentroids(self, mask, num_strips):
+    def get_centroids(self, mask, num_strips):
 
         # mask is a binary mask of the image
         # number of strips is the number of strips to divide the image into for finding centroids
@@ -79,7 +79,7 @@ class MiniContoursAlgorithm:
         return centroids
     
     
-    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
+    def get_center_hough_lines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -91,8 +91,8 @@ class MiniContoursAlgorithm:
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
-        # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphologyKernel)
-        centroids = self.getCentroids(mask, num_strips=num_strips)
+        # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
+        centroids = self.get_centroids(mask, num_strips=num_strips)
         
         points = np.zeros(mask.shape, dtype=np.uint8)
         # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
@@ -101,7 +101,7 @@ class MiniContoursAlgorithm:
         # ret, thresh = cv2.threshold(mask, 0, 254, 0)
         # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         # cnt = contours
-        # cv2.drawContours(frame, cnt, -1, self.contourColor, 3)
+        # cv2.drawContours(frame, cnt, -1, self.contour_color, 3)
         # cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
         # for c in cnt:
         #     if cv2.contourArea(c) > 3000:
@@ -111,31 +111,29 @@ class MiniContoursAlgorithm:
 
 
         height, width = frame.shape[0], frame.shape[1]
-        splitFactor = 10
-        segmentedPoints = [[] for _ in range(splitFactor)]
-        # print(segmentedPoints)
-        # print(height,width)
-        cutOffHeight = (int)(self.cutOffHeightFactor * height)
-        cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
-        cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
+        split_factor = 10
+        segmented_points = [[] for _ in range(split_factor)]
+        cut_off_height = (int)(self.cut_off_height_factor * height)
+        cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color_3)
+        cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color_3)
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
 
                 for centroid in strip_centroid:
                     x,y = centroid[0], centroid[1]
-                    if y > -(cutOffHeight/(width//2))*x + cutOffHeight and y > (cutOffHeight/(width//2))*x - cutOffHeight:
+                    if y > -(cut_off_height/(width//2))*x + cut_off_height and y > (cut_off_height/(width//2))*x - cut_off_height:
 
                         # vertically split the points
-                        idx = int(x / width * splitFactor)
-                        segmentedPoints[idx].append([int(x),int(y)])
+                        idx = int(x / width * split_factor)
+                        segmented_points[idx].append([int(x),int(y)])
 
 
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
+                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
-                        # print(x,y)
+                        
                     else:
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1) 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -156,11 +154,6 @@ class MiniContoursAlgorithm:
             max_theta=max_theta, 
             theta_step=theta_step
         )
-        # print(segmentedPoints)
-        # lines = []
-        # for s in segmentedPoints:
-        #     print(s)
-        #     lines.append(cv2.fitLine(np.array(s), cv2.DIST_L2,0,0.01,0.01))
 
         point_lines = []
         # if lines is not None:
@@ -170,7 +163,8 @@ class MiniContoursAlgorithm:
         #         p2y = py + width*vy
         #         p1,p2 = (px,py), (p2x, p2y)
 
-        #         cv2.line(frame, p1, p2, self.color2, 6, cv2.LINE_AA)
+        #         cv2.line(frame, p1, p2, self.color_2, 6, cv2.LINE_AA)
+
         if lines is not None:
             for line in lines:
                 if line[0][0] > self.max_vote:
@@ -191,18 +185,24 @@ class MiniContoursAlgorithm:
         cv2.imshow('mask', mask)
         cv2.imshow('c_mask', c_mask)
         cv2.imshow('points', points)
-        # cv2.waitKey(1)
+        cv2.waitKey(1)
 
 
         return frame, lines, point_lines
 
-    def process_frame(self, originalframe, num_strips=60, show=False):
+    #utility function to append fit lines to segmented points, call in get_center_hough_lines
+    def append_fit_line(segmented_points, lines):
+        for s in segmented_points:
+            lines.append(cv2.fitLine(np.array(s), cv2.DIST_L2,0,0.01,0.01))
+
+
+    def process_frame(self, original_frame, num_strips=60, show=False):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
-        frame = self.apply_filters(originalframe)
+        frame = self.apply_filters(original_frame)
         
-        frame, lines, point_lines = self.getCenterHoughLines(frame, 
+        frame, lines, point_lines = self.get_center_hough_lines(frame, 
                                                              num_strips=num_strips,
                                                              lines_max=self.lines_max,
                                                              threshold=self.threshold,
