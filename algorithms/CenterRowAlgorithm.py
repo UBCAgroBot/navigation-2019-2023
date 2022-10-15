@@ -39,11 +39,11 @@ class CenterRowAlgorithm(Algorithm):
         # center contour
         self.center = None
         self.center_angle = 0
-        
+
         # initialize super
         super().__init__(config)
 
-    def processFrame(self, frame, show):
+    def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -65,13 +65,15 @@ class CenterRowAlgorithm(Algorithm):
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
-        if show:
-            Lines.drawLinesOnFrame(lines, black_frame)
 
-        intersections = Lines.getIntersections(lines)
+        if show:
+            Lines.draw_lines_on_frame(lines, black_frame)
+
+        intersections = Lines.get_intersections(lines)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, x_points, y_points, show)
+        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, x_points, y_points, show)
+
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
