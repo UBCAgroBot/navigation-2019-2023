@@ -124,7 +124,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
 
     
-    def processFrame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True, speedUp=False):
+    def process_frame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True, speedUp=False):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on

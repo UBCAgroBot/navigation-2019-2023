@@ -43,7 +43,7 @@ class CenterRowAlgorithm:
         self.center = None
         self.center_angle = 0
 
-    def processFrame(self, frame, show=True):
+    def process_frame(self, frame, show=True):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)

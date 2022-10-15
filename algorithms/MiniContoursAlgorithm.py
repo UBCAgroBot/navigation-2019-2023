@@ -196,7 +196,7 @@ class MiniContoursAlgorithm:
 
         return frame, lines, point_lines
 
-    def processFrame(self, originalframe, num_strips=60, show=False):
+    def process_frame(self, originalframe, num_strips=60, show=False):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on

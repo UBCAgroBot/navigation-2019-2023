@@ -72,7 +72,7 @@ class ScanningAlgorithm(object):
 
         return line
 
-    def processFrame(self, frame, show=False):
+    def process_frame(self, frame, show=False):
         cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
