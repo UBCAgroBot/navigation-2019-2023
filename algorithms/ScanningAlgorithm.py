@@ -144,7 +144,6 @@ class ScanningAlgorithm(object):
         # finding the angle between the center of the frame and the line drawn to the vanishing point
         up = [0, 1]
         dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
-        dir = [0, self.mid_y - self.upper_y_bound]
 
         if show:
             cv2.imshow('after scanning algorithm', frame)
