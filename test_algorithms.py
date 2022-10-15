@@ -76,8 +76,11 @@ def run_algorithm(alg, vid_file):
             break
 
         processed_image, angle = alg.processFrame(frame, show=args.show)
+        print(angle)
 
-        cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+        if args.show:
+            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+            
         key = cv.waitKey(25)
 
         # Exit if Esc key is pressed
