@@ -73,7 +73,7 @@ class ScanningAlgorithm(object):
 
         return line
 
-    def processFrame(self, frame, show=False):
+    def processFrame(self, frame, show):
         if show:
             cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -128,10 +128,10 @@ class ScanningAlgorithm(object):
 
         # intersections, points = Lines.getIntersections(converted_lines, 0.5)
         intersections = Lines.getIntersections(converted_lines, 0.5)
-        xPoints = [point[0] for point in intersections]
-        yPoints = [point[1] for point in intersections]
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
         # vanishing_point = Lines.drawVanishingPoint(frame, points, False)
-        vanishing_point = Lines.drawVanishingPoint(frame, xPoints, yPoints, False)
+        vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points, False)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
@@ -155,9 +155,9 @@ class ScanningAlgorithm(object):
         # angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        deltaWVanishPoint = vanishing_point[0] - (self.WIDTH // 2)
-        deltaHVanishPoint = vanishing_point[1]
-        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
         return frame, angle
 

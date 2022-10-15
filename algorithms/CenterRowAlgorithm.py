@@ -43,7 +43,7 @@ class CenterRowAlgorithm(Algorithm):
         # initialize super
         super().__init__(config)
 
-    def processFrame(self, frame, show=True):
+    def processFrame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -68,18 +68,18 @@ class CenterRowAlgorithm(Algorithm):
         Lines.drawLinesOnFrame(lines, black_frame)
 
         intersections = Lines.getIntersections(lines)
-        xPoints = [point[0] for point in intersections]
-        yPoints = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, xPoints, yPoints)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, x_points, y_points)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
         
             # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-            deltaWVanishPoint = vanishing_point[0] - (self.WIDTH // 2)
-            deltaHVanishPoint = vanishing_point[1]
-            angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
+            delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+            delta_h_vanish_point = vanishing_point[1]
+            angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
             return black_frame, angle
         else:

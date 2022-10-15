@@ -199,7 +199,7 @@ class MiniContoursAlgorithm:
 
         return frame, lines, point_lines
 
-    def processFrame(self, originalframe, num_strips=60, show=False):
+    def processFrame(self, originalframe, show, num_strips=60):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
@@ -217,13 +217,13 @@ class MiniContoursAlgorithm:
                                                              theta_step=self.theta_step)
 
         intersections = Lines.getIntersections(lines)
-        xPoints = [point[0] for point in intersections]
-        yPoints = [point[1] for point in intersections]
-        vPoint = Lines.drawVanishingPoint(frame, xPoints, yPoints)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        deltaWVanishPoint = vPoint[0] - (self.WIDTH // 2)
-        deltaHVanishPoint = vPoint[1]
-        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
         return frame, angle

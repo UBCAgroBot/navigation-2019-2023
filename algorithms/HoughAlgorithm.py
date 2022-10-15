@@ -34,7 +34,7 @@ class HoughAlgorithm:
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def processFrame(self, frame, show=True):
+    def processFrame(self, frame, show):
         #pts = [(0, 400), (400,800), (0, 800)]
         #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
         #pts = [(800, 400), (400,800), (800, 800)]
@@ -73,14 +73,14 @@ class HoughAlgorithm:
         # Draw the vanishing point obtained fromm all the lines
         # intersections, points = self.intersectPoint( frame, lines)
         intersections = Lines.getIntersections(lines)
-        xPoints = [point[0] for point in intersections]
-        yPoints = [point[1] for point in intersections]
-        vPoint = Lines.drawVanishingPoint(lineimg, xPoints, yPoints)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.drawVanishingPoint(lineimg, x_points, y_points)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        deltaWVanishPoint = vPoint[0] - (self.WIDTH // 2)
-        deltaHVanishPoint = vPoint[1]
-        angle = round(math.degrees(math.atan(deltaWVanishPoint/deltaHVanishPoint)), 2)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
         
         # show the frames on screen for debugging
         if show:
