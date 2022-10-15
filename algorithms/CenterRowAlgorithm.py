@@ -22,7 +22,7 @@ class CenterRowAlgorithm:
         self.averaging_kernel_size = config.averaging_kernel_size
         self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
         self.dilate_kernel_size = config.dilate_kernel_size
-        self.sigmaX = config.sigmaX
+        self.sigma_X = config.sigma_X
 
         # contour parameters
         self.contour_color = list(map(int, config.contour_color.split(',')))
@@ -196,4 +196,4 @@ class CenterRowAlgorithm:
         :param frame: current frame
         :return: frame with gaussian blurring
         """
-        return cv.GaussianBlur(frame, self.gauss_kernel_size, self.sigmaX)
+        return cv.GaussianBlur(frame, self.gauss_kernel_size, self.sigma_X)
