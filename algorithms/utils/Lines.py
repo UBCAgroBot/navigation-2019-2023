@@ -1,7 +1,8 @@
 import sys
 
 import numpy
-import cv2 as cv2
+
+import cv2 as cv
 import numpy as np
 
 """
@@ -13,7 +14,7 @@ Every Algorithm calls functions from this class to:
 """
 
 
-def polar2points(rho, theta):
+def polar_2_points(rho, theta):
     """
     Helper function that,
     converts a polar definition of a line to a 2 point definition.
@@ -40,7 +41,7 @@ def polar2points(rho, theta):
     return end_pts
 
 
-def getIntersections(lines, min_slope=1):
+def get_intersections(lines, min_slope=1):
     """
     Calculates and returns all the intersection points between positive and negative gradient lines
     also returns a set of only the x co-ordinates for the intersections, for easier processing in the main methods
@@ -62,7 +63,7 @@ def getIntersections(lines, min_slope=1):
 
         # for each line in the lines array, we determine its slope.
         for line in lines:
-            x1, y1, x2, y2 = assignCoordinateValues(line)
+            x1, y1, x2, y2 = assign_coordinate_values(line)
 
             # if the line is a vertical line, skip it
             if x2 == x1:
@@ -86,11 +87,11 @@ def getIntersections(lines, min_slope=1):
         # we find an intersection point
         for lineL in lines_left:
             for lineR in lines_right:
-                x1L, y1L, x2L, y2L = assignCoordinateValues(lineL)
-                x1R, y1R, x2R, y2R = assignCoordinateValues(lineR)
+                x1L, y1L, x2L, y2L = assign_coordinate_values(lineL)
+                x1R, y1R, x2R, y2R = assign_coordinate_values(lineR)
 
                 # calls the getIntersection helper function
-                intersect = getIntersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
+                intersect = get_intersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
                 if type(intersect) is bool:
                     continue
 
@@ -102,7 +103,7 @@ def getIntersections(lines, min_slope=1):
     return intersections, points
 
 
-def assignCoordinateValues(line):
+def assign_coordinate_values(line):
     """
     Helper method,
     Since we will be working with different types of lines, we need a way to convert any type of line into
@@ -124,14 +125,14 @@ def assignCoordinateValues(line):
         x1, y1, x2, y2 = line
     # Type 3
     else:
-        points = polar2points(line[0][1], line[0][2])
+        points = polar_2_points(line[0][1], line[0][2])
         x1, y1 = points[0]
         x2, y2 = points[1]
 
     return x1, y1, x2, y2
 
 
-def getIntersection(line1, line2):
+def get_intersection(line1, line2):
     """
     Helper function that returns the intersection point of 2 lines
     :param line1: ((x1,y1), (x2,y2))
@@ -164,7 +165,7 @@ def getIntersection(line1, line2):
 
 
 # helper function to draw lines on given frame
-def drawLinesOnFrame(lines, frame):
+def draw_lines_on_frame(lines, frame):
     """
     Helper function that draws lines on a frame
     :param lines: set of all lines
@@ -173,7 +174,7 @@ def drawLinesOnFrame(lines, frame):
     """
     if lines is not None:
         for line in lines:
-            x1, y1, x2, y2 = assignCoordinateValues(line)
+            x1, y1, x2, y2 = assign_coordinate_values(line)
 
             # Avoids math error, and we can skip since we don't care about horizontal lines
             if x1 == x2:
@@ -181,11 +182,11 @@ def drawLinesOnFrame(lines, frame):
             slope = (float(y2 - y1)) / (x2 - x1)
             # Check if slope is sufficiently large, since we are interested in vertical lines
             if abs(slope) > 1:
-                cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2, cv2.LINE_AA)
+                cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2, cv.LINE_AA)
     return frame
 
 
-def drawVanishingPoint(frame, points, use_median=True):
+def draw_vanishing_point(frame, points, use_median=True):
     """
     Function that draws the vanishing point onto a frame
     :param frame: the frame on which the point needs to be drawn
@@ -195,10 +196,10 @@ def drawVanishingPoint(frame, points, use_median=True):
     """
     if len(points) != 0:
         if use_median:
-            IntersectingX = np.median(points)
+            intersecting_x = np.median(points)
         else:
-            IntersectingX = np.mean(points)
+            intersecting_x = np.mean(points)
 
-        cv2.circle(frame, (int(IntersectingX), int(frame.shape[1] / 2)), 8, (255, 0, 0), -1)
+        cv.circle(frame, (int(intersecting_x), int(frame.shape[1] / 2)), 8, (255, 0, 0), -1)
 
-        return (int(IntersectingX), int(frame.shape[1] / 2))
+        return int(intersecting_x), int(frame.shape[1] / 2)
