@@ -135,7 +135,7 @@ class CenterRowAlgorithm(Algorithm):
                 # Finds two other points on the line using the slope
                 lefty = int((-x * vy / vx) + y)
                 righty = int(((cols - x) * vy / vx) + y)
-                # black_frame = cv.line(black_frame, (cols - 1, right_y), (0, lefty), (255, 255, 0), 9)
+                # black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
                 # Appends a line to the lines array using the (x1,y1,x2,y2) definition
                 lines.append([cols - 1, righty, 0, lefty])
 
