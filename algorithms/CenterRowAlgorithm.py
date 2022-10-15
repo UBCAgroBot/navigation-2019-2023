@@ -2,12 +2,11 @@ import math
 
 import cv2 as cv
 import numpy as np
-from algorithms.Algorithm import Algorithm
 
 from algorithms.utils import Lines
 
 
-class CenterRowAlgorithm(Algorithm):
+class CenterRowAlgorithm():
 
     def __init__(self, config):
         """Sets center row algorithm configurations\n

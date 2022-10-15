@@ -185,15 +185,9 @@ class MiniContoursAlgorithm:
         cv2.imshow('mask', mask)
         cv2.imshow('c_mask', c_mask)
         cv2.imshow('points', points)
-        cv2.waitKey(1)
 
 
         return frame, lines, point_lines
-
-    #utility function to append fit lines to segmented points, call in get_center_hough_lines
-    def append_fit_line(segmented_points, lines):
-        for s in segmented_points:
-            lines.append(cv2.fitLine(np.array(s), cv2.DIST_L2,0,0.01,0.01))
 
 
     def process_frame(self, original_frame, num_strips=60, show=False):

@@ -149,6 +149,6 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         self.last_valid_frame = frame
 
         if delta: #commented out False
-            return frame, deltas #end_of_row
+            return frame, False, end_of_row, deltas
         else:
-            return frame, None
+            return frame, False, end_of_row
