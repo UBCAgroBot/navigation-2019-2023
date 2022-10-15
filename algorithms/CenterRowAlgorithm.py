@@ -128,16 +128,16 @@ class CenterRowAlgorithm(Algorithm):
                 cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
                 rows, cols = black_frame.shape[:2]
                 # Defines a line for the contour using the fitLine function
-                [v_x, v_y, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
+                [vx, vy, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
                 # calculates the slope and adds the slope to the array of slopes
-                slope = v_y / v_x
+                slope = vy / vx
                 slopes.append(slope)
                 # Finds two other points on the line using the slope
-                left_y = int((-x * v_y / v_x) + y)
-                right_y = int(((cols - x) * v_y / v_x) + y)
-                # black_frame = cv.line(black_frame, (cols - 1, right_y), (0, left_y), (255, 255, 0), 9)
+                lefty = int((-x * vy / vx) + y)
+                righty = int(((cols - x) * vy / vx) + y)
+                # black_frame = cv.line(black_frame, (cols - 1, right_y), (0, lefty), (255, 255, 0), 9)
                 # Appends a line to the lines array using the (x1,y1,x2,y2) definition
-                lines.append([cols - 1, right_y, 0, left_y])
+                lines.append([cols - 1, righty, 0, lefty])
 
         return lines, slopes, black_frame
 

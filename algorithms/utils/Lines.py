@@ -14,7 +14,7 @@ Every Algorithm calls functions from this class to:
 """
 
 
-def polar_2points(rho, theta):
+def polar_2_points(rho, theta):
     """
     Helper function that,
     converts a polar definition of a line to a 2 point definition.
@@ -63,7 +63,7 @@ def get_intersections(lines, min_slope=1):
 
         # for each line in the lines array, we determine its slope.
         for line in lines:
-            x1, y1, x2, y2 = assign_coordinateValues(line)
+            x1, y1, x2, y2 = assign_coordinate_values(line)
 
             # if the line is a vertical line, skip it
             if x2 == x1:
@@ -87,8 +87,8 @@ def get_intersections(lines, min_slope=1):
         # we find an intersection point
         for lineL in lines_left:
             for lineR in lines_right:
-                x1L, y1L, x2L, y2L = assign_coordinateValues(lineL)
-                x1R, y1R, x2R, y2R = assign_coordinateValues(lineR)
+                x1L, y1L, x2L, y2L = assign_coordinate_values(lineL)
+                x1R, y1R, x2R, y2R = assign_coordinate_values(lineR)
 
                 # calls the getIntersection helper function
                 intersect = get_intersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
@@ -103,7 +103,7 @@ def get_intersections(lines, min_slope=1):
     return intersections, points
 
 
-def assign_coordinateValues(line):
+def assign_coordinate_values(line):
     """
     Helper method,
     Since we will be working with different types of lines, we need a way to convert any type of line into
@@ -125,7 +125,7 @@ def assign_coordinateValues(line):
         x1, y1, x2, y2 = line
     # Type 3
     else:
-        points = polar_2points(line[0][1], line[0][2])
+        points = polar_2_points(line[0][1], line[0][2])
         x1, y1 = points[0]
         x2, y2 = points[1]
 
@@ -174,7 +174,7 @@ def draw_lines_on_frame(lines, frame):
     """
     if lines is not None:
         for line in lines:
-            x1, y1, x2, y2 = assign_coordinateValues(line)
+            x1, y1, x2, y2 = assign_coordinate_values(line)
 
             # Avoids math error, and we can skip since we don't care about horizontal lines
             if x1 == x2:
