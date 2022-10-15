@@ -2,27 +2,23 @@ import math
 
 import cv2 as cv
 import numpy as np
-import math
+from algorithms.Algorithm import Algorithm
 
 from algorithms.utils import Lines
 
 
-class CenterRowAlgorithm:
+class CenterRowAlgorithm(Algorithm):
 
     def __init__(self, config):
         """Sets center row algorithm configurations\n
         :param config: config params
         """
 
-        # hsv mask
-        self.low_green = np.array(config.lower_hsv_threshold)
-        self.high_green = np.array(config.upper_hsv_threshold)
-
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
         self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
         self.dilate_kernel_size = config.dilate_kernel_size
-        self.sigma_X = config.sigma_X
+        self.sigmaX = config.sigmaX
 
         # contour parameters
         self.contour_color = list(map(int, config.contour_color.split(',')))
@@ -42,8 +38,11 @@ class CenterRowAlgorithm:
         # center contour
         self.center = None
         self.center_angle = 0
+        
+        # initialize super
+        super().__init__(config)
 
-    def process_frame(self, frame, show=True):
+    def processFrame(self, frame, show=True):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -60,7 +59,7 @@ class CenterRowAlgorithm:
         # current frame is a 720 x 1280 black frame
         black_frame = np.uint8(np.zeros((720, 1280, 3)))
 
-        contours = self.get_contours(mask)
+        contours, contour_frame = self.get_contours(mask)
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
@@ -69,24 +68,11 @@ class CenterRowAlgorithm:
         intersections, points = Lines.getIntersections(lines)
         vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
 
-        #angle must be between -90 and 90 degrees. Positive values indicate the vanishing point is on the left of center, negative values indicate the vanishing point is on the right of center
-        angle = 0
-        #draws a reference line straight down the center of the screen from top to bottom (blue color to distinguish from ellipses and other lines)
-        cv.line(black_frame, (640, 720), (640, 0), (255, 0, 0), 2, cv.LINE_AA)
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
-            #draws line between the center of the frame and the vanishing point (blue color to distinguish from ellipses and other lines)
-            cv.line(black_frame, (640, 720), (vanishing_point[0], vanishing_point[1]), (255, 0, 0), 2, cv.LINE_AA)
-            
-            #calculates the angle between the two lines
-            angle = math.degrees(math.atan((vanishing_point[0]-640)/(vanishing_point[1]-720)))
 
-        else:
-            angle = None
-
-        print(angle)
-        return black_frame, angle
+        return black_frame, vanishing_point
 
     def create_binary_mask(self, frame):
         """
@@ -112,10 +98,13 @@ class CenterRowAlgorithm:
         :param binary_mask: binary mask of current frame
         :return: list of contours, blank frame with contours filled in
         """
+        frame = np.zeros((self.HEIGHT, self.WIDTH, 3))
         ret, thresh = cv.threshold(binary_mask, 0, 254, 0)
         contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        
-        return contours
+        cv.drawContours(frame, contours, -1, (0, 255, 0), 2)
+        cv.fillPoly(frame, pts=contours, color=(0, 255, 0))
+
+        return contours, frame
 
     def ellipse_slopes(self, contours, black_frame):
         """Draws ellipses around each contour on black_frame using cv.fitEllipse,
@@ -196,4 +185,4 @@ class CenterRowAlgorithm:
         :param frame: current frame
         :return: frame with gaussian blurring
         """
-        return cv.GaussianBlur(frame, self.gauss_kernel_size, self.sigma_X)
+        return cv.GaussianBlur(frame, self.gauss_kernel_size, self.sigmaX)
