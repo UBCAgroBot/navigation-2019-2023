@@ -38,11 +38,11 @@ class CenterRowAlgorithm(Algorithm):
         # center contour
         self.center = None
         self.center_angle = 0
-        
+
         # initialize super
         super().__init__(config)
 
-    def processFrame(self, frame, show=True):
+    def process_frame(self, frame, show=True):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -64,9 +64,9 @@ class CenterRowAlgorithm(Algorithm):
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
-        Lines.drawLinesOnFrame(lines, black_frame)
-        intersections, points = Lines.getIntersections(lines)
-        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, points)
+        Lines.draw_lines_on_frame(lines, black_frame)
+        intersections, points = Lines.get_intersections(lines)
+        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, points)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
@@ -128,16 +128,16 @@ class CenterRowAlgorithm(Algorithm):
                 cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
                 rows, cols = black_frame.shape[:2]
                 # Defines a line for the contour using the fitLine function
-                [vx, vy, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
+                [v_x, v_y, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
                 # calculates the slope and adds the slope to the array of slopes
-                slope = vy / vx
+                slope = v_y / v_x
                 slopes.append(slope)
                 # Finds two other points on the line using the slope
-                lefty = int((-x * vy / vx) + y)
-                righty = int(((cols - x) * vy / vx) + y)
-                # black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
+                left_y = int((-x * v_y / v_x) + y)
+                right_y = int(((cols - x) * v_y / v_x) + y)
+                # black_frame = cv.line(black_frame, (cols - 1, right_y), (0, left_y), (255, 255, 0), 9)
                 # Appends a line to the lines array using the (x1,y1,x2,y2) definition
-                lines.append([cols - 1, righty, 0, lefty])
+                lines.append([cols - 1, right_y, 0, left_y])
 
         return lines, slopes, black_frame
 
