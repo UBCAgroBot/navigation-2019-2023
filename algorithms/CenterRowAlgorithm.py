@@ -11,7 +11,7 @@ class CenterRowAlgorithm(Algorithm):
 
     def __init__(self, config):
         """
-        Sets center row algorithm configurations\n
+        Sets center row algorithm configurations
         :param config: config params
         """
 
@@ -65,16 +65,18 @@ class CenterRowAlgorithm(Algorithm):
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
-        Lines.drawLinesOnFrame(lines, black_frame)
+        if show:
+            Lines.drawLinesOnFrame(lines, black_frame)
 
         intersections = Lines.getIntersections(lines)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, x_points, y_points)
+        vanishing_point = Lines.drawVanishingPoint(ellipse_frame, x_points, y_points, show)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
-            cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
+            if show:
+                cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
         
             # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
             delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)

@@ -199,7 +199,7 @@ def filterPoints(numArray):
     return filtered
 
 
-def drawVanishingPoint(frame, x_points, y_points, use_median=True):
+def drawVanishingPoint(frame, x_points, y_points, show, use_median=True):
     """
     Function that draws the vanishing point onto a frame
     :param frame: the frame on which the point needs to be drawn
@@ -220,7 +220,8 @@ def drawVanishingPoint(frame, x_points, y_points, use_median=True):
             IntersectingX = np.mean(filtered_x)
             IntersectingY = np.mean(filtered_y)
 
-        cv2.circle(frame, (int(IntersectingX), int(IntersectingY)), 8, (255, 0, 0), -1)
+        if show:
+            cv2.circle(frame, (int(IntersectingX), int(IntersectingY)), 8, (255, 0, 0), -1)
 
         return (int(IntersectingX), int(IntersectingY))
     else:

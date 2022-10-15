@@ -22,7 +22,6 @@ class HoughAlgorithm:
         # gaussian blur / dilate
         self.K_SIZE = (config.blur_size_1, config.blur_size_2)
 
-
         # prob. hough
         self.THRESHOLD = config.hough_threshold
         self.MIN_LINE_LENGTH = config.hough_min_line_length
@@ -39,7 +38,6 @@ class HoughAlgorithm:
         #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
         #pts = [(800, 400), (400,800), (800, 800)]
         #cv2.fillPoly(frame, np.array([pts]), (0,0,0))
-
 
         # create mask by filtering image colors
         mask = self.createMask(frame)
@@ -68,14 +66,18 @@ class HoughAlgorithm:
         )
 
         # Draw Detected Lines on the frame
-        lineimg = Lines.drawLinesOnFrame(lines, frame.copy())
+        if show:
+            lineimg = Lines.drawLinesOnFrame(lines, frame.copy())
 
         # Draw the vanishing point obtained fromm all the lines
         # intersections, points = self.intersectPoint( frame, lines)
         intersections = Lines.getIntersections(lines)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(lineimg, x_points, y_points)
+        if show:
+            vanishing_point = Lines.drawVanishingPoint(lineimg, x_points, y_points, show)
+        else:
+            vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
         delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
@@ -90,7 +92,10 @@ class HoughAlgorithm:
             cv2.imshow('hough algorithm', lineimg)
             cv2.waitKey(1)
 
-        return lineimg, angle
+        if show:
+            return lineimg, angle
+        else:
+            return frame, angle
 
     # helper function to create a mask
     # takes in frame mat object, returns mask mat object

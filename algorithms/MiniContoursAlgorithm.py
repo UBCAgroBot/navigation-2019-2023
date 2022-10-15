@@ -82,7 +82,7 @@ class MiniContoursAlgorithm:
         return centroids
     
     
-    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180, show=False):
+    def getCenterHoughLines(self, frame, show, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -111,16 +111,15 @@ class MiniContoursAlgorithm:
         #         ellipse = cv2.fitEllipse(c)
         #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
                 
-
-
         height, width = frame.shape[0], frame.shape[1]
         splitFactor = 10
         segmentedPoints = [[] for _ in range(splitFactor)]
-        # print(segmentedPoints)
-        # print(height,width)
         cutOffHeight = (int)(self.cutOffHeightFactor * height)
-        cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
-        cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
+
+        if show:
+            cv2.line(frame, (0, cutOffHeight), (width//2, 0), self.color3)
+            cv2.line(frame, (width, cutOffHeight), (width//2, 0), self.color3)
+
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
 
@@ -132,13 +131,13 @@ class MiniContoursAlgorithm:
                         idx = int(x / width * splitFactor)
                         segmentedPoints[idx].append([int(x),int(y)])
 
-
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
+                        if show:
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
+                            cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
-                        # print(x,y)
                     else:
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
+                        if show:
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -186,8 +185,9 @@ class MiniContoursAlgorithm:
                     pt1 = (int(x0 + 2000*(-b)), int(y0 + 2000*(a)))
                     pt2 = (int(x0 - 2000*(-b)), int(y0 - 2000*(a)))
                     point_lines.append([line[0][0], pt1, pt2])
-                    cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
-                    cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
+                    if show:
+                        cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
+                        cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
 
 
         if show:
@@ -205,7 +205,8 @@ class MiniContoursAlgorithm:
         # returns frame: original_frame with the lines and centroids drawn on
         frame = self.apply_filters(originalframe)
         
-        frame, lines, point_lines = self.getCenterHoughLines(frame, 
+        frame, lines, point_lines = self.getCenterHoughLines(frame,
+                                                             show,
                                                              num_strips=num_strips,
                                                              lines_max=self.lines_max,
                                                              threshold=self.threshold,
@@ -219,7 +220,7 @@ class MiniContoursAlgorithm:
         intersections = Lines.getIntersections(lines)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points)
+        vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
         delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
