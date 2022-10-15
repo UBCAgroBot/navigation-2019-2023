@@ -1,15 +1,15 @@
 name: build-test
-on: [push, pull_request]
+
+on: [pull_request_target]
+
 jobs:
-  pep-check:
-    name: pep-check
-    timeout-minutes: 5
+  tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-        with:
+    - uses: actions/checkout@master
+      with:
         ref: ${{ github.event.pull_request.head.sha }}
-      - name: 'Run PEP8'
-        uses: quentinguidee/pep8-action@v1
-        with:
-          arguments: '--max-line-length=120'
+    - name: PEP8 Action
+      uses: quentinguidee/pep8-action@v2.0.13-dev
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
