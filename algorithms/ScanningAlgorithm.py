@@ -72,7 +72,7 @@ class ScanningAlgorithm(object):
 
         return line
 
-    def processFrame(self, frame, show=False):
+    def process_frame(self, frame, show=False):
         cv2.imshow('original frame', frame)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -124,8 +124,8 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.getIntersections(converted_lines, 0.5)
-        vanishing_point = Lines.drawVanishingPoint(frame, points, False)
+        intersections, points = Lines.get_intersections(converted_lines, 0.5)
+        vanishing_point = Lines.draw_vanishing_point(frame, points, False)
         for line in converted_lines:
             frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
@@ -144,8 +144,6 @@ class ScanningAlgorithm(object):
         # finding the angle between the center of the frame and the line drawn to the vanishing point
         up = [0, 1]
         dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
-        angle = np.arccos(np.dot(up, dir) / (np.linalg.norm(up) * np.linalg.norm(dir))) * 180 / np.pi
-        # print(angle)
 
         if show:
             cv2.imshow('after scanning algorithm', frame)
