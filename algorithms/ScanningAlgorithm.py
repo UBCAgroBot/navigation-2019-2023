@@ -73,9 +73,9 @@ class ScanningAlgorithm(object):
 
         return line
 
-    def processFrame(self, frame, show):
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    def process_frame(self, frame, show):
 
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
         mask = cv2.GaussianBlur(mask, (3, 3), 2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
@@ -124,10 +124,10 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections = Lines.getIntersections(converted_lines, 0.5)
+        intersections = Lines.get_intersections(converted_lines, 0.5)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.drawVanishingPoint(frame, x_points, y_points, show)
+        vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         if show:
             for line in converted_lines:

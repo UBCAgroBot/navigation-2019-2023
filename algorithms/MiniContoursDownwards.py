@@ -7,13 +7,13 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
     
     def __init__(self, config):
         MiniContoursAlgorithm.__init__(self,config)
-        self.speedUp = 5
-        self.frameCounter = 0
-        self.lastValidFrame = []
-        self.endOfRowCutOff = 0.6
+        self.speed_up = 5
+        self.frame_counter = 0
+        self.last_valid_frame = []
+        self.end_of_row_cut_off = 0.6
 
-    def getCenterHoughLines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
-                            drawPoints=False, showFrames=True):
+    def get_center_hough_lines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
+                            draw_points=False, show_frames=True):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -32,25 +32,25 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         points = []
 
         height, width = frame.shape[0], frame.shape[1]
-        splitFactor = 0.25
-        if drawPoints:
-            cv2.line(frame,(int(width*splitFactor), 0), (int(width*splitFactor), height), self.color3, thickness=2)
-            cv2.line(frame,(int(width*(1-splitFactor)), 0), (int(width*(1-splitFactor)), height), self.color3, thickness=2)
+        split_factor = 0.25
+        if draw_points:
+            cv2.line(frame,(int(width*split_factor), 0), (int(width*split_factor), height), self.color3, thickness=2)
+            cv2.line(frame,(int(width*(1-split_factor)), 0), (int(width*(1-split_factor)), height), self.color3, thickness=2)
         for i, strip_centroid in enumerate(centroids):
             for centroid in strip_centroid:
                 x,y = centroid[0], centroid[1]
-                if x > width*splitFactor and x < width*(1-splitFactor):
+                if x > width*split_factor and x < width*(1-split_factor):
                     # vertically split the points
-                    if drawPoints:
+                    if draw_points:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
                         cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
                     points.append([int(centroid[0]), int(centroid[1])])
                 else:
-                    if drawPoints:
+                    if draw_points:
                         cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1)     
 
                         
-        c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR) 
 
         for point in points:
             try:
@@ -74,9 +74,9 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         cv2.circle(frame, (int(x), height // 2), 5, self.color1, -1)
 
         # reference center line and point
-        centerP = (width // 2, height // 2)
-        cv2.line(frame, centerP, (width // 2, 0), self.color2, thickness=3)
-        cv2.circle(frame, centerP, 5, self.color2, -1)
+        center_point = (width // 2, height // 2)
+        cv2.line(frame, center_point, (width // 2, 0), self.color2, thickness=3)
+        cv2.circle(frame, center_point, 5, self.color2, -1)
 
         # calculate angle
         up = [0,-1]
@@ -97,58 +97,58 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         points = points[0]
 
         deltas = (sign*deg, width//2 - x)
-        if showFrames:
+        if show_frames:
             # cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
             cv2.imshow('points', points)
         return frame, points, deltas
     
-    def checkEndOfRow(self, frame, points):
+    def check_end_of_row(self, frame, points):
 
         height, width = frame.shape[0], frame.shape[1]
         if len(points) <= 0:
-            endOfRow = True
+            end_of_row = True
             cv2.putText(frame, "end of row detected",(width // 2 , height // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 2, cv2.LINE_AA)
-            return frame, endOfRow
+            return frame, end_of_row
 
         avg = np.sum(points, axis=0) / len(points)
         cv2.circle(frame, (avg[0], avg[1]), 5, self.color1, -1) 
 
-        endOfRow = False
-        if avg[1] > height*self.endOfRowCutOff:
-            endOfRow = True
+        end_of_row = False
+        if avg[1] > height*self.end_of_row_cut_off:
+            end_of_row = True
             cv2.putText(frame, "end of row detected",(width // 2 , height // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 2, cv2.LINE_AA)
 
-        return frame, endOfRow
+        return frame, end_of_row
         
 
 
     
-    def processFrame(self, originalframe, num_strips=60, show=False, delta=False, showFrames=True, speedUp=False):
+    def process_frame(self, original_frame, num_strips=60, show=False, delta=False, show_frames=True, speed_up=False):
         
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
 
         # increment frame counter
-        self.frameCounter += 1
+        self.frame_counter += 1
 
         # check if time to process a frame
-        if self.frameCounter % self.speedUp != 0:
+        if self.frame_counter % self.speed_up != 0:
             if delta:
-                return self.lastValidFrame, True, False, (0,0)
+                return self.last_valid_frame, True, False, (0,0)
             else:
-                return self.lastValidFrame, True, False
+                return self.last_valid_frame, True, False
 
         # call processing functions
-        frame = self.apply_filters(originalframe)
-        frame, points, deltas = self.getCenterHoughLines(frame, num_strips=num_strips, showFrames=showFrames or show)
+        frame = self.apply_filters(original_frame)
+        frame, points, deltas = self.get_center_hough_lines(frame, num_strips=num_strips, show_frames=show_frames or show)
 
-        frame, endOfRow = self.checkEndOfRow(frame, points)
+        frame, end_of_row = self.check_end_of_row(frame, points)
 
         # store frames
-        self.lastValidFrame = frame
+        self.last_valid_frame = frame
 
-        if delta:
-            return frame, False, endOfRow, deltas 
+        if delta: #commented out False
+            return frame, False, end_of_row, deltas
         else:
-            return frame, False, endOfRow
+            return frame, False, end_of_row
