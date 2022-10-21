@@ -117,8 +117,8 @@ class MiniContoursAlgorithm:
         cut_off_height = (int)(self.cut_off_height_factor * height)
 
         if show:
-            cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color3)
-            cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color3)
+            cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color_3)
+            cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color_3)
 
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
@@ -132,12 +132,12 @@ class MiniContoursAlgorithm:
                         segmented_points[idx].append([int(x),int(y)])
 
                         if show:
-                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                            cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
+                            cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
                     else:
                         if show:
-                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1) 
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1) 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 

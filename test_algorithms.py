@@ -74,7 +74,7 @@ def run_algorithm(alg, vid_file):
         if not ret:
             print('No More Frames Remaining')
             break
-
+        
         processed_image, angle = alg.process_frame(frame, show=args.show)
         print(angle)
 
