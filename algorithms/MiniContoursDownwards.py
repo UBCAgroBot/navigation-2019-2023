@@ -120,8 +120,6 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
             cv2.putText(frame, "end of row detected",(width // 2 , height // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 2, cv2.LINE_AA)
 
         return frame, end_of_row
-        
-
 
     
     def process_frame(self, original_frame, show, delta=False):
