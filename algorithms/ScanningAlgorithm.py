@@ -125,6 +125,10 @@ class ScanningAlgorithm(object):
             converted_lines.append(converted_line)
 
         intersections = Lines.get_intersections(converted_lines, 0.5)
+
+        if not intersections:
+            return frame, None
+
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
         vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
@@ -146,9 +150,7 @@ class ScanningAlgorithm(object):
             frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
-        delta_h_vanish_point = vanishing_point[1]
-        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         return frame, angle
 

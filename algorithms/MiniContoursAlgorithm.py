@@ -206,13 +206,15 @@ class MiniContoursAlgorithm:
                                                              theta_step=self.theta_step)
 
         intersections = Lines.get_intersections(lines)
+
+        if not intersections:
+            return frame, None
+
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
         vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
-        delta_h_vanish_point = vanishing_point[1]
-        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         return frame, angle

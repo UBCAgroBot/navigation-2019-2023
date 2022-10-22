@@ -74,20 +74,15 @@ class CenterRowAlgorithm(Algorithm):
         y_points = [point[1] for point in intersections]
         vanishing_point = Lines.draw_vanishing_point(ellipse_frame, x_points, y_points, show)
 
-
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             if show:
                 cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
-        
-            # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-            delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
-            delta_h_vanish_point = vanishing_point[1]
-            angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
-            return black_frame, angle
-        else:
-            return black_frame, None
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
+
+        return black_frame, angle
+
 
     def create_binary_mask(self, frame):
         """

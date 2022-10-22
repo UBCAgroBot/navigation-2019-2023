@@ -1,7 +1,7 @@
 import sys
 
 import numpy
-
+import math
 import cv2 as cv
 import numpy as np
 
@@ -212,6 +212,10 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
     filtered_x = filter_points(x_points)
     filtered_y = filter_points(y_points)
 
+    if not filtered_x or not filtered_y:
+        filtered_x = x_points
+        filtered_y = y_points
+
     if len(filtered_x) != 0:
         if use_median:
             IntersectingX = np.median(filtered_x)
@@ -224,3 +228,21 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
         return (int(IntersectingX), int(IntersectingY))
     else:
         return None
+
+
+def calculate_angle_from_v_point(vanishing_point, width, height):
+    """
+    Function that calculates angle from bottom middle of screen to vanishing point
+    :param vanishing_point: vanishing point calculated
+    :param width: width of screen
+    :param height: height of screen
+    :return: angle or None
+    """
+    if not vanishing_point:
+        return None
+    delta_w_vanish_point = vanishing_point[0] - (width // 2)
+    delta_h_vanish_point = height - vanishing_point[1]
+    if delta_h_vanish_point == 0:
+        return None
+    else:
+        return round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
