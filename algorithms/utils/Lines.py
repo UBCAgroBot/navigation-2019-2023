@@ -212,6 +212,10 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
     filtered_x = filter_points(x_points)
     filtered_y = filter_points(y_points)
 
+    if not filtered_x or not filtered_y:
+        filtered_x = x_points
+        filtered_y = y_points
+
     if len(filtered_x) != 0:
         if use_median:
             IntersectingX = np.median(filtered_x)

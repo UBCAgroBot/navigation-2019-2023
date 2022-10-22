@@ -70,17 +70,31 @@ class HoughAlgorithm:
         # Draw the vanishing point obtained fromm all the lines
         # intersections, points = self.intersectPoint( frame, lines)
         intersections = Lines.get_intersections(lines)
+
+        if not intersections:
+            if show:
+                return line_img, None
+            else:
+                return frame, None
+
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
+        
         if show:
             vanishing_point = Lines.draw_vanishing_point(line_img, x_points, y_points, show)
         else:
             vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
-        delta_h_vanish_point = vanishing_point[1]
-        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+        if not vanishing_point:
+            angle = None
+        else:
+            delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+            delta_h_vanish_point = vanishing_point[1]
+            if delta_h_vanish_point == 0:
+                angle = None
+            else:
+                angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
         # show the frames on screen for debugging
         if show:
