@@ -86,15 +86,7 @@ class HoughAlgorithm:
             vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        if not vanishing_point:
-            angle = None
-        else:
-            delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
-            delta_h_vanish_point = vanishing_point[1]
-            if delta_h_vanish_point == 0:
-                angle = None
-            else:
-                angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         # show the frames on screen for debugging
         if show:
