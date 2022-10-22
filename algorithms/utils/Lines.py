@@ -183,17 +183,17 @@ def draw_lines_on_frame(lines, frame):
     return frame
 
 
-def filter_points(numArray):
+def filter_points(num_array):
     """
     Function that filters the integer array by removing outliers
     :param numArray: integer array (generally for x/y coordinates)
     :return: int[] - filtered array of points
     """
-    low = np.percentile(numArray, 20)
-    high = np.percentile(numArray, 80)
+    low = np.percentile(num_array, 20)
+    high = np.percentile(num_array, 80)
     filtered = []
     
-    for num in numArray:
+    for num in num_array:
         if num >= low and num <= high:
             filtered.append(num)
         
@@ -209,6 +209,9 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
     :return: (x, y) - median/mean intersection point for x and y
     """
 
+    if not x_points or not y_points:
+        return None
+
     filtered_x = filter_points(x_points)
     filtered_y = filter_points(y_points)
 
@@ -218,14 +221,14 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
 
     if len(filtered_x) != 0:
         if use_median:
-            IntersectingX = np.median(filtered_x)
-            IntersectingY = np.median(filtered_y)
+            intersecting_x = np.median(filtered_x)
+            intersecting_y = np.median(filtered_y)
         else:
-            IntersectingX = np.mean(filtered_x)
-            IntersectingY = np.mean(filtered_y)
+            intersecting_x = np.mean(filtered_x)
+            intersecting_y = np.mean(filtered_y)
         if show:
-            cv.circle(frame, (int(IntersectingX), int(IntersectingY)), 8, (255, 0, 0), -1)
-        return (int(IntersectingX), int(IntersectingY))
+            cv.circle(frame, (int(intersecting_x), int(intersecting_y)), 8, (255, 0, 0), -1)
+        return (int(intersecting_x), int(intersecting_y))
     else:
         return None
 
