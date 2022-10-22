@@ -148,6 +148,10 @@ class MiniContoursAlgorithm:
                 pass
         
         points_vector = np.array([points_vector])
+
+        if not np.any(points_vector):
+            return frame, None, None
+
         lines = cv2.HoughLinesPointSet(
             points_vector, 
             lines_max=lines_max, 
