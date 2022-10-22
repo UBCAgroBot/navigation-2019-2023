@@ -23,7 +23,7 @@
     - `-v/--vid` : name of video
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`
-    - '-s/--show' : process drawings and show frame
+    - `-s/--show` : process drawings and show frame
   - example : `python test_algorithms.py -a center_row -v crop`
 
 
