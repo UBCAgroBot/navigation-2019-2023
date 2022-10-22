@@ -2,6 +2,7 @@ import cv2
 import numpy
 import numpy as np
 import time
+import math
 from algorithms.utils import Lines
 
 
@@ -72,10 +73,9 @@ class ScanningAlgorithm(object):
 
         return line
 
-    def process_frame(self, frame, show=False):
-        cv2.imshow('original frame', frame)
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    def process_frame(self, frame, show):
 
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
         mask = cv2.GaussianBlur(mask, (3, 3), 2)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, self.kernel)
@@ -124,33 +124,34 @@ class ScanningAlgorithm(object):
             converted_line = [line[0][0], line[0][1], line[-1][0], line[-1][1]]
             converted_lines.append(converted_line)
 
-        intersections, points = Lines.get_intersections(converted_lines, 0.5)
-        vanishing_point = Lines.draw_vanishing_point(frame, points, False)
-        for line in converted_lines:
-            frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
-
-        # line for the middle of frame
-        frame = cv2.line(frame, (self.WIDTH // 2, self.HEIGHT), (self.WIDTH // 2, 0), (0, 0, 255), 1)
-
-        # point with x coordinate of the vanishing point and y coordinate of the end of the crop row
-        frame = cv2.circle(frame, (vanishing_point[0], self.upper_y_bound), 5, (0, 255, 0), -1)
-
-        # point in the middle of frame at midpoint between the horizon and bottom of the screen
-        frame = cv2.circle(frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
-
-        # line between the two points above
-        frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
-
-        # finding the angle between the center of the frame and the line drawn to the vanishing point
-        up = [0, 1]
-        dir = [self.WIDTH // 2 - vanishing_point[0], self.mid_y - self.upper_y_bound]
+        intersections = Lines.get_intersections(converted_lines, 0.5)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         if show:
-            cv2.imshow('after scanning algorithm', frame)
-            cv2.imshow('mask', mask)
+            for line in converted_lines:
+                frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
-        # print('vanishing Point: ', vanishing_point)
-        return frame, vanishing_point
+            # line for the middle of frame
+            frame = cv2.line(frame, (self.WIDTH // 2, self.HEIGHT), (self.WIDTH // 2, 0), (0, 0, 255), 1)
+
+            # point with x coordinate of the vanishing point and y coordinate of the end of the crop row
+            frame = cv2.circle(frame, (vanishing_point[0], self.upper_y_bound), 5, (0, 255, 0), -1)
+
+            # point in the middle of frame at midpoint between the horizon and bottom of the screen
+            frame = cv2.circle(frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
+
+            # line between the two points above
+            frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
+
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+
+        return frame, angle
+
 
     # helper function to resize a frame mat object
     def resize(self, frame, factor):

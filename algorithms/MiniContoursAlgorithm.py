@@ -4,6 +4,7 @@ import time
 import operator
 import sys
 import math
+from algorithms.utils import Lines
 
 class MiniContoursAlgorithm:
     # applies hsv binarization to the image
@@ -13,6 +14,8 @@ class MiniContoursAlgorithm:
     def __init__(self, config):
         
         self.config = config
+        self.WIDTH = config.frame_width
+        self.HEIGHT = config.frame_length
         # smoothing kernel
         self.kernel = np.ones((5,5),np.float32)/25
         self.morphology_kernel = np.ones((9,9),np.float32)
@@ -27,7 +30,7 @@ class MiniContoursAlgorithm:
         self.color_3 = (0,0,255) #red (removed points)
         self.contour_color = (0, 129, 255)
 
-        # cutOff for points
+        # Cut Off for points
         self.cut_off_height_factor = self.config.cut_off_factor
         
         # parameters for HoughLinesPointSet
@@ -79,7 +82,7 @@ class MiniContoursAlgorithm:
         return centroids
     
     
-    def get_center_hough_lines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
+    def get_center_hough_lines(self, frame, show, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -108,14 +111,15 @@ class MiniContoursAlgorithm:
         #         ellipse = cv2.fitEllipse(c)
         #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
                 
-
-
         height, width = frame.shape[0], frame.shape[1]
         split_factor = 10
         segmented_points = [[] for _ in range(split_factor)]
         cut_off_height = (int)(self.cut_off_height_factor * height)
-        cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color_3)
-        cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color_3)
+
+        if show:
+            cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color_3)
+            cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color_3)
+
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3*len(centroids)):
 
@@ -127,13 +131,13 @@ class MiniContoursAlgorithm:
                         idx = int(x / width * split_factor)
                         segmented_points[idx].append([int(x),int(y)])
 
-
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
-                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
+                        if show:
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
+                            cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
                         points_vector.append([int(centroid[0]), int(centroid[1])])
-                        
                     else:
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1) 
+                        if show:
+                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1) 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -142,6 +146,7 @@ class MiniContoursAlgorithm:
                 points[point[1]][point[0]] = 255
             except:
                 pass
+        
         points_vector = np.array([points_vector])
         lines = cv2.HoughLinesPointSet(
             points_vector, 
@@ -156,14 +161,6 @@ class MiniContoursAlgorithm:
         )
 
         point_lines = []
-        # if lines is not None:
-        #     for l in lines:
-        #         vx, vy, px, py = l[0],l[1],l[2],l[3]
-        #         p2x = px + width*vx
-        #         p2y = py + width*vy
-        #         p1,p2 = (px,py), (p2x, p2y)
-
-        #         cv2.line(frame, p1, p2, self.color_2, 6, cv2.LINE_AA)
 
         if lines is not None:
             for line in lines:
@@ -177,15 +174,15 @@ class MiniContoursAlgorithm:
                     pt1 = (int(x0 + 2000*(-b)), int(y0 + 2000*(a)))
                     pt2 = (int(x0 - 2000*(-b)), int(y0 - 2000*(a)))
                     point_lines.append([line[0][0], pt1, pt2])
-                    cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
-                    cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
+                    if show:
+                        cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
+                        cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
 
-
-        cv2.imshow('frame', frame)
-        cv2.imshow('mask', mask)
-        cv2.imshow('c_mask', c_mask)
-        cv2.imshow('points', points)
-
+        if show:
+            cv2.imshow('frame', frame)
+            cv2.imshow('mask', mask)
+            cv2.imshow('c_mask', c_mask)
+            cv2.imshow('points', points)
 
         return frame, lines, point_lines
 
@@ -196,7 +193,8 @@ class MiniContoursAlgorithm:
         # returns frame: original_frame with the lines and centroids drawn on
         frame = self.apply_filters(original_frame)
         
-        frame, lines, point_lines = self.get_center_hough_lines(frame, 
+        frame, lines, point_lines = self.get_center_hough_lines(frame,
+                                                             show,
                                                              num_strips=num_strips,
                                                              lines_max=self.lines_max,
                                                              threshold=self.threshold,
@@ -207,6 +205,14 @@ class MiniContoursAlgorithm:
                                                              max_theta=self.max_theta,
                                                              theta_step=self.theta_step)
 
-        # cv2.imshow('frame', frame)
+        intersections = Lines.get_intersections(lines)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
-        return frame, point_lines
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+
+        return frame, angle

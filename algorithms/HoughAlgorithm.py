@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import sys
+import math
 from algorithms.utils import Lines
 
 
@@ -10,6 +11,8 @@ class HoughAlgorithm:
         # Files, setup, OpenCV Tutorial
         # Master, demo
         self.config = config
+        self.WIDTH = config.frame_width
+        self.HEIGHT = config.frame_length
 
         self.LOWER_GREEN = np.array(config.lower_hsv_threshold_hough)
         self.UPPER_GREEN = np.array(config.upper_hsv_threshold_hough)
@@ -61,13 +64,23 @@ class HoughAlgorithm:
             maxLineGap=self.MAX_LINE_GAP
         )
 
-        # Draw Detected Lines on the frame
-        line_img = Lines.draw_lines_on_frame(lines, frame.copy())
+        if show:
+            line_img = Lines.draw_lines_on_frame(lines, frame.copy())
 
         # Draw the vanishing point obtained fromm all the lines
         # intersections, points = self.intersectPoint( frame, lines)
-        intersections, points = Lines.get_intersections(lines)
-        vPoint = Lines.draw_vanishing_point(line_img, points)
+        intersections = Lines.get_intersections(lines)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        if show:
+            vanishing_point = Lines.draw_vanishing_point(line_img, x_points, y_points, show)
+        else:
+            vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
+
+        # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+        delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+        delta_h_vanish_point = vanishing_point[1]
+        angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
         # show the frames on screen for debugging
         if show:
@@ -77,7 +90,10 @@ class HoughAlgorithm:
             cv.imshow('hough algorithm', line_img)
             cv.waitKey(1)
 
-        return line_img, vPoint
+        if show:
+            return line_img, angle
+        else:
+            return frame, angle
 
     # helper function to create a mask
     # takes in frame mat object, returns mask mat object

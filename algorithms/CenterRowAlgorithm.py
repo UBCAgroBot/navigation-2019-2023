@@ -10,7 +10,8 @@ from algorithms.utils import Lines
 class CenterRowAlgorithm(Algorithm):
 
     def __init__(self, config):
-        """Sets center row algorithm configurations\n
+        """
+        Sets center row algorithm configurations
         :param config: config params
         """
 
@@ -42,13 +43,13 @@ class CenterRowAlgorithm(Algorithm):
         # initialize super
         super().__init__(config)
 
-    def process_frame(self, frame, show=True):
+    def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
         :param show: show/hide frames on screen for debugging
         :type show: bool
-        :return: processed frame (mat), vanishing point (tuple)
+        :return: processed frame (mat), angle [-90, 90]
         """
         mask = self.create_binary_mask(frame)
 
@@ -64,15 +65,29 @@ class CenterRowAlgorithm(Algorithm):
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
-        Lines.draw_lines_on_frame(lines, black_frame)
-        intersections, points = Lines.get_intersections(lines)
-        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, points)
+
+        if show:
+            Lines.draw_lines_on_frame(lines, black_frame)
+
+        intersections = Lines.get_intersections(lines)
+        x_points = [point[0] for point in intersections]
+        y_points = [point[1] for point in intersections]
+        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, x_points, y_points, show)
+
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
-            cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
+            if show:
+                cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
+        
+            # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
+            delta_w_vanish_point = vanishing_point[0] - (self.WIDTH // 2)
+            delta_h_vanish_point = vanishing_point[1]
+            angle = round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
 
-        return black_frame, vanishing_point
+            return black_frame, angle
+        else:
+            return black_frame, None
 
     def create_binary_mask(self, frame):
         """

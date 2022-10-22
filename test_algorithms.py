@@ -16,6 +16,8 @@ from algorithms.ScanningAlgorithm import ScanningAlgorithm
 parser = argparse.ArgumentParser()
 parser.add_argument('-a', '--alg', required=True)
 parser.add_argument('-v', '--vid', required=True)
+parser.add_argument('-s', '--show', required=False, action='store_true')
+
 
 # list of algorithms
 algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm), ('mini_contour_downward', MiniContoursDownwards),
@@ -72,10 +74,13 @@ def run_algorithm(alg, vid_file):
         if not ret:
             print('No More Frames Remaining')
             break
+        
+        processed_image, angle = alg.process_frame(frame, show=args.show)
+        print(angle)
 
-        processed_image, intersection_point = alg.process_frame(frame, show=True)
-
-        cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+        if args.show:
+            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+            
         key = cv.waitKey(25)
 
         # Exit if Esc key is pressed

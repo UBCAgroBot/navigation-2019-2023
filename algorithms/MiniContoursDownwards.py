@@ -12,8 +12,8 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         self.last_valid_frame = []
         self.end_of_row_cut_off = 0.6
 
-    def get_center_hough_lines(self, frame, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
-                            draw_points=False, show_frames=True):
+    def get_center_hough_lines(self, frame, show, num_strips=60, lines_max=30, threshold=4, min_rho=0, max_rho=1000, rho_step=1, min_theta=-math.pi/4, max_theta=math.pi/4, theta_step=math.pi/180,
+                            draw_points=False):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters for HoughLinesPointSet
@@ -97,7 +97,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         points = points[0]
 
         deltas = (sign*deg, width//2 - x)
-        if show_frames:
+        if show:
             # cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
             cv2.imshow('points', points)
@@ -124,8 +124,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
 
     
-    def process_frame(self, original_frame, num_strips=60, show=False, delta=False, show_frames=True, speed_up=False):
-        
+    def process_frame(self, original_frame, show, delta=False):
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on
 
@@ -141,7 +140,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
 
         # call processing functions
         frame = self.apply_filters(original_frame)
-        frame, points, deltas = self.get_center_hough_lines(frame, num_strips=num_strips, show_frames=show_frames or show)
+        frame, points, deltas = self.get_center_hough_lines(frame, show)
 
         frame, end_of_row = self.check_end_of_row(frame, points)
 

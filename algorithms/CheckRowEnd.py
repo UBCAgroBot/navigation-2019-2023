@@ -16,7 +16,7 @@ class CheckRowEnd:
         # Percentage of empty rows required to register as row end
         self.percentage_of_empty_rows = config.percentage_of_empty_rows
 
-    def process_frame(self, frame, show=True):
+    def process_frame(self, frame, show):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value
         of zero is greater than req_rows_empty, then frame is row end\n
         :param frame: current frame (mat)
