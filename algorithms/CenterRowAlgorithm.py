@@ -15,6 +15,10 @@ class CenterRowAlgorithm(Algorithm):
         :param config: config params
         """
 
+        # masking range for green
+        self.LOW_GREEN = np.array(config.lower_hsv_threshold)
+        self.HIGH_GREEN = np.array(config.upper_hsv_threshold)
+
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
         self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
@@ -39,9 +43,6 @@ class CenterRowAlgorithm(Algorithm):
         # center contour
         self.center = None
         self.center_angle = 0
-
-        # initialize super
-        super().__init__(config)
 
     def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
@@ -98,7 +99,7 @@ class CenterRowAlgorithm(Algorithm):
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         # Filter image and allow only shades of green to pass
-        mask = cv.inRange(hsv, self.low_green, self.high_green)
+        mask = cv.inRange(hsv, self.LOW_GREEN, self.HIGH_GREEN)
 
         return mask
 

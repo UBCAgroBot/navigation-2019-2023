@@ -4,9 +4,9 @@ import numpy as np
 import time
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
-
-class ScanningAlgorithm(object):
+class ScanningAlgorithm(Algorithm):
     def __init__(self, config):
 
         self.config = config

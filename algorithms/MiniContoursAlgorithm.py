@@ -5,8 +5,9 @@ import operator
 import sys
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
-class MiniContoursAlgorithm:
+class MiniContoursAlgorithm(Algorithm):
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
     # determines the centroids for all the mini-contours

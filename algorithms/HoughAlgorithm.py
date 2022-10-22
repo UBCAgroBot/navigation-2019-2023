@@ -3,9 +3,10 @@ import numpy as np
 import sys
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
 
-class HoughAlgorithm:
+class HoughAlgorithm(Algorithm):
 
     def __init__(self, config):
         # Files, setup, OpenCV Tutorial
