@@ -26,7 +26,7 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         mask = cv2.medianBlur(mask, 9)
         kernel = cv2.getStructuringElement(shape=cv2.MORPH_RECT, ksize=(3,3))
         mask = cv2.morphologyEx(mask, cv2.MORPH_DILATE, kernel, iterations = 3)
-        centroids = self.getCentroids(mask, num_strips=num_strips)
+        centroids = self.get_centroids(mask, num_strips=num_strips)
         
         points = np.zeros(mask.shape, dtype=np.uint8)
         points = []
@@ -34,20 +34,20 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         height, width = frame.shape[0], frame.shape[1]
         split_factor = 0.25
         if draw_points:
-            cv2.line(frame,(int(width*split_factor), 0), (int(width*split_factor), height), self.color3, thickness=2)
-            cv2.line(frame,(int(width*(1-split_factor)), 0), (int(width*(1-split_factor)), height), self.color3, thickness=2)
+            cv2.line(frame,(int(width*split_factor), 0), (int(width*split_factor), height), self.color_3, thickness=2)
+            cv2.line(frame,(int(width*(1-split_factor)), 0), (int(width*(1-split_factor)), height), self.color_3, thickness=2)
         for i, strip_centroid in enumerate(centroids):
             for centroid in strip_centroid:
                 x,y = centroid[0], centroid[1]
                 if x > width*split_factor and x < width*(1-split_factor):
                     # vertically split the points
                     if draw_points:
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1) 
-                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color1, -1)
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
+                        cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
                     points.append([int(centroid[0]), int(centroid[1])])
                 else:
                     if draw_points:
-                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color3, -1)     
+                        cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1)     
 
                         
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR) 
@@ -66,17 +66,17 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         v1,v2,x1,x2 = np.float32(line)
         alpha = width
         p1, p2 = (int(x1-alpha*v1),int(x2-alpha*v2)), (int(x1+alpha*v1),int(x2+alpha*v2))
-        cv2.line(frame, p1, p2, self.color3, thickness=3)
+        cv2.line(frame, p1, p2, self.color_3, thickness=3)
 
         # calculate center point of best fit line
         slope = v2/v1
         x = (height//2 - x2)/slope + x1
-        cv2.circle(frame, (int(x), height // 2), 5, self.color1, -1)
+        cv2.circle(frame, (int(x), height // 2), 5, self.color_1, -1)
 
         # reference center line and point
         center_point = (width // 2, height // 2)
-        cv2.line(frame, center_point, (width // 2, 0), self.color2, thickness=3)
-        cv2.circle(frame, center_point, 5, self.color2, -1)
+        cv2.line(frame, center_point, (width // 2, 0), self.color_2, thickness=3)
+        cv2.circle(frame, center_point, 5, self.color_2, -1)
 
         # calculate angle
         up = [0,-1]
@@ -112,7 +112,8 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
             return frame, end_of_row
 
         avg = np.sum(points, axis=0) / len(points)
-        cv2.circle(frame, (avg[0], avg[1]), 5, self.color1, -1) 
+        print(avg)
+        cv2.circle(frame, (int(avg[0]), int(avg[1])), 5, self.color_1, -1) 
 
         end_of_row = False
         if avg[1] > height*self.end_of_row_cut_off:
@@ -148,6 +149,6 @@ class MiniContoursDownwards(MiniContoursAlgorithm):
         self.last_valid_frame = frame
 
         if delta: #commented out False
-            return frame, False, end_of_row, deltas
+            return frame, end_of_row, deltas #False
         else:
-            return frame, False, end_of_row
+            return frame, end_of_row, None
