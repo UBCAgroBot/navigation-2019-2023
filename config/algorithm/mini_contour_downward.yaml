@@ -14,3 +14,25 @@ threshold: 0
 min_rho: 0
 max_rho: 1000
 rho_step: 1
+
+#filtering parameters
+averaging_kernel_size: (5,5)
+gauss_kernel_size: 3,3
+dilate_kernel_size: (5,5)
+sigma_x: 0
+
+#contour parameters
+contour_color: 0,129,255
+min_contour_area: 40000
+
+#Canny edge parameters
+canny_low_threshold: 75
+canny_high_threshold: 150
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
+
+#### hsv thresholds for crop video
+lower_hsv_threshold: [35, 80, 80]
+upper_hsv_threshold: [80, 255, 255]
