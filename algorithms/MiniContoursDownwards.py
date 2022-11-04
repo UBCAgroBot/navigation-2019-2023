@@ -6,7 +6,6 @@ from algorithms.Algorithm import Algorithm
 
 from algorithms.utils import Lines
 
-
 class MiniContoursDownwards(Algorithm):
 
     def __init__(self, config):
