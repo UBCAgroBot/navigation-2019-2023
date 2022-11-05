@@ -5,8 +5,9 @@ import operator
 import sys
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
-class MiniContoursAlgorithm:
+class MiniContoursAlgorithm(Algorithm):
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
     # determines the centroids for all the mini-contours
@@ -148,6 +149,10 @@ class MiniContoursAlgorithm:
                 pass
         
         points_vector = np.array([points_vector])
+
+        if not np.any(points_vector):
+            return frame, None, None
+
         lines = cv2.HoughLinesPointSet(
             points_vector, 
             lines_max=lines_max, 
@@ -177,12 +182,6 @@ class MiniContoursAlgorithm:
                     if show:
                         cv2.line(points, pt1, pt2, (255), 6, cv2.LINE_AA)
                         cv2.line(frame, pt1, pt2, (0,0,255), 6, cv2.LINE_AA)
-
-        if show:
-            cv2.imshow('frame', frame)
-            cv2.imshow('mask', mask)
-            cv2.imshow('c_mask', c_mask)
-            cv2.imshow('points', points)
 
         return frame, lines, point_lines
 
