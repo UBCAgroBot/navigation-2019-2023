@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
+from algorithms.Algorithm import Algorithm
 
-
-class CheckRowEnd:
+class CheckRowEnd(Algorithm):
 
     def __init__(self, config):
         """Sets checkRowEnd algorithm configurations\n

@@ -4,9 +4,9 @@ import numpy as np
 import time
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
-
-class ScanningAlgorithm(object):
+class ScanningAlgorithm(Algorithm):
     def __init__(self, config):
 
         self.config = config
@@ -82,6 +82,10 @@ class ScanningAlgorithm(object):
 
         # finds the end of the crop row by using the y value of the first white pixel in the mask
         white_pixels = np.array(np.where(mask == 255))
+
+        if len(white_pixels) == 0 or len(white_pixels[0]) == 0:
+            return mask, None
+            
         self.upper_y_bound = white_pixels[0][0]
         self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
 

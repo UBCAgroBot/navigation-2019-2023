@@ -3,9 +3,10 @@ import numpy as np
 import sys
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
 
-class HoughAlgorithm:
+class HoughAlgorithm(Algorithm):
 
     def __init__(self, config):
         # Files, setup, OpenCV Tutorial
@@ -87,14 +88,6 @@ class HoughAlgorithm:
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
         angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
-
-        # show the frames on screen for debugging
-        if show:
-            cv.imshow('frame', frame)
-            cv.imshow('mask_hough', mask)
-            cv.imshow('edges', edges)
-            cv.imshow('hough algorithm', line_img)
-            cv.waitKey(1)
 
         if show:
             return line_img, angle
