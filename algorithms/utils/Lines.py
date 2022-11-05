@@ -90,7 +90,7 @@ def get_intersections(lines, min_slope=1):
 
                 # calls the getIntersection helper function
                 intersect = get_intersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
-                if type(intersect) is bool:
+                if isinstance(intersect, bool):
                     continue
 
                 # the intersections array is an array of points coordinates (x, y)
@@ -192,12 +192,13 @@ def filter_points(num_array):
     low = np.percentile(num_array, 20)
     high = np.percentile(num_array, 80)
     filtered = []
-    
+
     for num in num_array:
         if num >= low and num <= high:
             filtered.append(num)
-        
+
     return filtered
+
 
 def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
     """
@@ -248,4 +249,4 @@ def calculate_angle_from_v_point(vanishing_point, width, height):
     if delta_h_vanish_point == 0:
         return None
     else:
-        return round(math.degrees(math.atan(delta_w_vanish_point/delta_h_vanish_point)), 2)
+        return round(math.degrees(math.atan(delta_w_vanish_point / delta_h_vanish_point)), 2)
