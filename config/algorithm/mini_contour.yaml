@@ -14,3 +14,7 @@ threshold: 0
 min_rho: 0
 max_rho: 1000
 rho_step: 1
+
+#### size of frame
+frame_width: 1280
+frame_length: 720

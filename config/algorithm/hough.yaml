@@ -10,3 +10,7 @@ blur_size_2: 3
 
 lower_hsv_threshold_hough: [36, 25, 25]
 upper_hsv_threshold_hough: [70, 255, 255]
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
