@@ -1,5 +1,5 @@
 name: python-lint
-on: pull_request
+on: [pull_request, push]
 jobs:
   python-lint:
     runs-on: ubuntu-latest
