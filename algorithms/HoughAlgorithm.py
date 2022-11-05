@@ -80,7 +80,7 @@ class HoughAlgorithm(Algorithm):
 
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        
+
         if show:
             vanishing_point = Lines.draw_vanishing_point(line_img, x_points, y_points, show)
         else:
