@@ -18,3 +18,7 @@ points_per_line_bottom: 15
 
 ### what is the minimum pixel length for a line
 #min_line_length: 400
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
