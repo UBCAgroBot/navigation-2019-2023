@@ -84,7 +84,6 @@ class CenterRowAlgorithm(Algorithm):
 
         return black_frame, angle
 
-
     def create_binary_mask(self, frame):
         """
         :param frame: current frame
