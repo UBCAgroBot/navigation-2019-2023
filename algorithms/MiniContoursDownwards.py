@@ -23,10 +23,10 @@ class MiniContoursDownwards():
         self.high_green = np.array(config.high_green)
 
         # random colors for drawing lines etc
-        self.color_1 = (255, 255, 0) #blue
+        self.color_1 = (255, 255, 0) #teal
         self.color_2 = (200, 0, 255) #pink
         self.color_3 = (0,0,255) #red (removed points)
-        self.contour_color = (0, 129, 255) #color for contours
+        self.midline = (0, 129, 255) #color for line vertically down center of frame
 
         # parameters for best fit line
         self.max_vote = self.config.max_vote
@@ -135,7 +135,6 @@ class MiniContoursDownwards():
                                 reps=reps,
                                 aeps=aeps
                                 )
-            print(int(100* line[0]), int(100 * line[1]), int(line[2]), int(line[3]))
             #want to show the line
             if show:
                 cv2.line(frame, (int(line[2]) - self.WIDTH*int(1000 * line[0]), int(line[3]) - self.HEIGHT*int(1000*line[1])), (int(line[2]) + self.WIDTH*int(1000 * line[0]), int(line[3]) + self.HEIGHT*int(1000 * line[1])), self.color_2, 3)
@@ -156,7 +155,7 @@ class MiniContoursDownwards():
         #         angle: angle between the best fit line and a line drawn vertically down the center of the screen
         frame = self.apply_filters(original_frame)
         
-        frame, lines = self.get_center_hough_lines(frame,
+        frame, line = self.get_center_hough_lines(frame,
                                                     show,
                                                     num_strips=num_strips,
                                                     lines_max=self.lines_max,
@@ -175,8 +174,14 @@ class MiniContoursDownwards():
 
         #calculate angle relative to a straight line downwards
         #ref_line = cv2.line(frame, (0,0), (0, self.HEIGHT), self.color_1, 0)
-        
-        angle = None
+        if line[0] != None:
+            angle = round(math.degrees(math.atan(line[0]/line[1])), 2)
+            cv2.line(frame, (int(self.WIDTH/2), 0), (int(self.WIDTH/2), int(self.HEIGHT)), self.midline, 2)
+            print(angle)
+            return frame, angle
+        else:
+            angle = None
+            return frame, angle
 
-        return frame, angle
+        
     
