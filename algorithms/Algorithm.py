@@ -1,8 +1,10 @@
+from typing import Optional
+
 import numpy as np
 
 
 class Algorithm:
-    def process_frame(self, frame: np.ndarray, show: bool) -> tuple[np.ndarray, float | None]:
+    def process_frame(self, frame: np.ndarray, show: bool) -> tuple[np.ndarray, Optional[float]]:
         '''
         Processes a frame using the algorithm
         :param frame: current frame (mat)
