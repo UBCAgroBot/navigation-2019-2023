@@ -55,27 +55,49 @@ def main():
     for elem in algo_list:
         if elem[0] == args.alg:
             alg = elem[1](config)
-            run_algorithm(alg, vid_file)
+            run_algorithm(alg, vid_file, config)
             exists = True
 
     if not exists:
         print(f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
         sys.exit()
+    
 
-
-def run_algorithm(alg, vid_file):
+def run_algorithm(alg, vid_file, config):
     vid = cv.VideoCapture(vid_file)
 
     if not vid.isOpened():
         print('Error Opening Video File')
+
+    
+    cv.namedWindow('controls')
+    cv.createTrackbar('h_lower','controls', 0, 80, nothing)
+    cv.createTrackbar('s_lower','controls', 0, 200, nothing)
+    cv.createTrackbar('v_lower','controls', 0, 200, nothing)
+    cv.createTrackbar('h_upper','controls', 80, 179, nothing)
+    cv.createTrackbar('s_upper','controls', 200, 255, nothing)
+    cv.createTrackbar('v_upper','controls', 200, 255, nothing)
+
 
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
             print('No More Frames Remaining')
             break
+    
+        config["upper_hsv_threshold"] = [
+            cv.getTrackbarPos('h_upper','controls'),
+            cv.getTrackbarPos('s_upper','controls'),
+            cv.getTrackbarPos('v_upper','controls')
+        ]
+        
+        config["lower_hsv_threshold"] = [
+            cv.getTrackbarPos('h_lower','controls'),
+            cv.getTrackbarPos('s_lower','controls'),
+            cv.getTrackbarPos('v_lower','controls')
+        ]
 
-        processed_image, angle = alg.process_frame(frame, show=args.show)
+        processed_image, angle = alg.process_frame(frame, config, show=args.show)
         print(angle)
 
         if args.show:
@@ -89,6 +111,9 @@ def run_algorithm(alg, vid_file):
 
     vid.release()
     cv.destroyAllWindows()
+
+def nothing(x):
+    pass
 
 
 if __name__ == '__main__':

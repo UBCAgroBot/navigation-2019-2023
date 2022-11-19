@@ -5,6 +5,7 @@ import time
 import math
 from algorithms.utils import Lines
 from algorithms.Algorithm import Algorithm
+import yaml
 
 
 class ScanningAlgorithm(Algorithm):
@@ -57,6 +58,7 @@ class ScanningAlgorithm(Algorithm):
         # list of all lines created
         self.lines = np.array(self.lines)
 
+
     # creates an array of x,y points for a line starting from a point on the top edge
     # extending to a point on the bottom edge
     def create_line(self, start_x, start_y, end_x, end_y):
@@ -74,7 +76,10 @@ class ScanningAlgorithm(Algorithm):
 
         return line
 
-    def process_frame(self, frame, show):
+    def process_frame(self, frame, config, show):
+
+        self.LOWER_GREEN = np.array(config["lower_hsv_threshold"])
+        self.UPPER_GREEN = np.array(config["upper_hsv_threshold"])
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
