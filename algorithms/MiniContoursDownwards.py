@@ -22,11 +22,11 @@ class MiniContoursDownwards():
         self.low_green = np.array(config.low_green)
         self.high_green = np.array(config.high_green)
 
-        # random colors for drawing lines etc
-        self.color_1 = (255, 255, 0) #teal
-        self.color_2 = (200, 0, 255) #pink
-        self.color_3 = (0,0,255) #red (removed points)
-        self.midline = (0, 129, 255) #color for line vertically down center of frame
+        # random colors for drawing lines
+        self.color_1 = (255, 255, 0) #teal (for contour points that are within bounds)
+        self.color_2 = (200, 0, 255) #pink (for the line of best fit through all the contour points that are within bounds)
+        self.color_3 = (0,0,255) #red (for contour points that are out of bounds)
+        self.midline = (0, 129, 255) #orange (for a reference line vertically down center of frame)
 
         # parameters for best fit line
         self.max_vote = self.config.max_vote
@@ -48,7 +48,7 @@ class MiniContoursDownwards():
     def get_centroids(self, mask, num_strips, show):
 
         # mask is a binary mask of the image
-        # number of strips is the number of strips to divide the image into for finding centroids
+        # num_strips is the number of strips to divide the image into for finding centroids
         # returns list [(x1, y1), (x2, y2), ...] of all the centroids obtained
         
         strips = []
@@ -73,13 +73,13 @@ class MiniContoursDownwards():
         return centroids
     
     
-    def get_center_hough_lines(self, frame, show, num_strips=60, lines_max=30, dist_type = cv2.DIST_L2, param=0, reps=0.01, aeps=0.01):
+    def get_best_fit_line(self, frame, show, num_strips=60, lines_max=30, dist_type = cv2.DIST_L2, param=0, reps=0.01, aeps=0.01):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
-        # other parameters required to calculate line of best fit through centroids using cv2.fitline
+        # other parameters required to calculate line of best fit through centroids using cv2.fitLine
         # returns: 
-        # frame: original frame with best fit lines drawn on
-        # line: [[vx, vy, x, y]] of the line of best fit through all the centroids. [vx, vy] is a vector that describes the line, where x, y is a point on the line     
+        # frame: original frame with best fit line drawn on
+        # line: A vector [vx, vy, x, y] representing the line of best fit through all the centroids. [vx, vy] is a vector that describes the direction of the line, where (x, y) when taken together is a point on the line     
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
@@ -138,7 +138,8 @@ class MiniContoursDownwards():
             #want to show the line
             if show:
                 cv2.line(frame, (int(line[2]) - self.WIDTH*int(1000 * line[0]), int(line[3]) - self.HEIGHT*int(1000*line[1])), (int(line[2]) + self.WIDTH*int(1000 * line[0]), int(line[3]) + self.HEIGHT*int(1000 * line[1])), self.color_2, 3)
-
+        else:
+            line = None
         if show:
             cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
@@ -155,7 +156,7 @@ class MiniContoursDownwards():
         #         angle: angle between the best fit line and a line drawn vertically down the center of the screen
         frame = self.apply_filters(original_frame)
         
-        frame, line = self.get_center_hough_lines(frame,
+        frame, line = self.get_best_fit_line(frame,
                                                     show,
                                                     num_strips=num_strips,
                                                     lines_max=self.lines_max,
@@ -175,7 +176,7 @@ class MiniContoursDownwards():
         #calculate angle relative to a straight line downwards
         #ref_line = cv2.line(frame, (0,0), (0, self.HEIGHT), self.color_1, 0)
         if line[0] != None:
-            angle = round(math.degrees(math.atan(line[0]/line[1])), 2)
+            angle = round(math.degrees(math.atan(-line[0]/line[1])), 2)
             cv2.line(frame, (int(self.WIDTH/2), 0), (int(self.WIDTH/2), int(self.HEIGHT)), self.midline, 2)
             print(angle)
             return frame, angle

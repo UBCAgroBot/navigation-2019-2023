@@ -1,0 +1,5 @@
+lower_hsv_threshold: [30, 80, 80]
+upper_hsv_threshold: [80, 255, 255]
+
+frame_width: 1280
+frame_length: 720
