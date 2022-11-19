@@ -2,7 +2,8 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 
-# Pipeline and config parts are copied from https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/opencv_viewer_example.py
+# Pipeline and config parts are copied from
+# https://github.com/IntelRealSense/librealsense/blob/master/wrappers/python/examples/opencv_viewer_example.py
 
 # Everything thing below 50 cm is black. Everything above that value or not calculated is white.
 THRESHOLD = 500
@@ -51,8 +52,8 @@ try:
         color_image = np.asanyarray(color_frame.get_data())
 
         thresh = np.zeros_like(depth_image)
-        thresh[depth_image>500] = depth_image.max()
-        thresh[depth_image<1] = depth_image.max()
+        thresh[depth_image > 500] = depth_image.max()
+        thresh[depth_image < 1] = depth_image.max()
 
         # Show images
         cv2.imshow('RealSense', thresh)
