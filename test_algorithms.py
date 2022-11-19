@@ -20,8 +20,8 @@ parser.add_argument('-s', '--show', required=False, action='store_true')
 
 
 # list of algorithms
-algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm), ('mini_contour_downward', MiniContoursDownwards),
-             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd)]
+algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
+             ('mini_contour_downward', MiniContoursDownwards), ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd)]
 
 
 def main():
@@ -74,6 +74,7 @@ def run_algorithm(alg, vid_file):
         if not ret:
             print('No More Frames Remaining')
             break
+
         
         if args.alg == "mini_contour_downward":
             processed_image, angle = alg.process_frame(original_frame=frame, show=args.show)
@@ -83,7 +84,7 @@ def run_algorithm(alg, vid_file):
 
         if args.show:
             cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
-            
+
         key = cv.waitKey(25)
 
         # Exit if Esc key is pressed

@@ -86,7 +86,6 @@ class MiniContoursDownwards():
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
         # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
         centroids = self.get_centroids(mask, num_strips=num_strips, show=show)
-        
         points = np.zeros(mask.shape, dtype=np.uint8)
         # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
         points_vector = []
@@ -102,6 +101,7 @@ class MiniContoursDownwards():
         #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
                 
         height, width = frame.shape[0], frame.shape[1]
+
         split_factor = 10
         segmented_points = [[] for _ in range(split_factor)]
 
@@ -112,7 +112,6 @@ class MiniContoursDownwards():
                 # vertically split the points
                 idx = int(x / width * split_factor)
                 segmented_points[idx].append([int(x),int(y)])
-
                 if show:
                     cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1) 
                     cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
@@ -140,6 +139,7 @@ class MiniContoursDownwards():
                 cv2.line(frame, (int(line[2]) - self.WIDTH*int(1000 * line[0]), int(line[3]) - self.HEIGHT*int(1000*line[1])), (int(line[2]) + self.WIDTH*int(1000 * line[0]), int(line[3]) + self.HEIGHT*int(1000 * line[1])), self.color_2, 3)
         else:
             line = None
+            
         if show:
             cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
@@ -185,4 +185,3 @@ class MiniContoursDownwards():
             return frame, angle
 
         
-    

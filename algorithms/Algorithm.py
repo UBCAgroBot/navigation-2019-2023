@@ -2,6 +2,12 @@ import numpy as np
 
 
 class Algorithm:
-    def __init__(self, config) -> None:
-        self.low_green = np.array(config.lower_hsv_threshold)
-        self.high_green = np.array(config.upper_hsv_threshold)
+    def process_frame(self, frame: np.ndarray, show: bool) -> tuple[np.ndarray, float or None]:
+        '''
+        Processes a frame using the algorithm
+        :param frame: current frame (mat)
+        :param show: show/hide frames on screen for debugging
+        :type show: bool
+        :return: processed frame (mat), angle [-90, 90]
+        '''
+        raise NotImplementedError

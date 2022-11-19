@@ -4,9 +4,10 @@ import numpy as np
 import time
 import math
 from algorithms.utils import Lines
+from algorithms.Algorithm import Algorithm
 
 
-class ScanningAlgorithm(object):
+class ScanningAlgorithm(Algorithm):
     def __init__(self, config):
 
         self.config = config
@@ -43,7 +44,7 @@ class ScanningAlgorithm(object):
         for top_x in range(0, self.WIDTH, self.pixel_gap):
             for right_y in range(self.mid_y,
                                  self.lower_y_bound, self.pixel_gap):
-                line1 = self.create_line(top_x, self.upper_y_bound, self.WIDTH-1, right_y)
+                line1 = self.create_line(top_x, self.upper_y_bound, self.WIDTH - 1, right_y)
                 self.lines.append(line1)
 
         # creates lines from horizon to the left side
@@ -82,6 +83,10 @@ class ScanningAlgorithm(object):
 
         # finds the end of the crop row by using the y value of the first white pixel in the mask
         white_pixels = np.array(np.where(mask == 255))
+
+        if len(white_pixels) == 0 or len(white_pixels[0]) == 0:
+            return mask, None
+
         self.upper_y_bound = white_pixels[0][0]
         self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
 
@@ -116,7 +121,7 @@ class ScanningAlgorithm(object):
         most_prominent_pos_lines = pos_array[:, 1][largest_pos_indices]
         most_prominent_neg_lines = neg_array[:, 1][largest_neg_indices]
 
-        most_prominent_lines = numpy.concatenate((most_prominent_pos_lines, most_prominent_neg_lines), axis = None)
+        most_prominent_lines = numpy.concatenate((most_prominent_pos_lines, most_prominent_neg_lines), axis=None)
 
         # convert to lines as defined in Lines.py
         converted_lines = []
@@ -147,15 +152,16 @@ class ScanningAlgorithm(object):
             frame = cv2.circle(frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
 
             # line between the two points above
-            frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y), (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
+            frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y),
+                             (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
         angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         return frame, angle
 
-
     # helper function to resize a frame mat object
+
     def resize(self, frame, factor):
         # resize frame to smaller size to allow faster processing
         return cv2.resize(frame, (frame.shape[1] // factor, frame.shape[0] // factor))

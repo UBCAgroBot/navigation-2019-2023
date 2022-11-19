@@ -1,2 +1,6 @@
 # Percentage of empty rows required to register as row end
 percentage_of_empty_rows: 0.375
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
