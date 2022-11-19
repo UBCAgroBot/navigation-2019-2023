@@ -90,16 +90,6 @@ class MiniContoursDownwards():
         points = np.zeros(mask.shape, dtype=np.uint8)
         # points = cv2.Mat.zeros(mask.shape[0], mask.shape[1], cv.CV_8UC3)
         points_vector = []
-        
-        # ret, thresh = cv2.threshold(mask, 0, 254, 0)
-        # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # cnt = contours
-        # cv2.drawContours(frame, cnt, -1, self.contour_color, 3)
-        # cv2.fillPoly(frame, pts=cnt, color=(0, 255, 0))
-        # for c in cnt:
-        #     if cv2.contourArea(c) > 3000:
-        #         ellipse = cv2.fitEllipse(c)
-        #         cv2.ellipse(frame, ellipse, (255, 255, 255), 2)
                 
         height, width = frame.shape[0], frame.shape[1]
         split_factor = 10
@@ -165,16 +155,6 @@ class MiniContoursDownwards():
                                                     reps=self.reps,
                                                     aeps=self.aeps)
 
-        #intersections = Lines.get_intersections(lines)
-
-        #if not intersections:
-            #return frame, None
-
-        #x_points = [point[0] for point in intersections]
-        #y_points = [point[1] for point in intersections]
-
-        #calculate angle relative to a straight line downwards
-        #ref_line = cv2.line(frame, (0,0), (0, self.HEIGHT), self.color_1, 0)
         if line[0] != None:
             angle = round(math.degrees(math.atan(-line[0]/line[1])), 2)
             cv2.line(frame, (int(self.WIDTH/2), 0), (int(self.WIDTH/2), int(self.HEIGHT)), self.midline, 2)
