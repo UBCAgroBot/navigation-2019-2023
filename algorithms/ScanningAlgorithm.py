@@ -5,7 +5,6 @@ import time
 import math
 from algorithms.utils import Lines
 from algorithms.Algorithm import Algorithm
-import yaml
 
 
 class ScanningAlgorithm(Algorithm):
