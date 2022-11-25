@@ -1,11 +1,13 @@
 import math
 
 import cv2 as cv
+import re
 import numpy
 import numpy as np
 from algorithms.Algorithm import Algorithm
 from helper_scripts.change_res import change_res
 from algorithms.utils import Lines
+
 
 class MiniContoursDownwards(Algorithm):
 
@@ -123,10 +125,13 @@ class MiniContoursDownwards(Algorithm):
         if len(lines) == 1:
             line = lines[0]
             delta_y = (line[0])
-            delta_x = (line[1]-line[3])
-            if delta_x != 0:
-                angle = round(math.degrees(math.atan(delta_y/delta_x)), 2)
-                return black_frame, -angle
+            delta_x = (line[3] - line[1])
+
+            if line[0] - line[2] == 0:
+                return black_frame, 0
+            elif delta_x != 0:
+                angle = round(math.degrees(math.atan(delta_y / delta_x)), 2)
+                return black_frame, angle
             else:
                 return black_frame, None
         else:
@@ -177,13 +182,13 @@ class MiniContoursDownwards(Algorithm):
 
         return contours, frame
 
-    def get_biggest_contour(self,contours):
+    def get_biggest_contour(self, contours):
         contour_area = 0
         for cnt in contours:
-            if cv.contourArea(cnt)>contour_area:
+            if cv.contourArea(cnt) > contour_area:
                 contour_area = cv.contourArea(cnt)
                 big_contour = cnt
-        return cnt
+        return big_contour
 
     def ellipse_slopes(self, contours, black_frame):
         """Draws ellipses around each contour on black_frame using cv.fitEllipse,
@@ -196,29 +201,75 @@ class MiniContoursDownwards(Algorithm):
         lines = []
         self.contours = []
 
-        for cnt in contours:
-            if self.min_contour_area < cv.contourArea(cnt):
-                rect = cv.minAreaRect(cnt)
-                box = cv.boxPoints(rect)
-                box = np.int0(box)
-                black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
-                ellipse = cv.fitEllipse(cnt)
-                self.contours.append(ellipse)
-                cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
-                rows, cols = black_frame.shape[:2]
+        con = self.get_biggest_contour(contours)
+        rect = cv.minAreaRect(con)
+        box = cv.boxPoints(rect)
+        box = np.int0(box)
+        black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
+        ellipse = cv.fitEllipse(con)
+        self.contours.append(ellipse)
+        cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
 
-                # Defines a line for the contour using the fitLine function
-                [vx, vy, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
-                # calculates the slope and adds the slope to the array of slopes
-                slope = vy / vx
-                slopes.append(slope)
-                # Finds two other points on the line using the slope
-                lefty = int((-x * vy / vx) + y)
-                righty = int(((cols - x) * vy / vx) + y)
-                black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
-                # Appends a line to the lines array using the (x1,y1,x2,y2) definition
-                lines.append([cols - 1, righty, 0, lefty])
+        point1 = box[0]
+        point2 = box[3]
+        point3 = box[2]
 
+        if math.sqrt((point2[-2] - point1[-2]) ** 2 + (point2[-1] - point1[-1]) ** 2) > math.sqrt(
+                (point3[-2] - point2[-2]) ** 2 + (point3[-1] - point2[-1]) ** 2):
+
+            vy = (point2[-1] - point1[-1])
+            vx = (point2[-2] - point1[-2])
+
+        else:
+
+            vy = (point3[-1] - point2[-1])
+            vx = (point3[-2] - point2[-2])
+
+        point = rect[-3]
+        length = math.sqrt(vx ** 2 + vy ** 2)
+
+        width, height = box[-2]
+        x = point[0]
+        y = point[1]
+
+        rows, cols = black_frame.shape[:2]
+
+        if vx != 0:
+            slope = vy / vx
+            slopes.append(slope)
+            lefty = int((-x * vy / vx) + y)
+            righty = int(((cols - x) * vy / vx) + y)
+            black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
+            lines.append([cols - 1, righty, 0, lefty])
+
+        else:
+            black_frame = cv.line(black_frame, (int(x), 0), (int(x), rows - 1), (255, 255, 0), 9)
+            lines.append([int(x), 0, int(x), rows-1])
+
+        # for cnt in contours:
+        #     print(cnt)
+        #     if self.min_contour_area < cv.contourArea(cnt):
+        #         rect = cv.minAreaRect(cnt)
+        #         box = cv.boxPoints(rect)
+        #         box = np.int0(box)
+        #         black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
+        #         ellipse = cv.fitEllipse(cnt)
+        #         self.contours.append(ellipse)
+        #         cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
+        #         rows, cols = black_frame.shape[:2]
+        #
+        #         # Defines a line for the contour using the fitLine function
+        #         [vx, vy, x, y] = cv.fitLine(cnt, cv.DIST_L2, 0, 0.01, 0.01)
+        #         # calculates the slope and adds the slope to the array of slopes
+        #         slope = vy / vx
+        #         slopes.append(slope)
+        #         # Finds two other points on the line using the slope
+        #         lefty = int((-x * vy / vx) + y)
+        #         righty = int(((cols - x) * vy / vx) + y)
+        #         black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
+        #         # Appends a line to the lines array using the (x1,y1,x2,y2) definition
+        #         lines.append([cols - 1, righty, 0, lefty])
+        #
         return lines, slopes, black_frame
 
     def get_center_row_coords(self):
