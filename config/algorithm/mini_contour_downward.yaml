@@ -1,20 +1,14 @@
 
 # color thresholds
-low_green: [36, 25, 25]
-high_green: [70, 255, 255]
+low_green: [40, 90, 80]
+high_green: [80, 255, 255]
 
-# cutOff parameters
-cut_off_factor: 0.9
-
-# parameters for Hough Lines Point Set
-max_vote: 0
-num_strips: 30
-lines_max: 15
-threshold: 0
-min_rho: 0
-max_rho: 1000
-rho_step: 1
-
-#### size of frame
-frame_width: 1280
-frame_length: 720
+# parameters for best fit line calculation
+#num_strips represents number of vertical strips the image is divided into while finding centroids
+num_strips: 60
+#a numeric parameter for some types of distances. This is left on the default value of 0
+param: 0
+#accuracy for the radius (distance between the coordinate origin and the line)
+reps: 0.01
+#accuracy for the angle that is used for line fitting. This is the default value suggested in the documentation for cv2.fitLine
+aeps: 0.01
