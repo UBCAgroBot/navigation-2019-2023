@@ -12,3 +12,7 @@ param: 0
 reps: 0.01
 #accuracy for the angle that is used for line fitting. This is the default value suggested in the documentation for cv2.fitLine
 aeps: 0.01
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
