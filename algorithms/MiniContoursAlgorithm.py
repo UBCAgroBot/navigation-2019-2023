@@ -23,8 +23,8 @@ class MiniContoursAlgorithm(Algorithm):
         self.morphology_kernel = np.ones((9, 9), np.float32)
 
         # thresholds for the color of the crop rows
-        self.low_green = np.array(config.low_green)
-        self.high_green = np.array(config.high_green)
+        self.LOWER_GREEN = np.array(config.low_green)
+        self.UPPER_GREEN = np.array(config.high_green)
 
         # random colors for drawing lines etc
         self.color_1 = (255, 255, 0)  # blue
@@ -104,7 +104,7 @@ class MiniContoursAlgorithm(Algorithm):
         # lines: list of [[votes, rho, theta]] of all lines
         # point_lines: list of [votes, pt1, pt2] of all lines
 
-        mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
+        mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.LOWER_GREEN, self.UPPER_GREEN)
         mask = cv2.medianBlur(mask, 9)
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
         # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
@@ -198,7 +198,10 @@ class MiniContoursAlgorithm(Algorithm):
 
         return frame, lines, point_lines
 
-    def process_frame(self, original_frame, num_strips=60, show=False):
+    def process_frame(self, original_frame, config, num_strips=60, show=False):
+
+        self.LOWER_GREEN = np.array(config["lower_hsv_threshold"])
+        self.UPPER_GREEN = np.array(config["upper_hsv_threshold"])
 
         # original_frame: BGR frame
         # returns frame: original_frame with the lines and centroids drawn on

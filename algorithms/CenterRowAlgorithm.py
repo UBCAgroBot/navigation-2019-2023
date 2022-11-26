@@ -16,7 +16,7 @@ class CenterRowAlgorithm(Algorithm):
         """
 
         # masking range for green
-        self.LOW_GREEN = np.array(config.lower_hsv_threshold)
+        self.LOWER_GREEN = np.array(config.lower_hsv_threshold)
         self.HIGH_GREEN = np.array(config.upper_hsv_threshold)
 
         # filtering parameters
@@ -44,7 +44,11 @@ class CenterRowAlgorithm(Algorithm):
         self.center = None
         self.center_angle = 0
 
-    def process_frame(self, frame, show):
+    def process_frame(self, frame, config, show):
+
+        self.LOWER_GREEN = np.array(config["lower_hsv_threshold"])
+        self.UPPER_GREEN = np.array(config["upper_hsv_threshold"])
+
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
         :param frame: current frame (mat)
@@ -87,7 +91,7 @@ class CenterRowAlgorithm(Algorithm):
     def create_binary_mask(self, frame):
         """
         :param frame: current frame
-        :return: binary mask of frame made using self.low_green and self.high_green as the HSV range
+        :return: binary mask of frame made using self.lower_green and self.high_green as the HSV range
         """
 
         # Run averaging filter to blur the frame
@@ -98,7 +102,7 @@ class CenterRowAlgorithm(Algorithm):
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         # Filter image and allow only shades of green to pass
-        mask = cv.inRange(hsv, self.LOW_GREEN, self.HIGH_GREEN)
+        mask = cv.inRange(hsv, self.LOWER_GREEN, self.HIGH_GREEN)
 
         return mask
 

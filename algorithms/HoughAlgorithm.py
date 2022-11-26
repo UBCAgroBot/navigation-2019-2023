@@ -34,7 +34,11 @@ class HoughAlgorithm(Algorithm):
 
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
-    def process_frame(self, frame, show=True):
+    def process_frame(self, frame, config, show=True):
+        
+        self.LOWER_GREEN = np.array(config["lower_hsv_threshold"])
+        self.UPPER_GREEN = np.array(config["upper_hsv_threshold"])
+        
         # pts = [(0, 400), (400,800), (0, 800)]
         # cv2.fillPoly(frame, np.array([pts]), (0,0,0))
         # pts = [(800, 400), (400,800), (800, 800)]
