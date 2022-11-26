@@ -1,10 +1,9 @@
-
 import cv2 as cv
 import numpy as np
 
 
 def delete_small_contours(contours, threshold):
-
+    # takes in contours and a threshold area, and draw only contours that are bigger than the threshold
     black_frame = np.uint8(np.zeros((720, 1280, 3)))
 
     for cnt in contours:
@@ -16,6 +15,7 @@ def delete_small_contours(contours, threshold):
 
 
 def morph_op(mask, kernel_size, op, iterations):
+    # morphological operations for image editing
 
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
 
