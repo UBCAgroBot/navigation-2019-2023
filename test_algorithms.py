@@ -75,7 +75,6 @@ def run_algorithm(alg, vid_file):
             print('No More Frames Remaining')
             break
 
-        
         if args.alg == "mini_contour_downward":
             processed_image, angle = alg.process_frame(original_frame=frame, show=args.show)
         else:
