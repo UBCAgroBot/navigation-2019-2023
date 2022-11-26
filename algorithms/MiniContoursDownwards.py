@@ -35,8 +35,12 @@ class MiniContoursDownwards():
         self.aeps=self.config.aeps
 
     def apply_filters(self, original_frame):
-        # orginal_frame: BGR frame 
-        # returns frame: filtered BGR frame
+        """""
+        parameters:
+        - orginal_frame: BGR frame
+        returns: 
+        - frame: filtered BGR frame
+        """""
 
         frame = cv2.filter2D(original_frame, -1, self.kernel)
         frame = cv2.bilateralFilter(frame, 9, 10, 75)    
@@ -44,11 +48,14 @@ class MiniContoursDownwards():
         return frame
     
     def get_centroids(self, mask, num_strips, show):
+        """""
+        parameters:
+        - mask is a binary mask of the image
+        - num_strips is the number of strips to divide the image into for finding centroids
+        returns:
+        - list [(x1, y1), (x2, y2), ...] of all the centroids obtained
+        """""
 
-        # mask is a binary mask of the image
-        # num_strips is the number of strips to divide the image into for finding centroids
-        # returns list [(x1, y1), (x2, y2), ...] of all the centroids obtained
-        
         strips = []
         width = int(mask.shape[0]/num_strips)
         for i in range (100):
@@ -72,12 +79,15 @@ class MiniContoursDownwards():
     
     
     def get_best_fit_line(self, frame, show, num_strips=60, dist_type = cv2.DIST_L2, param=0, reps=0.01, aeps=0.01):
-        # frame: BGR frame 
-        # num_strips: number of strips for centroid calculation
-        # other parameters required to calculate line of best fit through centroids using cv2.fitLine
-        # returns: 
-        # frame: original frame with best fit line drawn on
-        # line: A vector [vx, vy, x, y] representing the line of best fit through all the centroids. [vx, vy] is a vector that describes the direction of the line, where (x, y) when taken together is a point on the line     
+        """""
+        parameters:
+        - frame: BGR frame 
+        - num_strips: number of strips for centroid calculation
+        - other parameters required to calculate line of best fit through centroids using cv2.fitLine
+        returns: 
+         -frame: original frame with best fit line drawn on
+         -line: A vector [vx, vy, x, y] representing the line of best fit through all the centroids. [vx, vy] is a vector that describes the direction of the line, where (x, y) when taken together is a point on the line
+        """""     
         
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
@@ -138,10 +148,15 @@ class MiniContoursDownwards():
 
 
     def process_frame(self, original_frame, num_strips=60, show=False):
-        
-        # original_frame: BGR frame
-        # returns frame: original_frame with the best fit line and centroids drawn on
-        #         angle: angle between the best fit line and a line drawn vertically down the center of the screen
+        """""
+        parameters:
+        - original_frame: BGR frame
+        - num_strips: set in config, the number of strips used when calculating centroids
+        returns: 
+        - frame: original_frame with the best fit line and centroids drawn on
+        - angle: angle between the best fit line and a line drawn vertically down the center of the screen
+        """""
+
         frame = self.apply_filters(original_frame)
         
         frame, line = self.get_best_fit_line(frame,
