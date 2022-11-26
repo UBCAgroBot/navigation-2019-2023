@@ -28,10 +28,8 @@ class MiniContoursDownwards():
         self.color_3 = (0,0,255) #red (for contour points that are out of bounds)
         self.midline = (0, 129, 255) #orange (for a reference line vertically down center of frame)
 
-        # parameters for best fit line
-        self.max_vote = self.config.max_vote
+        # parameters for calculating centroids and drawing the best fit line among them
         self.num_strips=self.config.num_strips
-        self.lines_max=self.config.lines_max
         self.param=self.config.param
         self.reps=self.config.reps
         self.aeps=self.config.aeps
@@ -73,7 +71,7 @@ class MiniContoursDownwards():
         return centroids
     
     
-    def get_best_fit_line(self, frame, show, num_strips=60, lines_max=30, dist_type = cv2.DIST_L2, param=0, reps=0.01, aeps=0.01):
+    def get_best_fit_line(self, frame, show, num_strips=60, dist_type = cv2.DIST_L2, param=0, reps=0.01, aeps=0.01):
         # frame: BGR frame 
         # num_strips: number of strips for centroid calculation
         # other parameters required to calculate line of best fit through centroids using cv2.fitLine
@@ -149,7 +147,6 @@ class MiniContoursDownwards():
         frame, line = self.get_best_fit_line(frame,
                                                     show,
                                                     num_strips=num_strips,
-                                                    lines_max=self.lines_max,
                                                     dist_type=cv2.DIST_L2,
                                                     param=self.param,
                                                     reps=self.reps,

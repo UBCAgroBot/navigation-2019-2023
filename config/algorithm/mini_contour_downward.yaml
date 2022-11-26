@@ -3,13 +3,9 @@
 low_green: [40, 90, 80]
 high_green: [80, 255, 255]
 
-# parameters for best fit line
-max_vote: 0
-#num_strips represents number of vertical strips the image is divided into while calculating best fit line
+# parameters for best fit line calculation
+#num_strips represents number of vertical strips the image is divided into while finding centroids
 num_strips: 60
-#maximum number of lines that can be drawn
-lines_max: 15
-
 #a numeric parameter for some types of distances. This is left on the default value of 0
 param: 0
 #accuracy for the radius (distance between the coordinate origin and the line)
