@@ -131,9 +131,8 @@ class MiniContoursAlgorithm(Algorithm):
 
         if show:
 
-            cv2.line(frame, (0, cut_off_height), (width//2, 0), self.color_2)
-            cv2.line(frame, (width, cut_off_height), (width//2, 0), self.color_2)
-
+            cv2.line(frame, (0, cut_off_height), (width // 2, 0), self.color_2)
+            cv2.line(frame, (width, cut_off_height), (width // 2, 0), self.color_2)
 
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3 * len(centroids)):
