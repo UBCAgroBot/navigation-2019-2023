@@ -1,9 +1,10 @@
 import cv2 as cv
 import numpy as np
 
- # takes in contours and a threshold area, and draw only contours that are bigger than the threshold
- # contours: a tuple of points that describe a contour, as outputted by the findcontours function in opencv
- # threshold: the minimum area of a contour for it to be kept
+# takes in contours and a threshold area, and draw only contours that are bigger than the threshold
+# contours: a tuple of points that describe a contour, as outputted by the findcontours function in opencv
+# threshold: the minimum area of a contour for it to be kept
+
 
 def delete_small_contours(contours, threshold):
     black_frame = np.uint8(np.zeros((720, 1280, 3)))
@@ -18,6 +19,7 @@ def delete_small_contours(contours, threshold):
 # kernel size: integer size of kernel used for image filtering, should be odd number
 # op: 1 is erode, 2 is dilate, 3 is closing holes, 4 is getting rid of small contours
 # iterations: the amount of time the operation runs
+
 
 def morph_op(mask, kernel_size, op, iterations):
     # morphological operations for image editing
