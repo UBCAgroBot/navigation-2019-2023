@@ -59,7 +59,7 @@ def main(args):
 
     # run algorithm if it exists, else return an error
     if alg is not None:
-        uptime, total_run = run_algorithm(alg, vid_file)
+        uptime, total_run, all_time= run_algorithm(alg, vid_file)
     else:
         print(f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
         sys.exit()
@@ -70,6 +70,7 @@ def main(args):
     print(
         "time till finish execution: %2.2f sec" % (end_time-start_time),
         "\npercentage time of a valid return from process_frame: %.2f%%" % (100. * uptime/total_run),
+        "\naverage time to process a frame: %2.2f sec" % (1. * sum(all_time) / len(all_time)),
         "\n"
         )
 
@@ -84,16 +85,21 @@ def run_algorithm(alg, vid_file):
 
     total_run = 0
     uptime    = 0
+    all_frame = []
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
             print('No More Frames Remaining\n')
             break
-
+        
+        start_time_frame = time.time()
         if args.alg == "mini_contour_downward":
             processed_image, angle = alg.process_frame(original_frame=frame, show=args.show)
         else:
             processed_image, angle = alg.process_frame(frame, show=args.show)
+        end_time_frame = time.time()
+        all_frame.append(end_time_frame-start_time_frame)
+
         print(angle)
         
         # counters
@@ -112,7 +118,7 @@ def run_algorithm(alg, vid_file):
 
     vid.release()
     cv.destroyAllWindows()
-    return uptime, total_run
+    return uptime, total_run, all_frame
 
 
 if __name__ == '__main__':
