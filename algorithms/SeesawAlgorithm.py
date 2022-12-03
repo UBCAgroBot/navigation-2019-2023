@@ -4,16 +4,10 @@ import cv2 as cv
 import numpy as np
 from algorithms.Algorithm import Algorithm
 
-from algorithms.utils import Lines
-
 
 class SeesawAlgorithm(Algorithm):
 
     def __init__(self, config):
-        """
-        Sets center row algorithm configurations
-        :param config: config params
-        """
 
         # masking range for green
         self.LOW_GREEN = np.array(config.lower_hsv_threshold)
@@ -26,44 +20,58 @@ class SeesawAlgorithm(Algorithm):
         self.sigma_x = config.sigma_x
 
         # dimensions
-        self.HEIGHT = config.frame_length
-        self.WIDTH = config.frame_width
+        self.HEIGHT = int(config.frame_length)
+        self.WIDTH = int(config.frame_width)
 
     def process_frame(self, frame, show):
+
+        black_frame, points, both_points = self.plot_points(frame)
+        points = np.array(points)
+        both_points = np.array(both_points)
+
+        """get best fit line for left points and right points"""
+        [vx, vy, x, y] = cv.fitLine(points, cv.DIST_L2, 0, 0.01, 0.01)
+        black_frame = cv.line(black_frame, (int(x - vx * self.WIDTH), int(y - vy * self.HEIGHT)),
+                              (int(x + vx * self.WIDTH), int(y + vy * self.HEIGHT)), (0, 0, 255), 9)
+
+        """get best fit line for middle points"""
+        [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
+        x1 = int(x - vx * self.WIDTH)
+        x2 = int(x + vx * self.WIDTH)
+        y1 = int(y - vy * self.HEIGHT)
+        y2 = int(y + vy * self.HEIGHT)
+        black_frame = cv.line(black_frame, (x1, y1), (x2, y2), (0, 255, 255), 9)
+
+        """calculate angle"""
+        if y1 - y2 != 0:
+            angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 2)
+        else:
+            angle = None
+
+        return black_frame, angle
+
+    def plot_points(self, frame):
+
+        """This value needs to be changed to change the height of the bars"""
         bar_height = int(90)
 
         mask = self.create_binary_mask(frame)
+        half_width = int(self.WIDTH / 2)
 
-        height = int(self.HEIGHT)
-        width = int(self.WIDTH)
-        half_width = int(self.WIDTH/2)
-
-        left = mask[0:height, 0: half_width]
-        right = mask[0: height, half_width + 1:width]
-
-        cv.imshow("left", left)
-        cv.imshow("right", right)
-        cv.imshow("original", mask)
-        #
-        # # counting the number of pixels
-        # white_left = np.sum(left == 255)
-        # white_right = np.sum(right == 255)
-        #
-        # print('num of white in left:', white_left)
-        # print('num of white in right:', white_right)
+        left = mask[0: self.HEIGHT, 0: half_width]
+        right = mask[0: self.HEIGHT, half_width + 1: self.WIDTH]
 
         square_low = 0
         square_high = bar_height
         left_array = []
         right_array = []
         points = []
-
         both_points = []
 
         black_frame = frame
 
+        """draw rectangle and point for every square, add points to array"""
         while square_low < self.HEIGHT:
-
             seg_left = left[int(square_low) + 1:int(square_high), 0:half_width]
             seg_right = right[int(square_low) + 1:int(square_high), 0:half_width]
 
@@ -80,33 +88,19 @@ class SeesawAlgorithm(Algorithm):
             points.append(point_right)
             points.append(point_left)
 
-            both_points.append([int((x1 + x2) / 2), int((square_high + square_low) / 2)])
+            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)];
+            both_points.append(both_point)
 
             black_frame = cv.circle(black_frame, point_right, radius=0, color=(0, 0, 255), thickness=10)
             black_frame = cv.circle(black_frame, point_left, radius=0, color=(0, 0, 255), thickness=10)
+            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 255, 255), thickness=10)
 
             square_high += bar_height
             square_low += bar_height
             left_array.append(np.sum(seg_left == 255))
             right_array.append(np.sum(seg_right == 255))
 
-        points = np.array(points)
-        both_points = np.array(both_points)
-
-        [vx, vy, x, y] = cv.fitLine(points, cv.DIST_L2, 0, 0.01, 0.01)
-        lefty = int((-x * vy / vx) + y)
-        righty = int(((width - x) * vy / vx) + y)
-        black_frame = cv.line(black_frame, (width - 1, righty), (0, lefty), (255, 255, 0), 9)
-
-        [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
-        lefty = int((-x * vy / vx) + y)
-        righty = int(((width - x) * vy / vx) + y)
-        black_frame = cv.line(black_frame, (width - 1, righty), (0, lefty), (0, 255, 0), 9)
-
-        cv.imshow("test", black_frame)
-
-        print(points)
-        return mask, None
+        return black_frame, points, both_points
 
     def create_binary_mask(self, frame):
         """

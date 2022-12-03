@@ -115,6 +115,8 @@ class CenterRowAlgorithm(Algorithm):
         cv.drawContours(frame, contours, -1, (0, 255, 0), 2)
         cv.fillPoly(frame, pts=contours, color=(0, 255, 0))
 
+        print(type(contours))
+
         return contours, frame
 
     def ellipse_slopes(self, contours, black_frame):
