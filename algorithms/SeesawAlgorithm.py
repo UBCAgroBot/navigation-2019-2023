@@ -51,7 +51,6 @@ class SeesawAlgorithm(Algorithm):
         return black_frame, angle
 
     def plot_points(self, frame):
-
         """This value needs to be changed to change the height of the bars"""
         bar_height = int(90)
 
@@ -88,7 +87,7 @@ class SeesawAlgorithm(Algorithm):
             points.append(point_right)
             points.append(point_left)
 
-            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)];
+            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
             both_points.append(both_point)
 
             black_frame = cv.circle(black_frame, point_right, radius=0, color=(0, 0, 255), thickness=10)
