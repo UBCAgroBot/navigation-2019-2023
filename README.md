@@ -36,6 +36,18 @@
     - `-o/--overwrite (optional, default = False)` : flag to indicate that you wish to overwrite files at `./extract/vid`
   - example : `python create_dataset.py -v sim` or `python create_dataset.py -v crop -i 60 -o`
 
+
+`test_pf.py:`
+  - runs any of the algorithms against any video
+  - arguments :
+    - `-a/--alg` : name of algorithm
+      - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, or `check_row_end`
+    - `-v/--vid` : name of video
+      - video has to be stored in `./videos/`
+      - video configuration has to be stored as a `yaml` at `./config/video/`
+    - `-s/--show` : process drawings and show frame
+  - example : `python test_pf.py -a center_row -v farm4`
+  
 ### Commands to Start World in Gazebo
 
 Run the following Commands the first time:
