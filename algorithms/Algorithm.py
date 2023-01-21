@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Algorithm:
-    def process_frame(self, frame: np.ndarray, show: bool) -> tuple[np.ndarray, float or None]:
+    def process_frame(self, frame, show):
         '''
         Processes a frame using the algorithm
         :param frame: current frame (mat)
