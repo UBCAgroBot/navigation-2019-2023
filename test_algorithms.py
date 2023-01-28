@@ -11,6 +11,7 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
+import pre_process
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -71,9 +72,12 @@ def run_algorithm(alg, vid_file):
 
     while vid.isOpened():
         ret, frame = vid.read()
+        
         if not ret:
             print('No More Frames Remaining')
             break
+        
+        frame = pre_process.standardize_frame(frame)
 
         if args.alg == "mini_contour_downward":
             processed_image, angle = alg.process_frame(original_frame=frame, show=args.show)
