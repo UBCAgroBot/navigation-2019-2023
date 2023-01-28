@@ -1,6 +1,7 @@
 import numpy as np
 
 """ TODO: Move this file to a more appropriate location
+    TODO: Test formulas and fix as necessary (not tested yet)
 
     Implements differential steering.
     Assumes driving in 3 states:
