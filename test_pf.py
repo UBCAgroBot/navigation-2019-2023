@@ -72,13 +72,13 @@ def main(args):
     end_time = time.time()
     # display time till processed all frames in a video
     print(
-        "time till finish execution: %2.2f sec" % (end_time-start_time),
+        "time till finish execution: %2.2f sec" % (end_time - start_time),
         "\npercentage time of a valid return from process_frame: %.2f%%" % (
-            100. * uptime/frameCount),
+            100. * uptime / frameCount),
         "\naverage time to process a frame: %2.2f sec" % (
             1. * sum(all_time) / len(all_time)),
         "\nframe per second: %2.2f fps" % (
-            1. * (frameCount/(end_time-start_time))),
+            1. * (frameCount / (end_time - start_time))),
         "\n"
     )
 
@@ -103,7 +103,7 @@ def run_algorithm(alg, vid_file):
         start_time_frame = time.time()
         processed_image, angle = alg.process_frame(frame, show=args.show)
         end_time_frame = time.time()
-        all_frame.append(end_time_frame-start_time_frame)
+        all_frame.append(end_time_frame - start_time_frame)
 
         print(angle)
 
