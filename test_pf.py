@@ -21,16 +21,29 @@ parser.add_argument('-v', '--vid', required=True)
 parser.add_argument('-s', '--show', required=False, action='store_true')
 
 # list of algorithms
-algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
-             ('mini_contour_downward', MiniContoursDownwards), ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd)]
+algo_list = [
+    ('hough',
+     HoughAlgorithm),
+    ('center_row',
+     CenterRowAlgorithm),
+    ('mini_contour',
+     MiniContoursAlgorithm),
+    ('mini_contour_downward',
+     MiniContoursDownwards),
+    ('scanning',
+     ScanningAlgorithm),
+    ('check_row_end',
+     CheckRowEnd)]
 
 
 # ability to pass in args for reusability
 def main(args):
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
-        print('--vid', args.vid,
-              "is an invalid video name, make sure it video exists in ./videos")
+        print(
+            '--vid',
+            args.vid,
+            "is an invalid video name, make sure it video exists in ./videos")
         sys.exit()
 
     # verify that config file for video exists
@@ -72,13 +85,13 @@ def main(args):
     end_time = time.time()
     # display time till processed all frames in a video
     print(
-        "time till finish execution: %2.2f sec" % (end_time-start_time),
+        "time till finish execution: %2.2f sec" % (end_time - start_time),
         "\npercentage time of a valid return from process_frame: %.2f%%" % (
-            100. * uptime/frameCount),
+            100. * uptime / frameCount),
         "\naverage time to process a frame: %2.2f sec" % (
             1. * sum(all_time) / len(all_time)),
         "\nframe per second: %2.2f fps" % (
-            1. * (frameCount/(end_time-start_time))),
+            1. * (frameCount / (end_time - start_time))),
         "\n"
     )
 
@@ -103,7 +116,7 @@ def run_algorithm(alg, vid_file):
         start_time_frame = time.time()
         processed_image, angle = alg.process_frame(frame, show=args.show)
         end_time_frame = time.time()
-        all_frame.append(end_time_frame-start_time_frame)
+        all_frame.append(end_time_frame - start_time_frame)
 
         print(angle)
 
