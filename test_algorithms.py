@@ -72,11 +72,11 @@ def run_algorithm(alg, vid_file):
 
     while vid.isOpened():
         ret, frame = vid.read()
-        
+
         if not ret:
             print('No More Frames Remaining')
             break
-        
+
         frame = pre_process.standardize_frame(frame)
 
         if args.alg == "mini_contour_downward":

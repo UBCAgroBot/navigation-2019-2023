@@ -5,6 +5,7 @@ BRIGHTNESS_BASELINE = 110
 SATURATION_BASELINE = 105
 ACCEPTABLE_DIFFERENCE = 25
 
+
 def alter_brightness(img, amount):
     if amount > 0:
         return increase_brightness(img, amount)
@@ -13,6 +14,7 @@ def alter_brightness(img, amount):
     else:
         return img
 
+
 def alter_saturation(img, amount):
     if amount > 0:
         return increase_saturation(img, amount)
@@ -20,6 +22,7 @@ def alter_saturation(img, amount):
         return decrease_saturation(img, -1 * amount)
     else:
         return img
+
 
 def decrease_brightness(img, value):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -30,6 +33,7 @@ def decrease_brightness(img, value):
 
     final_hsv = cv2.merge((h, s, v))
     return cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+
 
 def increase_brightness(img, value):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -42,6 +46,7 @@ def increase_brightness(img, value):
     final_hsv = cv2.merge((h, s, v))
     return cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
 
+
 def decrease_saturation(img, value):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
@@ -51,6 +56,7 @@ def decrease_saturation(img, value):
 
     final_hsv = cv2.merge((h, s, v))
     return cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+
 
 def increase_saturation(img, value):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -62,6 +68,7 @@ def increase_saturation(img, value):
 
     final_hsv = cv2.merge((h, s, v))
     return cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+
 
 def standardize_frame(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
