@@ -12,7 +12,7 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
-# from test_algorithms import run_algorithm
+
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -29,7 +29,8 @@ algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mi
 def main(args):
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
-        print('--vid', args.vid, "is an invalid video name, make sure it video exists in ./videos")
+        print('--vid', args.vid,
+              "is an invalid video name, make sure it video exists in ./videos")
         sys.exit()
 
     # verify that config file for video exists
@@ -39,7 +40,8 @@ def main(args):
 
     # verify that config file for algorithm exists
     if not path.isfile(f'config/algorithm/{args.alg}.yaml'):
-        print(f"--alg config for {args.alg} is not defined in ./config/algorithm/")
+        print(
+            f"--alg config for {args.alg} is not defined in ./config/algorithm/")
         sys.exit()
 
     # set video and algorithm config, then merge
@@ -61,21 +63,24 @@ def main(args):
     # run algorithm if it exists, else return an error
     if alg is not None:
         uptime, frameCount, all_time = run_algorithm(alg, vid_file)
-        # run_algorithm(alg, vid_file)
     else:
-        print(f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
+        print(
+            f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
         sys.exit()
 
     # using time package to time the end point
-    end_time  = time.time()
+    end_time = time.time()
     # display time till processed all frames in a video
     print(
         "time till finish execution: %2.2f sec" % (end_time-start_time),
-        "\npercentage time of a valid return from process_frame: %.2f%%" % (100. * uptime/frameCount),
-        "\naverage time to process a frame: %2.2f sec" % (1. * sum(all_time) / len(all_time)),
-        "\nframe per second: %2.2f fps" % (1. * (frameCount/(end_time-start_time))),
+        "\npercentage time of a valid return from process_frame: %.2f%%" % (
+            100. * uptime/frameCount),
+        "\naverage time to process a frame: %2.2f sec" % (
+            1. * sum(all_time) / len(all_time)),
+        "\nframe per second: %2.2f fps" % (
+            1. * (frameCount/(end_time-start_time))),
         "\n"
-        )
+    )
 
 
 # copied from test_algorithms.py
@@ -87,31 +92,29 @@ def run_algorithm(alg, vid_file):
         print('Error Opening Video File')
 
     total_run = 0
-    uptime    = 0
+    uptime = 0
     all_frame = []
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
             print('No More Frames Remaining\n')
             break
-        
+
         start_time_frame = time.time()
-        # if args.alg == "mini_contour_downward":
-        #     processed_image, angle = alg.process_frame(original_frame=frame, show=args.show)
-        # else:
         processed_image, angle = alg.process_frame(frame, show=args.show)
         end_time_frame = time.time()
         all_frame.append(end_time_frame-start_time_frame)
 
         print(angle)
-        
+
         # counters
         if angle is not None:
             uptime += 1
         total_run += 1
 
         if args.show:
-            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+            cv.imshow(
+                f'{args.alg}s algorithm on {args.vid}s video', processed_image)
 
         key = cv.waitKey(25)
 
