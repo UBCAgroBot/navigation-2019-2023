@@ -38,7 +38,8 @@
 
 
 `test_pf.py:`
-  - runs any of the algorithms against any video
+  - runs performance tests on any of the algorithms against any video
+  - reports `framerate`, `time-to-finish`, `vanishing point uptime`, `avg time to process frame`
   - arguments :
     - `-a/--alg` : name of algorithm
       - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, or `check_row_end`
