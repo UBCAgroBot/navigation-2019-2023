@@ -1,9 +1,10 @@
-import time
 import argparse
 import os.path as path
 import sys
+import time
 
 import cv2 as cv
+import numpy as np
 from omegaconf import OmegaConf
 
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
@@ -12,7 +13,6 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
-
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -34,7 +34,8 @@ algo_list = [
      ScanningAlgorithm),
     ('check_row_end',
      CheckRowEnd)]
-
+#
+frames_for_GUI = ""
 
 # ability to pass in args for reusability
 def main(args):
@@ -96,6 +97,7 @@ def main(args):
     )
 
 
+
 # copied from test_algorithms.py
 # runs the algorithm on each frame of video, count the vanishing point uptime
 def run_algorithm(alg, vid_file):
@@ -106,7 +108,12 @@ def run_algorithm(alg, vid_file):
 
     total_run = 0
     uptime = 0
-    all_frame = []
+    all_frame_time = []
+    #
+    global frames_for_GUI
+    frames_for_GUI = {}
+    i = 0
+    #
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
@@ -114,11 +121,11 @@ def run_algorithm(alg, vid_file):
             break
 
         start_time_frame = time.time()
-        processed_image, angle = alg.process_frame(frame, show=args.show)
+        binary, mask, ctrs, angle = alg.process_frame(frame, show=args.show)
         end_time_frame = time.time()
-        all_frame.append(end_time_frame - start_time_frame)
+        all_frame_time.append(end_time_frame - start_time_frame)
 
-        print(angle)
+        # print(angle)
 
         # counters
         if angle is not None:
@@ -127,19 +134,54 @@ def run_algorithm(alg, vid_file):
 
         if args.show:
             cv.imshow(
-                f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+                f'{args.alg}s algorithm on {args.vid}s video', binary)
+            frames_for_GUI.update({"binary"+str(i): binary})
+            frames_for_GUI.update({"mask"+str(i): mask})
+            frames_for_GUI.update({"ctrs"+str(i): ctrs})
+            i += 1
 
-        key = cv.waitKey(25)
-
-        # Exit if Esc key is pressed
+        key = cv.waitKey(1) 
         if key == 27:
             break
 
     vid.release()
     cv.destroyAllWindows()
-    return uptime, total_run, all_frame
+    return uptime, total_run, all_frame_time
+
+# display binary_mask, black, contours ...
+# TODO: add controller for index of frame
+# TODO: add pause/resume functionality
+# TODO: add controller after pause
+
+def update_view(val):
+    global frames_for_GUI
+
+    if val == 0:
+        img = frames_for_GUI['binary10']
+    elif val == 1:
+        img = frames_for_GUI['mask10']
+    elif val == 2:
+        img = frames_for_GUI['ctrs10']
+    
+    cv.imshow('Window', img)
+    
+
+def init_gui():
+    cv.namedWindow('Window')
+    cv.createTrackbar('Toggle View', 'Window', 0, 2, update_view)
+
+    while True:
+        key = cv.waitKey(1)
+        if key == 27:
+            break
+    
+    cv.destroyAllWindows()
+
+    
 
 
 if __name__ == '__main__':
     args = parser.parse_args()
     main(args)
+    if args.show:
+        init_gui()

@@ -82,7 +82,7 @@ class CenterRowAlgorithm(Algorithm):
 
         angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
-        return black_frame, angle
+        return black_frame, mask, contours, angle
 
     def create_binary_mask(self, frame):
         """
