@@ -104,6 +104,10 @@ def main(args):
         "\n"
     )
 
+rt_frame_type = 0
+def update_rt_view(val):
+    global rt_frame_type
+    rt_frame_type = val
 
 # copied from test_algorithms.py
 # runs the algorithm on each frame of video, count the vanishing point uptime
@@ -117,10 +121,15 @@ def run_algorithm(alg, vid_file):
     uptime = 0
     all_frame_time = []
     #
-    global frames_for_GUI, number_of_frames
+    global frames_for_GUI, number_of_frames, rt_frame_type
     frames_for_GUI = {}
     number_of_frames = 0
     #
+    window_name = f'{args.alg}s algorithm on {args.vid}s video'
+    if args.show:
+        cv.namedWindow(window_name)
+        cv.createTrackbar('Toggle View', window_name, 0, 3, update_rt_view)
+        
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
@@ -128,7 +137,7 @@ def run_algorithm(alg, vid_file):
             break
 
         start_time_frame = time.time()
-        binary, mask, ctrs, angle = alg.process_frame(frame, show=args.show)
+        standard, binary, mask, ctrs, angle = alg.process_frame(frame, show=args.show)
         end_time_frame = time.time()
         all_frame_time.append(end_time_frame - start_time_frame)
 
@@ -140,7 +149,18 @@ def run_algorithm(alg, vid_file):
         total_run += 1
 
         if args.show:
-            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', binary)
+            # key = cv.waitKey(1)
+            # if key == 80:
+            #     pause_process()
+            if (rt_frame_type == 0):
+                cv.imshow(window_name, binary)
+            elif (rt_frame_type == 1):
+                cv.imshow(window_name, mask)
+            elif (rt_frame_type == 2):
+                cv.imshow(window_name, ctrs)
+            elif (rt_frame_type == 3):
+                cv.imshow(window_name, standard)   
+            
             frames_for_GUI.update({"0"+str(number_of_frames): binary})
             frames_for_GUI.update({"1"+str(number_of_frames): mask})
             frames_for_GUI.update({"2"+str(number_of_frames): ctrs})
@@ -158,6 +178,9 @@ def run_algorithm(alg, vid_file):
 # TODO: add pause/resume functionality
 # TODO: add controller after pause
 
+def pause_process():
+
+    time.sleep()
 
 def render_view():
     global frames_for_GUI, current_frame_type, current_frame_number
