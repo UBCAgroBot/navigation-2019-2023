@@ -36,8 +36,16 @@ algo_list = [
      CheckRowEnd)]
 #
 frames_for_GUI = ""
+number_of_frames = 0
+current_frame_number = 0
+# 0 = binary
+# 1 = mask
+# 2 = contour
+current_frame_type = 0
 
 # ability to pass in args for reusability
+
+
 def main(args):
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
@@ -97,7 +105,6 @@ def main(args):
     )
 
 
-
 # copied from test_algorithms.py
 # runs the algorithm on each frame of video, count the vanishing point uptime
 def run_algorithm(alg, vid_file):
@@ -110,9 +117,9 @@ def run_algorithm(alg, vid_file):
     uptime = 0
     all_frame_time = []
     #
-    global frames_for_GUI
+    global frames_for_GUI, number_of_frames
     frames_for_GUI = {}
-    i = 0
+    number_of_frames = 0
     #
     while vid.isOpened():
         ret, frame = vid.read()
@@ -133,14 +140,13 @@ def run_algorithm(alg, vid_file):
         total_run += 1
 
         if args.show:
-            cv.imshow(
-                f'{args.alg}s algorithm on {args.vid}s video', binary)
-            frames_for_GUI.update({"binary"+str(i): binary})
-            frames_for_GUI.update({"mask"+str(i): mask})
-            frames_for_GUI.update({"ctrs"+str(i): ctrs})
-            i += 1
+            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', binary)
+            frames_for_GUI.update({"0"+str(number_of_frames): binary})
+            frames_for_GUI.update({"1"+str(number_of_frames): mask})
+            frames_for_GUI.update({"2"+str(number_of_frames): ctrs})
+            number_of_frames += 1
 
-        key = cv.waitKey(1) 
+        key = cv.waitKey(1)
         if key == 27:
             break
 
@@ -149,35 +155,43 @@ def run_algorithm(alg, vid_file):
     return uptime, total_run, all_frame_time
 
 # display binary_mask, black, contours ...
-# TODO: add controller for index of frame
 # TODO: add pause/resume functionality
 # TODO: add controller after pause
 
-def update_view(val):
-    global frames_for_GUI
 
-    if val == 0:
-        img = frames_for_GUI['binary10']
-    elif val == 1:
-        img = frames_for_GUI['mask10']
-    elif val == 2:
-        img = frames_for_GUI['ctrs10']
-    
+def render_view():
+    global frames_for_GUI, current_frame_type, current_frame_number
+    img = frames_for_GUI[str(current_frame_type) + str(current_frame_number)]
     cv.imshow('Window', img)
-    
+
+
+def update_view(val):
+    global current_frame_type
+    current_frame_type = val
+    render_view()
+
+
+def update_frame(val):
+    global current_frame_number
+    current_frame_number = val
+    render_view()
+
 
 def init_gui():
+    global number_of_frames, current_frame_number, current_frame_type
+    current_frame_type = 0
+    current_frame_number = 0
     cv.namedWindow('Window')
     cv.createTrackbar('Toggle View', 'Window', 0, 2, update_view)
+    cv.createTrackbar('Toggle Frame', 'Window', 0,
+                      number_of_frames, update_frame)
 
     while True:
         key = cv.waitKey(1)
         if key == 27:
             break
-    
-    cv.destroyAllWindows()
 
-    
+    cv.destroyAllWindows()
 
 
 if __name__ == '__main__':
