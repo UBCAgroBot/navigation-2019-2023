@@ -2,7 +2,7 @@ import argparse
 import os.path as path
 import sys
 import time
-
+import pre_process
 import cv2 as cv
 import numpy as np
 from omegaconf import OmegaConf
@@ -42,6 +42,8 @@ current_frame_number = 0
 # 1 = mask
 # 2 = contour
 current_frame_type = 0
+current_avg_brightness = 110
+current_avg_saturation = 105
 
 # ability to pass in args for reusability
 
@@ -161,7 +163,16 @@ def run_algorithm(alg, vid_file):
 
 def render_view():
     global frames_for_GUI, current_frame_type, current_frame_number
+    global current_avg_brightness, current_avg_saturation
+
     img = frames_for_GUI[str(current_frame_type) + str(current_frame_number)]
+
+    pre_process.ACCEPTABLE_DIFFERENCE = 0
+    pre_process.BRIGHTNESS_BASELINE = current_avg_brightness
+    pre_process.SATURATION_BASELINE = current_avg_saturation
+
+    img = pre_process.standardize_frame(img)
+
     cv.imshow('Window', img)
 
 
@@ -177,14 +188,32 @@ def update_frame(val):
     render_view()
 
 
+def update_brightness(val):
+    global current_avg_brightness
+    current_avg_brightness = val
+    render_view()
+
+
+def update_saturation(val):
+    global current_avg_saturation
+    current_avg_saturation = val
+    render_view()
+
+
 def init_gui():
     global number_of_frames, current_frame_number, current_frame_type
+    global current_avg_brightness, current_avg_saturation
+
     current_frame_type = 0
     current_frame_number = 0
+    current_avg_brightness = 110
+    current_avg_saturation = 105
+
     cv.namedWindow('Window')
-    cv.createTrackbar('Toggle View', 'Window', 0, 2, update_view)
-    cv.createTrackbar('Toggle Frame', 'Window', 0,
-                      number_of_frames, update_frame)
+    cv.createTrackbar('Toggle View', 'Window', current_frame_type, 2, update_view)
+    cv.createTrackbar('Toggle Frame', 'Window', current_frame_number, number_of_frames, update_frame)
+    cv.createTrackbar('Brightness', 'Window', current_avg_brightness, 255, update_brightness)
+    cv.createTrackbar('Saturation', 'Window', current_avg_saturation, 255, update_saturation)
 
     while True:
         key = cv.waitKey(1)
