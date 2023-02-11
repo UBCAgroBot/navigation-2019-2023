@@ -29,10 +29,10 @@ class SeesawAlgorithm(Algorithm):
         points = np.array(points)
         both_points = np.array(both_points)
 
-        """get best fit line for left points and right points"""
-        [vx, vy, x, y] = cv.fitLine(points, cv.DIST_L2, 0, 0.01, 0.01)
-        black_frame = cv.line(black_frame, (int(x - vx * self.WIDTH), int(y - vy * self.HEIGHT)),
-                              (int(x + vx * self.WIDTH), int(y + vy * self.HEIGHT)), (0, 0, 255), 9)
+        # """get best fit line for left points and right points"""
+        # [vx, vy, x, y] = cv.fitLine(points, cv.DIST_L2, 0, 0.01, 0.01)
+        # black_frame = cv.line(black_frame, (int(x - vx * self.WIDTH), int(y - vy * self.HEIGHT)),
+        #                       (int(x + vx * self.WIDTH), int(y + vy * self.HEIGHT)), (0, 0, 255), 9)
 
         """get best fit line for middle points"""
         [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
@@ -62,42 +62,63 @@ class SeesawAlgorithm(Algorithm):
 
         square_low = 0
         square_high = bar_height
-        left_array = []
-        right_array = []
-        points = []
         both_points = []
+
+        xs = []
+
+        normalized = False
 
         black_frame = frame
 
         """draw rectangle and point for every square, add points to array"""
         while square_low < self.HEIGHT:
+            normalized = False
             seg_left = left[int(square_low) + 1:int(square_high), 0:half_width]
             seg_right = right[int(square_low) + 1:int(square_high), 0:half_width]
 
-            x1 = half_width - int(np.sum(seg_left == 255) / bar_height)
-            x2 = half_width + int(np.sum(seg_right == 255) / bar_height)
+            left_x = int(np.sum(seg_left == 255) / bar_height)
+            right_x = int(np.sum(seg_right == 255) / bar_height)
+
+            if left_x > half_width/2 or right_x > half_width/2:
+                normalized = True
+
+            xs.append([left_x, right_x])
+
+            x1 = half_width - left_x
+            x2 = half_width + right_x
+
+            black_frame = cv.rectangle(black_frame, (half_width, square_low), (
+                x1, int(square_high)), (255, 255, 0), 3)
+            black_frame = cv.rectangle(black_frame, (half_width, square_low), (
+                x2, int(square_high)), (255, 255, 0), 3)
+
+            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
+            both_points.append(both_point)
+
+            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 255, 255), thickness=10)
+
+            square_high += bar_height
+            square_low += bar_height
+
+        if normalized is False:
+            for points in xs:
+                points[0] *= 2
+                points[1] *= 2
+
+        square_low = 0
+        square_high = bar_height
+
+        for points in xs:
+            x1 = half_width - points[0]
+            x2 = half_width + points[1]
 
             black_frame = cv.rectangle(black_frame, (half_width, square_low), (
                 x1, int(square_high)), (255, 255, 255), 3)
             black_frame = cv.rectangle(black_frame, (half_width, square_low), (
                 x2, int(square_high)), (255, 255, 255), 3)
 
-            point_left = [int((x1 + half_width) / 2), int((square_high + square_low) / 2)]
-            point_right = [int((x2 + half_width) / 2), int((square_high + square_low) / 2)]
-            points.append(point_right)
-            points.append(point_left)
-
-            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
-            both_points.append(both_point)
-
-            black_frame = cv.circle(black_frame, point_right, radius=0, color=(0, 0, 255), thickness=10)
-            black_frame = cv.circle(black_frame, point_left, radius=0, color=(0, 0, 255), thickness=10)
-            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 255, 255), thickness=10)
-
             square_high += bar_height
             square_low += bar_height
-            left_array.append(np.sum(seg_left == 255))
-            right_array.append(np.sum(seg_right == 255))
 
         return black_frame, points, both_points
 
