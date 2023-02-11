@@ -6,7 +6,7 @@ SATURATION_BASELINE = 105
 ACCEPTABLE_DIFFERENCE = 25
 
 
-# Calls helper functions to increase or decrease brightness 
+# Calls helper functions to increase or decrease brightness
 # of an image based on the amount parameter
 def alter_brightness(img, amount):
     # (Image, int) -> Image
@@ -18,7 +18,7 @@ def alter_brightness(img, amount):
         return img
 
 
-# Calls helper functions to increase or decrease saturation 
+# Calls helper functions to increase or decrease saturation
 # of an image based on the amount parameter
 def alter_saturation(img, amount):
     # (Image, int) -> Image
