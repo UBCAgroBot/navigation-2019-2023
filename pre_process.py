@@ -8,7 +8,7 @@ ACCEPTABLE_DIFFERENCE = 25
 
 def alter_brightness(img, amount):
     """
-        Calls helper functions to increase or decrease brightness 
+        Calls helper functions to increase or decrease brightness
         of an image based on the amount parameter.
 
         Parameters
@@ -30,7 +30,7 @@ def alter_brightness(img, amount):
 
 def alter_saturation(img, amount):
     """
-        Calls helper functions to increase or decrease saturation 
+        Calls helper functions to increase or decrease saturation
         of an image based on the amount parameter.
 
         Parameters
@@ -146,7 +146,7 @@ def increase_saturation(img, value):
 
 def standardize_frame(img):
     """
-        Main function that modifies the saturation and brightness of a frame 
+        Main function that modifies the saturation and brightness of a frame
         based on it's mean s and v values.
 
         Parameters
