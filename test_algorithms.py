@@ -13,6 +13,7 @@ from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 import pre_process
 from algorithms.SeesawAlgorithm import SeesawAlgorithm
+from algorithms.CenterDownwards import CenterDownward
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -23,7 +24,7 @@ parser.add_argument('-s', '--show', required=False, action='store_true')
 # list of algorithms
 algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
              ('mini_contour_downward', MiniContoursDownwards),
-             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd), ('seesaw', SeesawAlgorithm)]
+             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd), ('seesaw', SeesawAlgorithm), ("center_down", CenterDownward)]
 
 
 def main():
