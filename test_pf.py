@@ -2,11 +2,12 @@ import argparse
 import os.path as path
 import sys
 import time
-import pre_process
+
 import cv2 as cv
 import numpy as np
 from omegaconf import OmegaConf
 
+import pre_process
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
 from algorithms.CheckRowEnd import CheckRowEnd
 from algorithms.HoughAlgorithm import HoughAlgorithm
@@ -38,16 +39,13 @@ algo_list = [
 frames_for_GUI = ""
 number_of_frames = 0
 current_frame_number = 0
-# 0 = binary
-# 1 = mask
-# 2 = contour
 current_frame_type = 0
 current_avg_brightness = 110
 current_avg_saturation = 105
+rt_frame_type = 0
+
 
 # ability to pass in args for reusability
-
-
 def main(args):
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
@@ -106,10 +104,21 @@ def main(args):
         "\n"
     )
 
-rt_frame_type = 0
+
 def update_rt_view(val):
     global rt_frame_type
     rt_frame_type = val
+
+
+def apply_rt_brightness(val):
+    global current_avg_brightness
+    current_avg_brightness = val
+
+
+def apply_rt_saturation(val):
+    global current_avg_saturation
+    current_avg_saturation = val
+
 
 # copied from test_algorithms.py
 # runs the algorithm on each frame of video, count the vanishing point uptime
@@ -123,7 +132,9 @@ def run_algorithm(alg, vid_file):
     uptime = 0
     all_frame_time = []
     #
-    global frames_for_GUI, number_of_frames, rt_frame_type
+    global frames_for_GUI, number_of_frames, rt_frame_type, current_frame_number
+    global current_avg_brightness, current_avg_saturation
+
     frames_for_GUI = {}
     number_of_frames = 0
     #
@@ -131,7 +142,13 @@ def run_algorithm(alg, vid_file):
     if args.show:
         cv.namedWindow(window_name)
         cv.createTrackbar('Toggle View', window_name, 0, 3, update_rt_view)
-        
+        # cv.createTrackbar('Toggle View', 'Window', current_frame_type, 2, update_view)
+        # cv.createTrackbar('Toggle Frame', window_name, current_frame_number, number_of_frames, update_frame)
+        cv.createTrackbar('Brightness', window_name,
+                          current_avg_brightness, 255, apply_rt_brightness)
+        cv.createTrackbar('Saturation', window_name,
+                          current_avg_saturation, 255, apply_rt_saturation)
+
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
@@ -139,7 +156,8 @@ def run_algorithm(alg, vid_file):
             break
 
         start_time_frame = time.time()
-        standard, binary, mask, ctrs, angle = alg.process_frame(frame, show=args.show)
+        standard, binary, mask, ctrs, angle = alg.process_frame(
+            frame, show=args.show)
         end_time_frame = time.time()
         all_frame_time.append(end_time_frame - start_time_frame)
 
@@ -151,22 +169,22 @@ def run_algorithm(alg, vid_file):
         total_run += 1
 
         if args.show:
-            # key = cv.waitKey(1)
-            # if key == 80:
-            #     pause_process()
-            if (rt_frame_type == 0):
-                cv.imshow(window_name, binary)
-            elif (rt_frame_type == 1):
-                cv.imshow(window_name, mask)
-            elif (rt_frame_type == 2):
-                cv.imshow(window_name, ctrs)
-            elif (rt_frame_type == 3):
-                cv.imshow(window_name, standard)   
-            
+
             frames_for_GUI.update({"0"+str(number_of_frames): binary})
             frames_for_GUI.update({"1"+str(number_of_frames): mask})
             frames_for_GUI.update({"2"+str(number_of_frames): ctrs})
+            frames_for_GUI.update({"3"+str(number_of_frames): standard})
+
+            img = frames_for_GUI[str(rt_frame_type) + str(number_of_frames)]
             number_of_frames += 1
+
+            pre_process.ACCEPTABLE_DIFFERENCE = 0
+            pre_process.BRIGHTNESS_BASELINE = current_avg_brightness
+            pre_process.SATURATION_BASELINE = current_avg_saturation
+
+            img = pre_process.standardize_frame(img)
+
+            cv.imshow(window_name, img)
 
         key = cv.waitKey(1)
         if key == 27:
@@ -176,79 +194,7 @@ def run_algorithm(alg, vid_file):
     cv.destroyAllWindows()
     return uptime, total_run, all_frame_time
 
-# display binary_mask, black, contours ...
-# TODO: add pause/resume functionality
-# TODO: add controller after pause
-
-def pause_process():
-
-    time.sleep()
-
-def render_view():
-    global frames_for_GUI, current_frame_type, current_frame_number
-    global current_avg_brightness, current_avg_saturation
-
-    img = frames_for_GUI[str(current_frame_type) + str(current_frame_number)]
-
-    pre_process.ACCEPTABLE_DIFFERENCE = 0
-    pre_process.BRIGHTNESS_BASELINE = current_avg_brightness
-    pre_process.SATURATION_BASELINE = current_avg_saturation
-
-    img = pre_process.standardize_frame(img)
-
-    cv.imshow('Window', img)
-
-
-def update_view(val):
-    global current_frame_type
-    current_frame_type = val
-    render_view()
-
-
-def update_frame(val):
-    global current_frame_number
-    current_frame_number = val
-    render_view()
-
-
-def update_brightness(val):
-    global current_avg_brightness
-    current_avg_brightness = val
-    render_view()
-
-
-def update_saturation(val):
-    global current_avg_saturation
-    current_avg_saturation = val
-    render_view()
-
-
-def init_gui():
-    global number_of_frames, current_frame_number, current_frame_type
-    global current_avg_brightness, current_avg_saturation
-
-    current_frame_type = 0
-    current_frame_number = 0
-    current_avg_brightness = 110
-    current_avg_saturation = 105
-
-    cv.namedWindow('Window')
-    cv.createTrackbar('Toggle View', 'Window', current_frame_type, 2, update_view)
-    cv.createTrackbar('Toggle Frame', 'Window', current_frame_number, number_of_frames, update_frame)
-    cv.createTrackbar('Brightness', 'Window', current_avg_brightness, 255, update_brightness)
-    cv.createTrackbar('Saturation', 'Window', current_avg_saturation, 255, update_saturation)
-
-    while True:
-        key = cv.waitKey(1)
-        if key == 27:
-            break
-
-    cv.destroyAllWindows()
-
 
 if __name__ == '__main__':
     args = parser.parse_args()
     main(args)
-    if args.show:
-        init_gui()
-
