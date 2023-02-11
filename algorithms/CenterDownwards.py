@@ -6,6 +6,7 @@ from algorithms.Algorithm import Algorithm
 from algorithms.utils import Lines
 from algorithms.utils import delete_small_contours
 
+
 class CenterDownward(Algorithm):
 
     def __init__(self, config):
@@ -182,7 +183,7 @@ class CenterDownward(Algorithm):
 
         else:
             black_frame = cv.line(black_frame, (int(x), 0), (int(x), rows - 1), (255, 255, 0), 9)
-            lines.append([int(x), 0, int(x), rows-1])
+            lines.append([int(x), 0, int(x), rows - 1])
 
         return lines, slopes, black_frame
 
