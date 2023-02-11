@@ -79,7 +79,7 @@ class SeesawAlgorithm(Algorithm):
             left_x = int(np.sum(seg_left == 255) / bar_height)
             right_x = int(np.sum(seg_right == 255) / bar_height)
 
-            if left_x > half_width/2 or right_x > half_width/2:
+            if left_x > half_width / 2 or right_x > half_width / 2:
                 normalized = True
 
             xs.append([left_x, right_x])
