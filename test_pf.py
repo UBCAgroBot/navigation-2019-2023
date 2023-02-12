@@ -2,18 +2,19 @@ import argparse
 import os.path as path
 import sys
 import time
+import tkinter as tk
 
 import cv2 as cv
 import numpy as np
 from omegaconf import OmegaConf
 
-import pre_process
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
 from algorithms.CheckRowEnd import CheckRowEnd
 from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
+from gui import startGUI
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -36,13 +37,7 @@ algo_list = [
     ('check_row_end',
      CheckRowEnd)]
 #
-frames_for_GUI = ""
 number_of_frames = 0
-current_frame_number = 0
-current_frame_type = 0
-current_avg_brightness = 110
-current_avg_saturation = 105
-rt_frame_type = 0
 
 
 # ability to pass in args for reusability
@@ -105,21 +100,6 @@ def main(args):
     )
 
 
-def update_rt_view(val):
-    global rt_frame_type
-    rt_frame_type = val
-
-
-def apply_rt_brightness(val):
-    global current_avg_brightness
-    current_avg_brightness = val
-
-
-def apply_rt_saturation(val):
-    global current_avg_saturation
-    current_avg_saturation = val
-
-
 # copied from test_algorithms.py
 # runs the algorithm on each frame of video, count the vanishing point uptime
 def run_algorithm(alg, vid_file):
@@ -132,22 +112,10 @@ def run_algorithm(alg, vid_file):
     uptime = 0
     all_frame_time = []
     #
-    global frames_for_GUI, number_of_frames, rt_frame_type, current_frame_number
-    global current_avg_brightness, current_avg_saturation
-
-    frames_for_GUI = {}
-    number_of_frames = 0
-    #
-    window_name = f'{args.alg}s algorithm on {args.vid}s video'
     if args.show:
-        cv.namedWindow(window_name)
-        cv.createTrackbar('Toggle View', window_name, 0, 3, update_rt_view)
-        # cv.createTrackbar('Toggle View', 'Window', current_frame_type, 2, update_view)
-        # cv.createTrackbar('Toggle Frame', window_name, current_frame_number, number_of_frames, update_frame)
-        cv.createTrackbar('Brightness', window_name,
-                          current_avg_brightness, 255, apply_rt_brightness)
-        cv.createTrackbar('Saturation', window_name,
-                          current_avg_saturation, 255, apply_rt_saturation)
+        window_name = f'{args.alg}s algorithm on {args.vid}s video'
+        app = startGUI(window_name, name1="standard",
+                       name2="binary", name3="mask")
 
     while vid.isOpened():
         ret, frame = vid.read()
@@ -169,22 +137,10 @@ def run_algorithm(alg, vid_file):
         total_run += 1
 
         if args.show:
-
-            frames_for_GUI.update({"0"+str(number_of_frames): binary})
-            frames_for_GUI.update({"1"+str(number_of_frames): mask})
-            frames_for_GUI.update({"2"+str(number_of_frames): ctrs})
-            frames_for_GUI.update({"3"+str(number_of_frames): standard})
-
-            img = frames_for_GUI[str(rt_frame_type) + str(number_of_frames)]
-            number_of_frames += 1
-
-            pre_process.ACCEPTABLE_DIFFERENCE = 0
-            pre_process.BRIGHTNESS_BASELINE = current_avg_brightness
-            pre_process.SATURATION_BASELINE = current_avg_saturation
-
-            img = pre_process.standardize_frame(img)
-
-            cv.imshow(window_name, img)
+            app.update_dict({'standard': standard})
+            app.update_dict({'binary': binary})
+            app.update_dict({'mask': mask})
+            app.render_image()
 
         key = cv.waitKey(1)
         if key == 27:
