@@ -1,11 +1,13 @@
-import cv2
-import numpy as np
-import time
+import math
 import operator
 import sys
-import math
-from algorithms.utils import Lines
+import time
+
+import cv2
+import numpy as np
+
 from algorithms.Algorithm import Algorithm
+from algorithms.utils import Lines
 
 
 class MiniContoursAlgorithm(Algorithm):
@@ -199,6 +201,10 @@ class MiniContoursAlgorithm(Algorithm):
 
         return frame, lines, point_lines
 
+    def get_extra_content(self, frame, show):
+        item1, item2 = self.process_frame(frame, show)
+        return frame, item1, item2
+        
     def process_frame(self, original_frame, num_strips=60, show=False):
 
         # original_frame: BGR frame

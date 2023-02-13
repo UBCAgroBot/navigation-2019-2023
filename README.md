@@ -38,7 +38,7 @@
 
 
 `test_pf.py:`
-  - runs performance tests on any of the algorithms against any video
+  - runs performance tests on any of the algorithms against any video with an optional GUI
   - reports `framerate`, `time-to-finish`, `vanishing point uptime`, `avg time to process frame`
   - arguments :
     - `-a/--alg` : name of algorithm
@@ -46,8 +46,8 @@
     - `-v/--vid` : name of video
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`
-    - `-s/--show` : process drawings and show frame
-  - example : `python test_pf.py -a center_row -v farm4`
+    - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views
+  - example : `python test_pf.py -a center_row -v farm4 -s`
   
 ### Commands to Start World in Gazebo
 

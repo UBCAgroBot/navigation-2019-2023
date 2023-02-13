@@ -2,8 +2,8 @@ import math
 
 import cv2 as cv
 import numpy as np
-from algorithms.Algorithm import Algorithm
 
+from algorithms.Algorithm import Algorithm
 from algorithms.utils import Lines
 
 
@@ -44,6 +44,10 @@ class CenterRowAlgorithm(Algorithm):
         self.center = None
         self.center_angle = 0
 
+    def get_extra_content(self, frame, show):
+        item1, item2 = self.process_frame(frame, show)
+        return frame, item1, item2
+        
     def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
@@ -82,7 +86,7 @@ class CenterRowAlgorithm(Algorithm):
 
         angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
-        return frame, black_frame, mask, contour_frame, angle
+        return black_frame, angle
 
     def create_binary_mask(self, frame):
         """

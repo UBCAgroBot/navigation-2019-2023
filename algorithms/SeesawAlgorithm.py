@@ -23,6 +23,10 @@ class SeesawAlgorithm(Algorithm):
         self.HEIGHT = int(config.frame_length)
         self.WIDTH = int(config.frame_width)
 
+    def get_extra_content(self, frame, show):
+        item1, item2 = self.process_frame(frame, show)
+        return frame, item1, item2
+        
     def process_frame(self, frame, show):
 
         black_frame, points, both_points = self.plot_points(frame)

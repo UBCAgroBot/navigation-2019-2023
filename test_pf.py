@@ -115,7 +115,7 @@ def run_algorithm(alg, vid_file):
     if args.show:
         window_name = f'{args.alg}s algorithm on {args.vid}s video'
         app = startGUI(window_name, name1="standard",
-                       name2="binary", name3="mask")
+                       name2="binary")
 
     while vid.isOpened():
         ret, frame = vid.read()
@@ -124,7 +124,7 @@ def run_algorithm(alg, vid_file):
             break
 
         start_time_frame = time.time()
-        standard, binary, mask, ctrs, angle = alg.process_frame(
+        standard, binary, angle = alg.get_extra_content(
             frame, show=args.show)
         end_time_frame = time.time()
         all_frame_time.append(end_time_frame - start_time_frame)
@@ -139,7 +139,7 @@ def run_algorithm(alg, vid_file):
         if args.show:
             app.update_dict({'standard': standard})
             app.update_dict({'binary': binary})
-            app.update_dict({'mask': mask})
+            # app.update_dict({'mask': ctrs})
             app.render_image()
 
         key = cv.waitKey(1)

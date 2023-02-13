@@ -7,7 +7,8 @@ from PIL import Image, ImageTk
 import pre_process
 
 img_dict = {}
-
+# TODO: check_row_end img
+# TODO: pause and continue
 
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
