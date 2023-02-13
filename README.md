@@ -47,7 +47,7 @@
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`
     - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views
-  - example : `python test_pf.py -a center_row -v farm4 -s`
+  - example : `python test_pf.py -a center_row -v crop -s`
   
 ### Commands to Start World in Gazebo
 

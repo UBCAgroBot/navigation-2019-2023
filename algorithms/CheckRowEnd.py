@@ -19,7 +19,7 @@ class CheckRowEnd(Algorithm):
 
     def get_extra_content(self, frame, show):
         item1, item2 = self.process_frame(frame, show)
-        return frame, item1, item2
+        return item1, item2
         
     def process_frame(self, frame, show):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value

@@ -7,13 +7,14 @@ from PIL import Image, ImageTk
 import pre_process
 
 img_dict = {}
-# TODO: check_row_end img
+
 # TODO: pause and continue
+# TODO: return without error onClose
 
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
     creates 2 sliders for brightness and saturation, then render images accordingly\n
-    :param `root` = tk.Tk()
+    :param `master` = tk.Tk()
     :param `img_dict` = { "frameType1": numpy.ndarray }
     :param `window_name` = String
     """

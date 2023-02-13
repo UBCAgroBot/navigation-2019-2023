@@ -34,7 +34,7 @@ class HoughAlgorithm(Algorithm):
 
     def get_extra_content(self, frame, show):
         item1, item2 = self.process_frame(frame, show)
-        return frame, item1, item2
+        return item1, item2
         
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()

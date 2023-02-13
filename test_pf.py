@@ -39,6 +39,7 @@ algo_list = [
 #
 number_of_frames = 0
 
+# TODO: log performance live
 
 # ability to pass in args for reusability
 def main(args):
@@ -115,7 +116,7 @@ def run_algorithm(alg, vid_file):
     if args.show:
         window_name = f'{args.alg}s algorithm on {args.vid}s video'
         app = startGUI(window_name, name1="standard",
-                       name2="binary")
+                       name2="processed")
 
     while vid.isOpened():
         ret, frame = vid.read()
@@ -124,7 +125,7 @@ def run_algorithm(alg, vid_file):
             break
 
         start_time_frame = time.time()
-        standard, binary, angle = alg.get_extra_content(
+        processed, angle = alg.get_extra_content(
             frame, show=args.show)
         end_time_frame = time.time()
         all_frame_time.append(end_time_frame - start_time_frame)
@@ -137,9 +138,8 @@ def run_algorithm(alg, vid_file):
         total_run += 1
 
         if args.show:
-            app.update_dict({'standard': standard})
-            app.update_dict({'binary': binary})
-            # app.update_dict({'mask': ctrs})
+            app.update_dict({'standard': frame})
+            app.update_dict({'processed': processed})
             app.render_image()
 
         key = cv.waitKey(1)

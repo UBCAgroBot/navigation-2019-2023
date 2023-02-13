@@ -203,7 +203,7 @@ class MiniContoursAlgorithm(Algorithm):
 
     def get_extra_content(self, frame, show):
         item1, item2 = self.process_frame(frame, show)
-        return frame, item1, item2
+        return item1, item2
         
     def process_frame(self, original_frame, num_strips=60, show=False):
 
