@@ -29,11 +29,6 @@ class SeesawAlgorithm(Algorithm):
         points = np.array(points)
         both_points = np.array(both_points)
 
-        # """get best fit line for left points and right points"""
-        # [vx, vy, x, y] = cv.fitLine(points, cv.DIST_L2, 0, 0.01, 0.01)
-        # black_frame = cv.line(black_frame, (int(x - vx * self.WIDTH), int(y - vy * self.HEIGHT)),
-        #                       (int(x + vx * self.WIDTH), int(y + vy * self.HEIGHT)), (0, 0, 255), 9)
-
         """get best fit line for middle points"""
         [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
         x1 = int(x - vx * self.WIDTH)
@@ -95,7 +90,7 @@ class SeesawAlgorithm(Algorithm):
             both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
             both_points.append(both_point)
 
-            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 255, 255), thickness=10)
+            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 0, 255), thickness=15)
 
             square_high += bar_height
             square_low += bar_height
