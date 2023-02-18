@@ -7,10 +7,10 @@ from PIL import Image, ImageTk
 import pre_process
 
 img_dict = {}
+isActive = False
 
 # TODO: pause and continue
 # TODO: return without error onClose
-# TODO: pass the process into algorithm
 
 
 class GUI:
@@ -38,7 +38,8 @@ class GUI:
         self.label = tk.Label(self.frame, bg="white", width=450, height=450)
         self.label.pack(fill="both", expand="yes")
 
-        self.fps_label = tk.Label(self.master, text="Frames Per Second: " + str(self.fps))
+        self.fps_label = tk.Label(
+            self.master, text="Frames Per Second: " + str(self.fps))
         self.fps_label.pack(pady=10, side="bottom")
 
         for i, (img_name, img_array) in enumerate(img_dict.items(), 1):
@@ -56,10 +57,11 @@ class GUI:
         self.saturation_scale.set(self.current_avg_saturation)
         self.saturation_scale.pack(pady=10, side="bottom")
 
-
         self.render_image()
 
     def onClose(self):
+        global isActive
+        isActive = False
         self.master.destroy()
 
     def update_fps(self, next):
@@ -81,20 +83,25 @@ class GUI:
         return pre_process.standardize_frame(img)
 
     def render_image(self):
-        global img_dict
-        curr_img = list(img_dict.values())[self.curr_selected - 1]
-        if np.any(curr_img != np.zeros((100, 100))):
-            curr_img = self.apply_filter(curr_img)
+        global isActive
+        try:
+            if isActive:
+                global img_dict
+                curr_img = list(img_dict.values())[self.curr_selected - 1]
+                if np.any(curr_img != np.zeros((100, 100))):
+                    curr_img = self.apply_filter(curr_img)
 
-        curr_img = np.array(curr_img).astype(np.uint8)
-        curr_img = cv.cvtColor(curr_img, cv.COLOR_BGR2RGB)
+                curr_img = np.array(curr_img).astype(np.uint8)
+                curr_img = cv.cvtColor(curr_img, cv.COLOR_BGR2RGB)
 
-        curr_img = Image.fromarray(curr_img)
-        curr_img = ImageTk.PhotoImage(curr_img)
-        self.label.config(image=curr_img)
-        self.label.image = curr_img
-        self.fps_label.config(text="Frames Per Second: " + str(self.fps))
-        self.master.update()
+                curr_img = Image.fromarray(curr_img)
+                curr_img = ImageTk.PhotoImage(curr_img)
+                self.label.config(image=curr_img)
+                self.label.image = curr_img
+                self.fps_label.config(text="Frames Per Second: ~" + str(self.fps))
+                self.master.update()
+        except KeyError:
+            print()
 
 
     def update_dict(self, key_value):
@@ -109,10 +116,7 @@ def startGUI(window_name, **kwargs):
     :param `window_name` of type String
     :(param >= 1) `name1="some string"`, `name2="some string"`, `name3="some string"`, ...
     """
-    global img_dict
-    # for i in range(numberOfViews):
-    #     frame_type = "frameType" + str(i + 1)
-    #     img_dict[frame_type] = np.zeros((100, 100))
+    global img_dict, isActive
     curr_name = "name"
     curr_index = 1
     if kwargs == {}:
@@ -129,4 +133,5 @@ def startGUI(window_name, **kwargs):
 
     root = tk.Tk()
     app = GUI(root, img_dict, window_name)
+    isActive = True
     return app

@@ -39,7 +39,7 @@ algo_list = [
 #
 number_of_frames = 0
 
-# TODO: log performance live
+
 
 # ability to pass in args for reusability
 def main(args):
@@ -146,7 +146,7 @@ def run_algorithm(alg, vid_file):
         if args.show:
             app.update_dict({'processed': processed})
             x = time_till_second # replace with the integer you want to check
-            tolerance = 0.1
+            tolerance = 0.05
             if abs(x - 1) <= tolerance:
                 app.update_fps(frame_within_second)
                 frame_within_second = 0
