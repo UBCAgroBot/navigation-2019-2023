@@ -10,6 +10,8 @@ img_dict = {}
 
 # TODO: pause and continue
 # TODO: return without error onClose
+# TODO: pass the process into algorithm
+
 
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
@@ -25,6 +27,7 @@ class GUI:
 
         self.current_avg_brightness = 110
         self.current_avg_saturation = 105
+        self.fps = 0
 
         self.var = tk.IntVar()
         self.curr_selected = 1
@@ -34,6 +37,9 @@ class GUI:
 
         self.label = tk.Label(self.frame, bg="white", width=450, height=450)
         self.label.pack(fill="both", expand="yes")
+
+        self.fps_label = tk.Label(self.master, text="Frames Per Second: " + str(self.fps))
+        self.fps_label.pack(pady=10, side="bottom")
 
         for i, (img_name, img_array) in enumerate(img_dict.items(), 1):
             radiobutton = tk.Radiobutton(
@@ -50,7 +56,14 @@ class GUI:
         self.saturation_scale.set(self.current_avg_saturation)
         self.saturation_scale.pack(pady=10, side="bottom")
 
+
         self.render_image()
+
+    def onClose(self):
+        self.master.destroy()
+
+    def update_fps(self, next):
+        self.fps = next
 
     def update_frameType(self, next):
         self.curr_selected = next
@@ -80,7 +93,9 @@ class GUI:
         curr_img = ImageTk.PhotoImage(curr_img)
         self.label.config(image=curr_img)
         self.label.image = curr_img
+        self.fps_label.config(text="Frames Per Second: " + str(self.fps))
         self.master.update()
+
 
     def update_dict(self, key_value):
         global img_dict

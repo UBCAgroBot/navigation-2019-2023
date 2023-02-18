@@ -112,6 +112,8 @@ def run_algorithm(alg, vid_file):
     total_run = 0
     uptime = 0
     all_frame_time = []
+    time_till_second = 0
+    frame_within_second = 0
     #
     if args.show:
         window_name = f'{args.alg}s algorithm on {args.vid}s video'
@@ -123,29 +125,42 @@ def run_algorithm(alg, vid_file):
         if not ret:
             print('No More Frames Remaining\n')
             break
-
+        #
+        if args.show:
+            app.update_dict({'standard': frame})
+            frame = app.apply_filter(frame)
+        #
         start_time_frame = time.time()
+        #
         processed, angle = alg.get_extra_content(
             frame, show=args.show)
+        #
         end_time_frame = time.time()
+        #
         all_frame_time.append(end_time_frame - start_time_frame)
-
+        #
         # print(angle)
-
+        time_till_second += end_time_frame - start_time_frame
+        frame_within_second += 1
+        #
+        if args.show:
+            app.update_dict({'processed': processed})
+            x = time_till_second # replace with the integer you want to check
+            tolerance = 0.1
+            if abs(x - 1) <= tolerance:
+                app.update_fps(frame_within_second)
+                frame_within_second = 0
+                time_till_second = 0
+            app.render_image()
         # counters
         if angle is not None:
             uptime += 1
         total_run += 1
-
-        if args.show:
-            app.update_dict({'standard': frame})
-            app.update_dict({'processed': processed})
-            app.render_image()
-
+        #
         key = cv.waitKey(1)
         if key == 27:
             break
-
+    #
     vid.release()
     cv.destroyAllWindows()
     return uptime, total_run, all_frame_time
