@@ -72,7 +72,7 @@ class CenterDownward(Algorithm):
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
 
-        if contours is ():
+        if contours == ():
             return black_frame, None
 
         lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
