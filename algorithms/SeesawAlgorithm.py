@@ -62,6 +62,7 @@ class SeesawAlgorithm(Algorithm):
         xs = []
 
         normalized = False
+        isnull = True
 
         black_frame = frame
 
@@ -76,6 +77,9 @@ class SeesawAlgorithm(Algorithm):
 
             if left_x > half_width / 2 or right_x > half_width / 2:
                 normalized = True
+
+            if left_x != 0 or right_x != 0:
+                isnull = False
 
             xs.append([left_x, right_x])
 
@@ -95,10 +99,16 @@ class SeesawAlgorithm(Algorithm):
             square_high += bar_height
             square_low += bar_height
 
-        if normalized is False:
+        if isnull:
+            normalized = True
+
+        while normalized is False:
             for points in xs:
                 points[0] *= 2
                 points[1] *= 2
+
+                if points[0] > half_width / 2 or points[1] > half_width / 2:
+                    normalized = True
 
         square_low = 0
         square_high = bar_height
