@@ -172,7 +172,7 @@ class MiniContoursDownwards():
                                              reps=self.reps,
                                              aeps=self.aeps)
 
-        if line[0] is not None:
+        if line is not None and line[0] is not None:
             angle = round(math.degrees(math.atan(-line[0] / line[1])), 2)
             cv2.line(frame, (int(self.WIDTH / 2), 0), (int(self.WIDTH / 2), int(self.HEIGHT)), self.midline, 2)
             print(angle)
