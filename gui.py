@@ -86,6 +86,10 @@ class GUI:
         self.update_btn_low = tk.Button(
             self.lower_frame, text="Update", command=self.update_lower_hsv)
         self.update_btn_low.pack(pady=0, side="left")
+
+        self.alert_for_hsv = tk.Label(
+            self.upper_frame, text="", fg="red")
+        self.alert_for_hsv.pack(pady=10, side="top")
         #
         #
         self.UPPER_GREEN = [80, 255, 255]
@@ -122,14 +126,44 @@ class GUI:
         upper_h = int(self.up_h_entry.get())
         upper_s = int(self.up_s_entry.get())
         upper_v = int(self.up_v_entry.get())
-        self.UPPER_GREEN = (upper_h, upper_s, upper_v)
+        if upper_h > self.LOW_GREEN[0] and upper_s > self.LOW_GREEN[1] and upper_v > self.LOW_GREEN[2]:
+            self.UPPER_GREEN = (upper_h, upper_s, upper_v)
+            self.alert_for_hsv.config(
+                text="")
+        else:
+            self.alert_for_hsv.config(
+                text="Invalid UPPER HSV values")
+            self.up_h_entry.delete(0, tk.END)
+            self.up_h_entry.insert(
+                0, str(self.UPPER_GREEN[0]))
+            self.up_v_entry.delete(0, tk.END)
+            self.up_v_entry.insert(
+                0, str(self.UPPER_GREEN[1]))
+            self.up_s_entry.delete(0, tk.END)
+            self.up_s_entry.insert(
+                0, str(self.UPPER_GREEN[2]))
         print(self.UPPER_GREEN)
 
     def update_lower_hsv(self):
         lower_h = int(self.low_h_entry.get())
         lower_s = int(self.low_s_entry.get())
         lower_v = int(self.low_v_entry.get())
-        self.LOW_GREEN = (lower_h, lower_s, lower_v)
+        if lower_h < self.UPPER_GREEN[0] and lower_s < self.UPPER_GREEN[1] and lower_v < self.UPPER_GREEN[2]:
+            self.LOWER_GREEN = (lower_h, lower_s, lower_v)
+            self.alert_for_hsv.config(
+                text="")
+        else:
+            self.alert_for_hsv.config(
+                text="Invalid LOWER HSV values")
+            self.low_h_entry.delete(0, tk.END)
+            self.low_h_entry.insert(
+                0, str(self.LOW_GREEN[0]))
+            self.low_v_entry.delete(0, tk.END)
+            self.low_v_entry.insert(
+                0, str(self.LOW_GREEN[1]))
+            self.low_s_entry.delete(0, tk.END)
+            self.low_s_entry.insert(
+                0, str(self.LOW_GREEN[2]))
         print(self.LOW_GREEN)
 
     def getLowerHSV(self):
