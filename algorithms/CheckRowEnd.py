@@ -20,6 +20,12 @@ class CheckRowEnd(Algorithm):
     def get_extra_content(self, frame, show):
         item1, item2 = self.process_frame(frame, show)
         return item1, item2
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
         
     def process_frame(self, frame, show):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value

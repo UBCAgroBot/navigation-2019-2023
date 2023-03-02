@@ -9,9 +9,6 @@ import pre_process
 img_dict = {}
 isActive = False
 
-# TODO: pause and continue
-# TODO: return without error onClose
-
 
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
@@ -32,10 +29,10 @@ class GUI:
         self.var = tk.IntVar()
         self.curr_selected = 1
 
-        self.frame = tk.Frame(self.master, bg="white", height=600, width=600)
-        self.frame.pack(fill="both", expand="yes")
+        self.frame = tk.Frame(self.master, height=600, width=600)
+        self.frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        self.label = tk.Label(self.frame, bg="white", width=450, height=450)
+        self.label = tk.Label(self.frame, width=450, height=450)
         self.label.pack(fill="both", expand="yes")
 
         self.fps_label = tk.Label(
@@ -56,13 +53,90 @@ class GUI:
                                          label="Saturation", command=lambda x: self.update_saturation(x))
         self.saturation_scale.set(self.current_avg_saturation)
         self.saturation_scale.pack(pady=10, side="bottom")
-
+        #
+        #
+        self.lower_frame = tk.Frame(self.frame)
+        self.lower_frame.pack(in_=self.frame, anchor="c", side="bottom")
+        self.upper_frame = tk.Frame(self.frame)
+        self.upper_frame.pack(in_=self.frame, anchor="c", side="bottom")
+        #
+        #
+        self.LOW_GREEN = [35, 80, 80]
+        self.low_h_entry_label = tk.Label(self.lower_frame, text="LOWER-H:")
+        self.low_h_entry_label.pack(pady=10, side="left")
+        self.low_h_entry = tk.Entry(
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_h_entry.insert(0, str(self.LOW_GREEN[0]))
+        self.low_h_entry.pack(pady=10, side="left")
+        #
+        self.low_s_entry_label = tk.Label(self.lower_frame, text="S:")
+        self.low_s_entry_label.pack(pady=10, side="left")
+        self.low_s_entry = tk.Entry(
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_s_entry.insert(0, str(self.LOW_GREEN[1]))
+        self.low_s_entry.pack(pady=10, side="left")
+        #
+        self.low_v_entry_label = tk.Label(self.lower_frame, text="V:")
+        self.low_v_entry_label.pack(pady=10, side="left")
+        self.low_v_entry = tk.Entry(
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_v_entry.insert(0, str(self.LOW_GREEN[2]))
+        self.low_v_entry.pack(pady=10, side="left")
+        #
+        self.update_btn_low = tk.Button(
+            self.lower_frame, text="Update", command=self.update_lower_hsv)
+        self.update_btn_low.pack(pady=0, side="left")
+        #
+        #
+        self.UPPER_GREEN = [80, 255, 255]
+        self.up_h_entry_label = tk.Label(self.upper_frame, text="UPPER-H:")
+        self.up_h_entry_label.pack(pady=10, side="left")
+        self.up_h_entry = tk.Entry(
+            self.upper_frame, width=10, justify="center", font="Courier 12")
+        self.up_h_entry.insert(0, str(self.UPPER_GREEN[0]))
+        self.up_h_entry.pack(pady=10, side="left")
+        #
+        self.up_s_entry_label = tk.Label(self.upper_frame, text="S:")
+        self.up_s_entry_label.pack(pady=10, side="left")
+        self.up_s_entry = tk.Entry(
+            self.upper_frame, width=10, justify="center", font="Courier 12")
+        self.up_s_entry.insert(0, str(self.UPPER_GREEN[1]))
+        self.up_s_entry.pack(pady=10, side="left")
+        #
+        self.up_v_entry_label = tk.Label(self.upper_frame, text="V:")
+        self.up_v_entry_label.pack(pady=10, side="left")
+        self.up_v_entry = tk.Entry(
+            self.upper_frame, width=10, justify="center", font="Courier 12")
+        self.up_v_entry.insert(0, str(self.UPPER_GREEN[2]))
+        self.up_v_entry.pack(pady=10, side="left")
+        #
+        self.update_btn_high = tk.Button(
+            self.upper_frame, text="Update", command=self.update_upper_hsv)
+        self.update_btn_high.pack(pady=0, side="left")
+        #
+        #
+        #
         self.render_image()
 
-    def onClose(self):
-        global isActive
-        isActive = False
-        self.master.destroy()
+    def update_upper_hsv(self):
+        upper_h = int(self.up_h_entry.get())
+        upper_s = int(self.up_s_entry.get())
+        upper_v = int(self.up_v_entry.get())
+        self.UPPER_GREEN = (upper_h, upper_s, upper_v)
+        print(self.UPPER_GREEN)
+
+    def update_lower_hsv(self):
+        lower_h = int(self.low_h_entry.get())
+        lower_s = int(self.low_s_entry.get())
+        lower_v = int(self.low_v_entry.get())
+        self.LOW_GREEN = (lower_h, lower_s, lower_v)
+        print(self.LOW_GREEN)
+
+    def getLowerHSV(self):
+        return self.LOW_GREEN
+
+    def getUpperHSV(self):
+        return self.UPPER_GREEN
 
     def update_fps(self, next):
         self.fps = next
@@ -76,6 +150,10 @@ class GUI:
     def update_saturation(self, value):
         self.current_avg_saturation = int(value)
 
+    def update_dict(self, key_value):
+        global img_dict
+        img_dict.update(key_value)
+
     def apply_filter(self, img):
         pre_process.ACCEPTABLE_DIFFERENCE = 0
         pre_process.BRIGHTNESS_BASELINE = self.current_avg_brightness
@@ -83,30 +161,34 @@ class GUI:
         return pre_process.standardize_frame(img)
 
     def render_image(self):
-        global isActive
-        try:
-            if isActive:
-                global img_dict
-                curr_img = list(img_dict.values())[self.curr_selected - 1]
-                if np.any(curr_img != np.zeros((100, 100))):
-                    curr_img = self.apply_filter(curr_img)
-
-                curr_img = np.array(curr_img).astype(np.uint8)
-                curr_img = cv.cvtColor(curr_img, cv.COLOR_BGR2RGB)
-
-                curr_img = Image.fromarray(curr_img)
-                curr_img = ImageTk.PhotoImage(curr_img)
-                self.label.config(image=curr_img)
-                self.label.image = curr_img
-                self.fps_label.config(text="Frames Per Second: ~" + str(self.fps))
-                self.master.update()
-        except KeyError:
-            print()
-
-
-    def update_dict(self, key_value):
         global img_dict
-        img_dict.update(key_value)
+        curr_img = list(img_dict.values())[self.curr_selected - 1]
+        if np.any(curr_img != np.zeros((100, 100))):
+            curr_img = self.apply_filter(curr_img)
+
+        curr_img = np.array(curr_img).astype(np.uint8)
+        curr_img = cv.cvtColor(curr_img, cv.COLOR_BGR2RGB)
+
+        curr_img = Image.fromarray(curr_img)
+        curr_img = ImageTk.PhotoImage(curr_img)
+        self.label.config(image=curr_img)
+        self.label.image = curr_img
+        self.fps_label.config(
+            text="Frames Per Second: ~" + str(self.fps))
+        self.master.update()
+
+    def isActive(self):
+        global isActive
+        return isActive
+
+
+global root
+
+
+def onClose():
+    global isActive
+    isActive = False
+    root.destroy()
 
 
 def startGUI(window_name, **kwargs):
@@ -130,8 +212,9 @@ def startGUI(window_name, **kwargs):
         else:
             raise KeyError("argument " + curr_name +
                            str(curr_index) + " is missing in startGUI()")
-
+    global root
     root = tk.Tk()
+    root.protocol("WM_DELETE_WINDOW", onClose)
     app = GUI(root, img_dict, window_name)
     isActive = True
     return app

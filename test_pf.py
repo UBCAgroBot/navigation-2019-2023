@@ -14,6 +14,7 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
+from algorithms.SeesawAlgorithm import SeesawAlgorithm
 from gui import startGUI
 
 # parser for command line arguments
@@ -35,7 +36,9 @@ algo_list = [
     ('scanning',
      ScanningAlgorithm),
     ('check_row_end',
-     CheckRowEnd)]
+     CheckRowEnd),
+    ('seesaw',
+     SeesawAlgorithm)]
 #
 number_of_frames = 0
 
@@ -126,8 +129,10 @@ def run_algorithm(alg, vid_file):
             print('No More Frames Remaining\n')
             break
         #
-        if args.show:
+        if args.show and app.isActive():
             app.update_dict({'standard': frame})
+            alg.update_lower_hsv(app.getLowerHSV())
+            alg.update_upper_hsv(app.getUpperHSV())
             frame = app.apply_filter(frame)
         #
         start_time_frame = time.time()
@@ -139,11 +144,11 @@ def run_algorithm(alg, vid_file):
         #
         all_frame_time.append(end_time_frame - start_time_frame)
         #
-        # print(angle)
+        print(angle)
         time_till_second += end_time_frame - start_time_frame
         frame_within_second += 1
         #
-        if args.show:
+        if args.show and app.isActive():
             app.update_dict({'processed': processed})
             x = time_till_second # replace with the integer you want to check
             tolerance = 0.05
