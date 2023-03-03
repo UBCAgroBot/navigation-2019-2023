@@ -36,29 +36,32 @@ class GUI:
         self.label.pack(fill="both", expand="yes")
 
         self.fps_label = tk.Label(
-            self.master, text="Frames Per Second: " + str(self.fps))
+            self.frame, text="Frames Per Second: " + str(self.fps))
         self.fps_label.pack(pady=10, side="bottom")
 
         for i, (img_name, img_array) in enumerate(img_dict.items(), 1):
             radiobutton = tk.Radiobutton(
-                self.master, text=img_name, variable=self.var, value=i, command=lambda i=i: self.update_frameType(i))
+                self.frame, text=img_name, variable=self.var, value=i, command=lambda i=i: self.update_frameType(i))
             radiobutton.pack(pady=10, side="bottom")
 
-        self.brightness_scale = tk.Scale(self.master, from_=0, to=255, orient="horizontal",
+        self.brightness_scale = tk.Scale(self.frame, from_=0, to=255, orient="horizontal",
                                          label="Brightness", command=lambda x: self.update_brightness(x))
         self.brightness_scale.set(self.current_avg_brightness)
         self.brightness_scale.pack(pady=10, side="bottom")
 
-        self.saturation_scale = tk.Scale(self.master, from_=0, to=255, orient="horizontal",
+        self.saturation_scale = tk.Scale(self.frame, from_=0, to=255, orient="horizontal",
                                          label="Saturation", command=lambda x: self.update_saturation(x))
         self.saturation_scale.set(self.current_avg_saturation)
         self.saturation_scale.pack(pady=10, side="bottom")
         #
         #
-        self.lower_frame = tk.Frame(self.frame)
-        self.lower_frame.pack(in_=self.frame, anchor="c", side="bottom")
         self.upper_frame = tk.Frame(self.frame)
         self.upper_frame.pack(in_=self.frame, anchor="c", side="bottom")
+        self.lower_frame = tk.Frame(self.frame)
+        self.lower_frame.pack(in_=self.frame, anchor="c", side="bottom")
+        self.alert_for_hsv = tk.Label(
+            self.lower_frame, text="", fg="red")
+        self.alert_for_hsv.pack(pady=10, side="top")
         #
         #
         self.LOW_GREEN = [35, 80, 80]
@@ -86,10 +89,6 @@ class GUI:
         self.update_btn_low = tk.Button(
             self.lower_frame, text="Update", command=self.update_lower_hsv)
         self.update_btn_low.pack(pady=0, side="left")
-
-        self.alert_for_hsv = tk.Label(
-            self.upper_frame, text="", fg="red")
-        self.alert_for_hsv.pack(pady=10, side="top")
         #
         #
         self.UPPER_GREEN = [80, 255, 255]
@@ -204,6 +203,22 @@ class GUI:
         curr_img = cv.cvtColor(curr_img, cv.COLOR_BGR2RGB)
 
         curr_img = Image.fromarray(curr_img)
+
+        # Get the dimensions of the available space
+        max_width = self.label.winfo_width()
+        max_height = self.label.winfo_height()
+
+        # Get the dimensions of the image
+        img_width, img_height = curr_img.size
+
+        # Calculate the scale factor to fit the image within the available space
+        scale_factor = min(max_width / img_width, max_height / img_height)
+
+        # Resize the image to fit within the available space, while maintaining aspect ratio
+        new_width = int(img_width * scale_factor)
+        new_height = int(img_height * scale_factor)
+        curr_img = curr_img.resize((new_width, new_height), Image.ANTIALIAS)
+
         curr_img = ImageTk.PhotoImage(curr_img)
         self.label.config(image=curr_img)
         self.label.image = curr_img
