@@ -11,7 +11,9 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
+import pre_process
 from algorithms.SeesawAlgorithm import SeesawAlgorithm
+from algorithms.CenterDownwards import CenterDownward
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -22,7 +24,7 @@ parser.add_argument('-s', '--show', required=False, action='store_true')
 # list of algorithms
 algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mini_contour', MiniContoursAlgorithm),
              ('mini_contour_downward', MiniContoursDownwards),
-             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd), ('seesaw', SeesawAlgorithm)]
+             ('scanning', ScanningAlgorithm), ('check_row_end', CheckRowEnd), ('seesaw', SeesawAlgorithm), ("center_down", CenterDownward)]
 
 
 def main():
@@ -72,11 +74,14 @@ def run_algorithm(alg, vid_file):
 
     while vid.isOpened():
         ret, frame = vid.read()
+
         if not ret:
             print('No More Frames Remaining')
             break
 
+        frame = pre_process.standardize_frame(frame)
         processed_image, angle = alg.process_frame(frame, show=args.show)
+
         print(angle)
 
         if args.show:
