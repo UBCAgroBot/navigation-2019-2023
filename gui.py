@@ -8,8 +8,6 @@ import pre_process
 
 img_dict = {}
 isActive = False
-mw = 600
-mh = 600
 
 
 class GUI:
@@ -23,7 +21,7 @@ class GUI:
     def __init__(self, master, img_dict, window_name):
         self.master = master
         self.master.title(window_name)
-        self.master.geometry("550x800")
+        self.master.geometry("600x700")
 
         self.current_avg_brightness = 110
         self.current_avg_saturation = 105
@@ -33,24 +31,22 @@ class GUI:
         self.curr_selected = 1
 
         self.container = tk.Frame(self.master)
-        self.container.pack(side='top', anchor='nw', fill="both", expand=True, padx=5, pady=5)
-
-        self.img_container = tk.Label(self.container)
-        # self.img_container.place(x=0, y=0, relwidth=1, relheight=1, anchor='nw')
-        self.img_container.pack(side='top', anchor='nw', fill="none", expand=False, padx=2, pady=2)
-        self.img_container.config(width=600, height=400)
+        self.container.pack(side='top', anchor='nw', fill="both", expand=True)
 
         self.canvas = tk.Canvas(self.container)
         self.scrollbar = tk.Scrollbar(self.container, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas)
-
         self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.img_container = tk.Label(self.scrollable_frame)
+        self.img_container.pack(side='top', fill="both", expand=True)
+        # self.img_container.config(width=600, height=400)
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor='c')
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.canvas.pack(side="left", fill="both", expand=True)
-        self.canvas.config(height=400)
+        # self.canvas.config(width=600, height=300)
         self.scrollbar.pack(side="right", fill="y")
 
         self.fps_label = tk.Label(
@@ -86,21 +82,21 @@ class GUI:
         self.low_h_entry_label = tk.Label(self.lower_frame, text="LOWER-H:")
         self.low_h_entry_label.pack(pady=5, side="left")
         self.low_h_entry = tk.Entry(
-            self.lower_frame, width=10, justify="center", font="Courier 12")
+            self.lower_frame, width=5, justify="center", font="Courier 12")
         self.low_h_entry.insert(0, str(self.LOW_GREEN[0]))
         self.low_h_entry.pack(pady=5, side="left")
         #
         self.low_s_entry_label = tk.Label(self.lower_frame, text="S:")
         self.low_s_entry_label.pack(pady=5, side="left")
         self.low_s_entry = tk.Entry(
-            self.lower_frame, width=10, justify="center", font="Courier 12")
+            self.lower_frame, width=5, justify="center", font="Courier 12")
         self.low_s_entry.insert(0, str(self.LOW_GREEN[1]))
         self.low_s_entry.pack(pady=5, side="left")
         #
         self.low_v_entry_label = tk.Label(self.lower_frame, text="V:")
         self.low_v_entry_label.pack(pady=5, side="left")
         self.low_v_entry = tk.Entry(
-            self.lower_frame, width=10, justify="center", font="Courier 12")
+            self.lower_frame, width=5, justify="center", font="Courier 12")
         self.low_v_entry.insert(0, str(self.LOW_GREEN[2]))
         self.low_v_entry.pack(pady=5, side="left")
         #
@@ -113,21 +109,21 @@ class GUI:
         self.up_h_entry_label = tk.Label(self.upper_frame, text="UPPER-H:")
         self.up_h_entry_label.pack(pady=5, side="left")
         self.up_h_entry = tk.Entry(
-            self.upper_frame, width=10, justify="center", font="Courier 12")
+            self.upper_frame, width=5, justify="center", font="Courier 12")
         self.up_h_entry.insert(0, str(self.UPPER_GREEN[0]))
         self.up_h_entry.pack(pady=5, side="left")
         #
         self.up_s_entry_label = tk.Label(self.upper_frame, text="S:")
         self.up_s_entry_label.pack(pady=5, side="left")
         self.up_s_entry = tk.Entry(
-            self.upper_frame, width=10, justify="center", font="Courier 12")
+            self.upper_frame, width=5, justify="center", font="Courier 12")
         self.up_s_entry.insert(0, str(self.UPPER_GREEN[1]))
         self.up_s_entry.pack(pady=5, side="left")
         #
         self.up_v_entry_label = tk.Label(self.upper_frame, text="V:")
         self.up_v_entry_label.pack(pady=5, side="left")
         self.up_v_entry = tk.Entry(
-            self.upper_frame, width=10, justify="center", font="Courier 12")
+            self.upper_frame, width=5, justify="center", font="Courier 12")
         self.up_v_entry.insert(0, str(self.UPPER_GREEN[2]))
         self.up_v_entry.pack(pady=5, side="left")
         #
@@ -223,8 +219,8 @@ class GUI:
         curr_img = Image.fromarray(curr_img)
 
         # Get the dimensions of the available space
-        max_width = self.img_container.winfo_width()
-        max_height = self.img_container.winfo_height()
+        max_width = self.canvas.winfo_width()
+        max_height = self.canvas.winfo_height()
 
         # Get the dimensions of the image
         img_width, img_height = curr_img.size
@@ -249,12 +245,6 @@ class GUI:
         global isActive
         return isActive
 
-def on_master_configure(event):
-    # Get the updated height and width of the master widget
-    global mw, mh
-    mw = event.width
-    mh = event.height
-    # print("New window size: {}x{}".format(mw, mh))
 
 global root
 
