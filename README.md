@@ -46,7 +46,7 @@
     - `-v/--vid` : name of video
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`
-    - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views
+    - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views, adjust saturation, brightness, upper, and lower HSV
   - example : `python test_pf.py -a center_row -v crop -s`
   
 ### Commands to Start World in Gazebo
