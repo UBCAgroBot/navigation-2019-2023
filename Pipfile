@@ -9,6 +9,7 @@ omegaconf = "*"
 numpy = "*"
 tk = "*"
 python-rospkg = "*"
+Pillow = "*"
 
 [dev-packages]
 
