@@ -104,8 +104,8 @@ class SeesawAlgorithm(Algorithm):
 
         while normalized is False:
             for points in xs:
-                points[0] = float(1.5*points[0])
-                points[1] = float(1.5*points[1])
+                points[0] = float(1.5 * points[0])
+                points[1] = float(1.5 * points[1])
 
                 if points[0] > half_width / 2 or points[1] > half_width / 2:
                     normalized = True
