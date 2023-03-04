@@ -41,7 +41,7 @@ class HoughAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-
+        
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
     def process_frame(self, frame, show=True):
@@ -92,15 +92,12 @@ class HoughAlgorithm(Algorithm):
         y_points = [point[1] for point in intersections]
 
         if show:
-            vanishing_point = Lines.draw_vanishing_point(
-                line_img, x_points, y_points, show)
+            vanishing_point = Lines.draw_vanishing_point(line_img, x_points, y_points, show)
         else:
-            vanishing_point = Lines.draw_vanishing_point(
-                frame, x_points, y_points, show)
+            vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        angle = Lines.calculate_angle_from_v_point(
-            vanishing_point, self.WIDTH, self.HEIGHT)
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         if show:
             return line_img, angle

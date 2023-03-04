@@ -30,8 +30,7 @@ algo_list = [('hough', HoughAlgorithm), ('center_row', CenterRowAlgorithm), ('mi
 def main():
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{args.vid}.mp4'):
-        print('--vid', args.vid,
-              "is an invalid video name, make sure it video exists in ./videos")
+        print('--vid', args.vid, "is an invalid video name, make sure it video exists in ./videos")
         sys.exit()
 
     # verify that config file for video exists
@@ -41,8 +40,7 @@ def main():
 
     # verify that config file for algorithm exists
     if not path.isfile(f'config/algorithm/{args.alg}.yaml'):
-        print(
-            f"--alg config for {args.alg} is not defined in ./config/algorithm/")
+        print(f"--alg config for {args.alg} is not defined in ./config/algorithm/")
         sys.exit()
 
     # set video config
@@ -64,8 +62,7 @@ def main():
             exists = True
 
     if not exists:
-        print(
-            f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
+        print(f"{args.alg} is an invalid algorithm, list of valid argument values: {algo_list}")
         sys.exit()
 
 
@@ -88,8 +85,7 @@ def run_algorithm(alg, vid_file):
         print(angle)
 
         if args.show:
-            cv.imshow(
-                f'{args.alg}s algorithm on {args.vid}s video', processed_image)
+            cv.imshow(f'{args.alg}s algorithm on {args.vid}s video', processed_image)
 
         key = cv.waitKey(25)
 

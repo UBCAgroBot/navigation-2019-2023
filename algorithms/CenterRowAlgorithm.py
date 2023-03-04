@@ -22,8 +22,7 @@ class CenterRowAlgorithm(Algorithm):
 
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
-        self.gauss_kernel_size = list(
-            map(int, config.gauss_kernel_size.split(',')))
+        self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
         self.dilate_kernel_size = config.dilate_kernel_size
         self.sigma_x = config.sigma_x
 
@@ -55,7 +54,7 @@ class CenterRowAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-
+        
     def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n
@@ -77,8 +76,7 @@ class CenterRowAlgorithm(Algorithm):
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         # fillPoly fills in the polygons in the frame
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
-        lines, slopes, ellipse_frame = self.ellipse_slopes(
-            contours, black_frame)
+        lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
 
         if show:
             Lines.draw_lines_on_frame(lines, black_frame)
@@ -86,16 +84,14 @@ class CenterRowAlgorithm(Algorithm):
         intersections = Lines.get_intersections(lines)
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.draw_vanishing_point(
-            ellipse_frame, x_points, y_points, show)
+        vanishing_point = Lines.draw_vanishing_point(ellipse_frame, x_points, y_points, show)
 
         if vanishing_point:
             center_contour, angle = self.find_center_contour(vanishing_point)
             if show:
                 cv.ellipse(black_frame, center_contour, (0, 255, 0), 2)
 
-        angle = Lines.calculate_angle_from_v_point(
-            vanishing_point, self.WIDTH, self.HEIGHT)
+        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
 
         return black_frame, angle
 
@@ -125,8 +121,7 @@ class CenterRowAlgorithm(Algorithm):
         """
         frame = np.zeros((self.HEIGHT, self.WIDTH, 3))
         ret, thresh = cv.threshold(binary_mask, 0, 254, 0)
-        contours, hierarchy = cv.findContours(
-            thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         cv.drawContours(frame, contours, -1, (0, 255, 0), 2)
         cv.fillPoly(frame, pts=contours, color=(0, 255, 0))
 
@@ -148,8 +143,7 @@ class CenterRowAlgorithm(Algorithm):
                 rect = cv.minAreaRect(cnt)
                 box = cv.boxPoints(rect)
                 box = np.int0(box)
-                black_frame = cv.drawContours(
-                    black_frame, [box], 0, (255, 255, 255), 2)
+                black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
                 ellipse = cv.fitEllipse(cnt)
                 self.contours.append(ellipse)
                 cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
