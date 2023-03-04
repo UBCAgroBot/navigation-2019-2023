@@ -8,6 +8,8 @@ import pre_process
 
 img_dict = {}
 isActive = False
+mw = 600
+mh = 600
 
 
 class GUI:
@@ -21,7 +23,7 @@ class GUI:
     def __init__(self, master, img_dict, window_name):
         self.master = master
         self.master.title(window_name)
-        self.master.geometry("600x700")
+        self.master.geometry("550x800")
 
         self.current_avg_brightness = 110
         self.current_avg_saturation = 105
@@ -31,25 +33,24 @@ class GUI:
         self.curr_selected = 1
 
         self.container = tk.Frame(self.master)
-        self.container.pack(side='top', anchor='nw', fill="both", expand=True)
+        self.container.pack(side='top', anchor='nw', fill="both", expand=True, padx=5, pady=5)
+
+        self.img_container = tk.Label(self.container)
+        # self.img_container.place(x=0, y=0, relwidth=1, relheight=1, anchor='nw')
+        self.img_container.pack(side='top', anchor='nw', fill="none", expand=False, padx=2, pady=2)
+        self.img_container.config(width=600, height=400)
 
         self.canvas = tk.Canvas(self.container)
-        self.scrollbar = tk.Scrollbar(
-            self.container, orient="vertical", command=self.canvas.yview)
+        self.scrollbar = tk.Scrollbar(self.container, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas)
-        self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(
-            scrollregion=self.canvas.bbox("all")))
 
-        self.img_container = tk.Label(self.scrollable_frame, padx=10, pady=10)
-        self.img_container.pack(side='top', fill="both", expand=True)
-        # self.img_container.config(width=600, height=400)
+        self.scrollable_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
-        self.canvas.create_window(
-            (0, 0), window=self.scrollable_frame, anchor='c')
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor='c')
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.canvas.pack(side="left", fill="both", expand=True)
-        # self.canvas.config(width=600, height=300)
+        self.canvas.config(height=400)
         self.scrollbar.pack(side="right", fill="y")
 
         self.fps_label = tk.Label(
@@ -73,36 +74,34 @@ class GUI:
         #
         #
         self.upper_frame = tk.Frame(self.scrollable_frame)
-        self.upper_frame.pack(in_=self.scrollable_frame,
-                              anchor="c", side="bottom")
+        self.upper_frame.pack(in_=self.scrollable_frame, anchor="c", side="bottom")
         self.lower_frame = tk.Frame(self.scrollable_frame)
-        self.lower_frame.pack(in_=self.scrollable_frame,
-                              anchor="c", side="bottom")
+        self.lower_frame.pack(in_=self.scrollable_frame, anchor="c", side="bottom")
         self.alert_for_hsv = tk.Label(
             self.lower_frame, text="", fg="red")
         self.alert_for_hsv.pack(pady=5, side="top")
         #
         #
-        self.LOWER_GREEN = [35, 80, 80]
+        self.LOW_GREEN = [35, 80, 80]
         self.low_h_entry_label = tk.Label(self.lower_frame, text="LOWER-H:")
         self.low_h_entry_label.pack(pady=5, side="left")
         self.low_h_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_h_entry.insert(0, str(self.LOWER_GREEN[0]))
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_h_entry.insert(0, str(self.LOW_GREEN[0]))
         self.low_h_entry.pack(pady=5, side="left")
         #
         self.low_s_entry_label = tk.Label(self.lower_frame, text="S:")
         self.low_s_entry_label.pack(pady=5, side="left")
         self.low_s_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_s_entry.insert(0, str(self.LOWER_GREEN[1]))
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_s_entry.insert(0, str(self.LOW_GREEN[1]))
         self.low_s_entry.pack(pady=5, side="left")
         #
         self.low_v_entry_label = tk.Label(self.lower_frame, text="V:")
         self.low_v_entry_label.pack(pady=5, side="left")
         self.low_v_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_v_entry.insert(0, str(self.LOWER_GREEN[2]))
+            self.lower_frame, width=10, justify="center", font="Courier 12")
+        self.low_v_entry.insert(0, str(self.LOW_GREEN[2]))
         self.low_v_entry.pack(pady=5, side="left")
         #
         self.update_btn_low = tk.Button(
@@ -114,21 +113,21 @@ class GUI:
         self.up_h_entry_label = tk.Label(self.upper_frame, text="UPPER-H:")
         self.up_h_entry_label.pack(pady=5, side="left")
         self.up_h_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
+            self.upper_frame, width=10, justify="center", font="Courier 12")
         self.up_h_entry.insert(0, str(self.UPPER_GREEN[0]))
         self.up_h_entry.pack(pady=5, side="left")
         #
         self.up_s_entry_label = tk.Label(self.upper_frame, text="S:")
         self.up_s_entry_label.pack(pady=5, side="left")
         self.up_s_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
+            self.upper_frame, width=10, justify="center", font="Courier 12")
         self.up_s_entry.insert(0, str(self.UPPER_GREEN[1]))
         self.up_s_entry.pack(pady=5, side="left")
         #
         self.up_v_entry_label = tk.Label(self.upper_frame, text="V:")
         self.up_v_entry_label.pack(pady=5, side="left")
         self.up_v_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
+            self.upper_frame, width=10, justify="center", font="Courier 12")
         self.up_v_entry.insert(0, str(self.UPPER_GREEN[2]))
         self.up_v_entry.pack(pady=5, side="left")
         #
@@ -144,70 +143,48 @@ class GUI:
         upper_h = int(self.up_h_entry.get())
         upper_s = int(self.up_s_entry.get())
         upper_v = int(self.up_v_entry.get())
-        if upper_h > self.LOWER_GREEN[0] and upper_s > self.LOWER_GREEN[1] and upper_v > self.LOWER_GREEN[2] and upper_h <= 255 and upper_s <= 255 and upper_v <= 255:
+        if upper_h > self.LOW_GREEN[0] and upper_s > self.LOW_GREEN[1] and upper_v > self.LOW_GREEN[2]:
             self.UPPER_GREEN = (upper_h, upper_s, upper_v)
             self.alert_for_hsv.config(
-                text="new UPPER-HSV: " + str(self.UPPER_GREEN))
+                text="")
         else:
-            warning = "INVALID: "
-            if upper_h <= self.LOWER_GREEN[0]:
-                warning += "UPPER_H <= LOWER_H\t"
-            elif upper_s <= self.LOWER_GREEN[1]:
-                warning += "UPPER_S <= LOWER_S\t"
-            elif upper_v <= self.LOWER_GREEN[2]:
-                warning += "UPPER_V <= LOWER_V\t"
-            else:
-                warning += "UPPER_V > 255\t"
-
             self.alert_for_hsv.config(
-                text=warning)
-
+                text="Invalid UPPER HSV values")
             self.up_h_entry.delete(0, tk.END)
             self.up_h_entry.insert(
                 0, str(self.UPPER_GREEN[0]))
-            self.up_s_entry.delete(0, tk.END)
-            self.up_s_entry.insert(
-                0, str(self.UPPER_GREEN[1]))
             self.up_v_entry.delete(0, tk.END)
             self.up_v_entry.insert(
+                0, str(self.UPPER_GREEN[1]))
+            self.up_s_entry.delete(0, tk.END)
+            self.up_s_entry.insert(
                 0, str(self.UPPER_GREEN[2]))
-        # print(self.UPPER_GREEN)
+        print(self.UPPER_GREEN)
 
     def update_lower_hsv(self):
         lower_h = int(self.low_h_entry.get())
         lower_s = int(self.low_s_entry.get())
         lower_v = int(self.low_v_entry.get())
-        if lower_h < self.UPPER_GREEN[0] and lower_s < self.UPPER_GREEN[1] and lower_v < self.UPPER_GREEN[2] and lower_h >= 0 and lower_s >= 0 and lower_v >= 0:
+        if lower_h < self.UPPER_GREEN[0] and lower_s < self.UPPER_GREEN[1] and lower_v < self.UPPER_GREEN[2]:
             self.LOWER_GREEN = (lower_h, lower_s, lower_v)
             self.alert_for_hsv.config(
-                text="new LOWER-HSV: " + str(self.LOWER_GREEN))
+                text="")
         else:
-            warning = "INVALID: "
-            if lower_h >= self.UPPER_GREEN[0]:
-                warning += "UPPER_H <= LOWER_H\t"
-            elif lower_s >= self.UPPER_GREEN[1]:
-                warning += "UPPER_S <= LOWER_S\t"
-            elif lower_v >= self.UPPER_GREEN[2]:
-                warning += "UPPER_V <= LOWER_V\t"
-            else:
-                warning += "LOWER_V < 0\t"
-
             self.alert_for_hsv.config(
-                text=warning)
-
+                text="Invalid LOWER HSV values")
             self.low_h_entry.delete(0, tk.END)
             self.low_h_entry.insert(
-                0, str(self.LOWER_GREEN[0]))
-            self.low_s_entry.delete(0, tk.END)
-            self.low_s_entry.insert(
-                0, str(self.LOWER_GREEN[1]))
+                0, str(self.LOW_GREEN[0]))
             self.low_v_entry.delete(0, tk.END)
             self.low_v_entry.insert(
-                0, str(self.LOWER_GREEN[2]))
-        # print(self.LOWER_GREEN)
+                0, str(self.LOW_GREEN[1]))
+            self.low_s_entry.delete(0, tk.END)
+            self.low_s_entry.insert(
+                0, str(self.LOW_GREEN[2]))
+        print(self.LOW_GREEN)
 
     def getLowerHSV(self):
-        return self.LOWER_GREEN
+        return self.LOW_GREEN
 
     def getUpperHSV(self):
         return self.UPPER_GREEN
@@ -246,8 +223,8 @@ class GUI:
         curr_img = Image.fromarray(curr_img)
 
         # Get the dimensions of the available space
-        max_width = self.canvas.winfo_width()
-        max_height = self.canvas.winfo_height()
+        max_width = self.img_container.winfo_width()
+        max_height = self.img_container.winfo_height()
 
         # Get the dimensions of the image
         img_width, img_height = curr_img.size
@@ -258,22 +235,26 @@ class GUI:
         # Resize the image to fit within the available space, while maintaining aspect ratio
         new_width = int(img_width * scale_factor)
         new_height = int(img_height * scale_factor)
-        if new_height > 10 and new_width > 10:
-            new_width -= 10
-            new_height -= 10
         curr_img = curr_img.resize((new_width, new_height), Image.ANTIALIAS)
 
         curr_img = ImageTk.PhotoImage(curr_img)
-        self.img_container.config(image=curr_img, padx=10, pady=10)
+        self.img_container.config(image=curr_img)
         self.img_container.image = curr_img
         self.fps_label.config(
-            text="Frames Per Second: ~" + str(self.fps), padx=10, pady=10)
+            text="Frames Per Second: ~" + str(self.fps))
         self.master.update()
+    
 
     def isActive(self):
         global isActive
         return isActive
 
+def on_master_configure(event):
+    # Get the updated height and width of the master widget
+    global mw, mh
+    mw = event.width
+    mh = event.height
+    # print("New window size: {}x{}".format(mw, mh))
 
 global root
 
