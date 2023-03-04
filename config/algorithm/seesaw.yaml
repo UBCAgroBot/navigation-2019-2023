@@ -6,6 +6,7 @@ sigma_x: 0
 
 bar_height: 30
 normalization_factor: 1.5
+k: 2
 
 #### size of frame
 frame_width: 1280

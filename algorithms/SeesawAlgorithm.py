@@ -30,6 +30,9 @@ class SeesawAlgorithm(Algorithm):
         self.BAR_HEIGHT = config.bar_height
         self.NORM_FACTOR = config.normalization_factor
 
+        # output adjustment
+        self.k = config.k
+
     def process_frame(self, frame, show):
         """
         Divides screen into horizontal strips and draw bars according to the amount
@@ -54,20 +57,22 @@ class SeesawAlgorithm(Algorithm):
 
         # calculate angle
         if y1 - y2 != 0:
-            angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 2)
+            angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 1)
         else:
             angle = None
 
         # alternative way of calculating angle
-        '''
-        angle = 0
-        for point in both_points:
-            if point[0] > self.WIDTH / 2:
-                angle += 1
-            elif point[0] < self.WIDTH / 2:
-                angle -= 1
-        angle = angle/(len(both_points))*90
-        '''
+        # angle = 0
+        # for point in both_points:
+        #     if point[0] > self.WIDTH / 2:
+        #         angle += 1
+        #     elif point[0] < self.WIDTH / 2:
+        #         angle -= 1
+        #
+        # if abs(angle) >= self.k:
+        #     angle = round(angle/(len(both_points))*90, 1)
+        # else:
+        #     angle = 0
 
         return black_frame, angle
 
