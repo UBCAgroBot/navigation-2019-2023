@@ -72,8 +72,11 @@ class CenterDownward(Algorithm):
         contours, contour_frame = self.get_contours(mask)
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
-        lines, slopes, ellipse_frame = self.ellipse_slopes(
-            contours, black_frame)
+
+        if contours == ():
+            return black_frame, None
+
+        lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
 
         if show:
             Lines.draw_lines_on_frame(lines, black_frame)
@@ -126,6 +129,7 @@ class CenterDownward(Algorithm):
 
     def get_biggest_contour(self, contours):
         contour_area = 0
+
         for cnt in contours:
             if cv.contourArea(cnt) > contour_area:
                 contour_area = cv.contourArea(cnt)
