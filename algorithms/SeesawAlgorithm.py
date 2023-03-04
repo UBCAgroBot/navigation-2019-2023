@@ -8,7 +8,10 @@ from algorithms.Algorithm import Algorithm
 class SeesawAlgorithm(Algorithm):
 
     def __init__(self, config):
-
+        """
+        Sets seesaw algorithm configurations
+        :param config: config params
+        """
         # masking range for green
         self.LOW_GREEN = np.array(config.lower_hsv_threshold)
         self.HIGH_GREEN = np.array(config.upper_hsv_threshold)
@@ -23,13 +26,25 @@ class SeesawAlgorithm(Algorithm):
         self.HEIGHT = int(config.frame_length)
         self.WIDTH = int(config.frame_width)
 
-    def process_frame(self, frame, show):
+        # visual parameters
+        self.BAR_HEIGHT = config.bar_height
+        self.NORM_FACTOR = config.normalization_factor
 
-        black_frame, points, both_points = self.plot_points(frame)
-        points = np.array(points)
+    def process_frame(self, frame, show):
+        """
+        Divides screen into horizontal strips and draw bars according to the amount
+        of green present on each strip. Draw the best fit line based on the centre of each bar,
+        then calculate the angle between the best fit line and a horizontal line.
+        :param frame: current frame (mat)
+        :param show: show/hide frames on screen for debugging
+        :type show: bool
+        :return: processed frame (mat), angle [-90, 90]
+        """
+
+        black_frame, both_points = self.plot_points(frame)
         both_points = np.array(both_points)
 
-        """get best fit line for middle points"""
+        """get best fit line for centre points"""
         [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
         x1 = int(x - vx * self.WIDTH)
         x2 = int(x + vx * self.WIDTH)
@@ -37,18 +52,36 @@ class SeesawAlgorithm(Algorithm):
         y2 = int(y + vy * self.HEIGHT)
         black_frame = cv.line(black_frame, (x1, y1), (x2, y2), (0, 255, 255), 9)
 
-        """calculate angle"""
+        # calculate angle
         if y1 - y2 != 0:
             angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 2)
         else:
             angle = None
 
+        # alternative way of calculating angle
+        '''
+        angle = 0
+        for point in both_points:
+            if point[0] > self.WIDTH / 2:
+                angle += 1
+            elif point[0] < self.WIDTH / 2:
+                angle -= 1
+        angle = angle/(len(both_points))*90
+        '''
+
         return black_frame, angle
 
     def plot_points(self, frame):
-        """This value needs to be changed to change the height of the bars"""
-        bar_height = int(30)
+        """
+        Divides screen into equally sized rectangles on the left and right side
+        and draw bars according to the amount of green present on each strip.
+        Calculates the centre point of each horizontal strip.
+        :param frame: current frame (mat)
+        :return: processed frame (mat), list of centre points
+        """
 
+        # initializing parameters
+        bar_height = int(self.BAR_HEIGHT)
         mask = self.create_binary_mask(frame)
         half_width = int(self.WIDTH / 2)
 
@@ -58,7 +91,6 @@ class SeesawAlgorithm(Algorithm):
         square_low = 0
         square_high = bar_height
         both_points = []
-
         xs = []
 
         normalized = False
@@ -66,9 +98,11 @@ class SeesawAlgorithm(Algorithm):
 
         black_frame = frame
 
-        """draw rectangle and point for every square, add points to array"""
         while square_low < self.HEIGHT:
+
+            # for each area, calculates the amount of green present
             normalized = False
+
             seg_left = left[int(square_low) + 1:int(square_high), 0:half_width]
             seg_right = right[int(square_low) + 1:int(square_high), 0:half_width]
 
@@ -83,14 +117,16 @@ class SeesawAlgorithm(Algorithm):
 
             xs.append([left_x, right_x])
 
+            # draw bars based on the amount of green present
             x1 = half_width - left_x
             x2 = half_width + right_x
 
-            black_frame = cv.rectangle(black_frame, (half_width, square_low), (
-                x1, int(square_high)), (255, 255, 0), 3)
-            black_frame = cv.rectangle(black_frame, (half_width, square_low), (
-                x2, int(square_high)), (255, 255, 0), 3)
+            black_frame = cv.rectangle(black_frame, (half_width, square_low),
+                                       (x1, int(square_high)), (255, 255, 0), 3)
+            black_frame = cv.rectangle(black_frame, (half_width, square_low),
+                                       (x2, int(square_high)), (255, 255, 0), 3)
 
+            # draw centre points of the bars, add points to a list
             both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
             both_points.append(both_point)
 
@@ -99,17 +135,19 @@ class SeesawAlgorithm(Algorithm):
             square_high += bar_height
             square_low += bar_height
 
+        # normalize the lengths of the bars
         if isnull:
             normalized = True
 
         while normalized is False:
             for points in xs:
-                points[0] = float(1.5*points[0])
-                points[1] = float(1.5*points[1])
+                points[0] = float(self.NORM_FACTOR * points[0])
+                points[1] = float(self.NORM_FACTOR * points[1])
 
                 if points[0] > half_width / 2 or points[1] > half_width / 2:
                     normalized = True
 
+        # draw normalized bars
         square_low = 0
         square_high = bar_height
 
@@ -125,7 +163,7 @@ class SeesawAlgorithm(Algorithm):
             square_high += bar_height
             square_low += bar_height
 
-        return black_frame, points, both_points
+        return black_frame, both_points
 
     def create_binary_mask(self, frame):
         """
