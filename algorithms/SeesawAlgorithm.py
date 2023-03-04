@@ -47,7 +47,7 @@ class SeesawAlgorithm(Algorithm):
 
     def plot_points(self, frame):
         """This value needs to be changed to change the height of the bars"""
-        bar_height = int(90)
+        bar_height = int(30)
 
         mask = self.create_binary_mask(frame)
         half_width = int(self.WIDTH / 2)
