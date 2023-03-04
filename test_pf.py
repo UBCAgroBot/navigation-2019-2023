@@ -120,7 +120,7 @@ def run_algorithm(alg, vid_file):
     if args.show:
         window_name = f'{args.alg}s algorithm on {args.vid}s video'
         app = startGUI(window_name, name1="standard",
-                       name2="processed")
+                       name2="processed", name3='masked')
 
     while vid.isOpened():
         ret, frame = vid.read()
@@ -136,7 +136,7 @@ def run_algorithm(alg, vid_file):
         #
         start_time_frame = time.time()
         #
-        processed, angle = alg.get_extra_content(
+        processed, angle, maskf = alg.get_extra_content(
             frame, show=args.show)
         #
         end_time_frame = time.time()
@@ -149,6 +149,7 @@ def run_algorithm(alg, vid_file):
         #
         if args.show and app.isActive():
             app.update_dict({'processed': processed})
+            app.update_dict({'masked': maskf})
             x = time_till_second  # replace with the integer you want to check
             tolerance = 0.05
             if abs(x - 1) <= tolerance:

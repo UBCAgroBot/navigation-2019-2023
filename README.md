@@ -38,7 +38,7 @@
 - example : `python create_dataset.py -v sim` or `python create_dataset.py -v crop -i 60 -o`
 
 `test_pf.py:`
-  - runs performance tests on any of the algorithms against any video with an optional GUI
+  - runs performance tests on seesaw ~~(any of the algorithms)~~ against any video with an optional GUI
   - reports `framerate`, `time-to-finish`, `vanishing point uptime`, `avg time to process frame`
   - arguments :
     - `-a/--alg` : name of algorithm
@@ -47,7 +47,7 @@
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`
     - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views, adjust saturation, brightness, upper, and lower HSV
-  - example : `python test_pf.py -a center_row -v crop -s`
+  - example : `python test_pf.py -a seesaw -v crop -s`
   
 ### Commands to Start World in Gazebo
 

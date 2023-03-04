@@ -268,6 +268,7 @@ class GUI:
         self.img_container.image = curr_img
         self.fps_label.config(
             text="Frames Per Second: ~" + str(self.fps), padx=10, pady=10)
+        
         self.master.update()
 
     def isActive(self):
@@ -307,7 +308,7 @@ def startGUI(window_name, **kwargs):
                            str(curr_index) + " is missing in startGUI()")
     global root
     root = tk.Tk()
+    isActive = True
     root.protocol("WM_DELETE_WINDOW", onClose)
     app = GUI(root, img_dict, window_name)
-    isActive = True
     return app
