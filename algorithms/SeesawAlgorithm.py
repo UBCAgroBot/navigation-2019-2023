@@ -104,8 +104,8 @@ class SeesawAlgorithm(Algorithm):
 
         while normalized is False:
             for points in xs:
-                points[0] *= 2
-                points[1] *= 2
+                points[0] = float(1.5*points[0])
+                points[1] = float(1.5*points[1])
 
                 if points[0] > half_width / 2 or points[1] > half_width / 2:
                     normalized = True
@@ -114,8 +114,8 @@ class SeesawAlgorithm(Algorithm):
         square_high = bar_height
 
         for points in xs:
-            x1 = half_width - points[0]
-            x2 = half_width + points[1]
+            x1 = int(half_width - points[0])
+            x2 = int(half_width + points[1])
 
             black_frame = cv.rectangle(black_frame, (half_width, square_low), (
                 x1, int(square_high)), (255, 255, 255), 3)
