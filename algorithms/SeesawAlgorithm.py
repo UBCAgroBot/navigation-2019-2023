@@ -1,8 +1,10 @@
 import math
 
 import cv2 as cv
+import numpy
 import numpy as np
 from algorithms.Algorithm import Algorithm
+from helper_scripts.change_res import change_res
 
 
 class SeesawAlgorithm(Algorithm):
@@ -29,6 +31,7 @@ class SeesawAlgorithm(Algorithm):
         # visual parameters
         self.BAR_HEIGHT = config.bar_height
         self.NORM_FACTOR = config.normalization_factor
+        self.RES_FACTOR = config.resolution_factor
 
         # output adjustment
         self.k = config.k
@@ -43,25 +46,30 @@ class SeesawAlgorithm(Algorithm):
         :type show: bool
         :return: processed frame (mat), angle [-90, 90]
         """
-
-        black_frame, both_points = self.plot_points(frame)
+        frame = change_res(frame, self.RES_FACTOR)
+        # black_frame, both_points = self.plot_points(frame)
+        black_frame, both_points = self.plot_points_2(frame)
         both_points = np.array(both_points)
 
-        """get best fit line for centre points"""
-        [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
-        x1 = int(x - vx * self.WIDTH)
-        x2 = int(x + vx * self.WIDTH)
-        y1 = int(y - vy * self.HEIGHT)
-        y2 = int(y + vy * self.HEIGHT)
-        black_frame = cv.line(black_frame, (x1, y1), (x2, y2), (0, 255, 255), 9)
+        if both_points.any():
+            """get best fit line for centre points"""
+            [vx, vy, x, y] = cv.fitLine(both_points, cv.DIST_L2, 0, 0.01, 0.01)
+            x1 = int(x - vx * self.WIDTH)
+            x2 = int(x + vx * self.WIDTH)
+            y1 = int(y - vy * self.HEIGHT)
+            y2 = int(y + vy * self.HEIGHT)
+            black_frame = cv.line(black_frame, (x1, y1), (x2, y2), (0, 255, 255), 9)
 
-        # calculate angle
-        if y1 - y2 != 0:
-            angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 1)
+            # calculate angle
+            if y1 - y2 != 0:
+                angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 1)
+            else:
+                angle = None
         else:
             angle = None
 
         # alternative way of calculating angle
+
         # angle = 0
         # for point in both_points:
         #     if point[0] > self.WIDTH / 2:
@@ -75,6 +83,45 @@ class SeesawAlgorithm(Algorithm):
         #     angle = 0
 
         return black_frame, angle
+
+    def plot_points_2(self, frame):
+
+        bar_height = int(self.BAR_HEIGHT)
+        mask = self.create_binary_mask(frame)
+
+        square_low = 0
+        square_high = bar_height
+
+        black_frame = frame
+
+        centre_points = []
+
+        while square_low < self.HEIGHT:
+            points = []
+
+            seg = mask[int(square_low) + 1:int(square_high), 0:self.WIDTH]
+
+            # iterable = (index for index, x in enumerate(seg[0]) if x == 255)
+            # points = np.fromiter(iterable, int)
+
+            for iy, ix in np.ndindex(seg.shape):
+                if seg[iy, ix] == 255:
+                    points.append(ix)
+
+            # for strip in seg:
+            #     iterable = (index for index, x in enumerate(strip) if x == 255)
+            #     points = np.fromiter(iterable, int)
+
+            if points:
+                centre = int(numpy.average(points))
+                black_frame = cv.circle(black_frame, [int(centre), int((square_high + square_low) / 2)],
+                                        radius=0, color=(0, 0, 255), thickness=15)
+                centre_points.append([centre, int((square_high + square_low) / 2)])
+
+            square_high += bar_height
+            square_low += bar_height
+
+        return frame, centre_points
 
     def plot_points(self, frame):
         """
@@ -113,6 +160,8 @@ class SeesawAlgorithm(Algorithm):
 
             left_x = int(np.sum(seg_left == 255) / bar_height)
             right_x = int(np.sum(seg_right == 255) / bar_height)
+
+            print("lol", seg_left)
 
             if left_x > half_width / 2 or right_x > half_width / 2:
                 normalized = True
