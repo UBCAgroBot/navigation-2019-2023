@@ -21,7 +21,8 @@ class CenterDownward(Algorithm):
 
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
-        self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
+        self.gauss_kernel_size = list(
+            map(int, config.gauss_kernel_size.split(',')))
         self.dilate_kernel_size = config.dilate_kernel_size
         self.sigma_x = config.sigma_x
 
@@ -71,7 +72,8 @@ class CenterDownward(Algorithm):
         contours, contour_frame = self.get_contours(mask)
         cv.drawContours(black_frame, contours, -1, self.contour_color, 3)
         cv.fillPoly(black_frame, pts=contours, color=self.contour_color)
-        lines, slopes, ellipse_frame = self.ellipse_slopes(contours, black_frame)
+        lines, slopes, ellipse_frame = self.ellipse_slopes(
+            contours, black_frame)
 
         if show:
             Lines.draw_lines_on_frame(lines, black_frame)
@@ -117,7 +119,8 @@ class CenterDownward(Algorithm):
         """
         frame = np.zeros((self.HEIGHT, self.WIDTH, 3))
         ret, thresh = cv.threshold(binary_mask, 0, 254, 0)
-        contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv.findContours(
+            thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
         return contours, frame
 
@@ -144,7 +147,8 @@ class CenterDownward(Algorithm):
         rect = cv.minAreaRect(con)
         box = cv.boxPoints(rect)
         box = np.int0(box)
-        black_frame = cv.drawContours(black_frame, [box], 0, (255, 255, 255), 2)
+        black_frame = cv.drawContours(
+            black_frame, [box], 0, (255, 255, 255), 2)
         ellipse = cv.fitEllipse(con)
         self.contours.append(ellipse)
         cv.ellipse(black_frame, ellipse, (255, 255, 255), 2)
@@ -178,11 +182,13 @@ class CenterDownward(Algorithm):
             slopes.append(slope)
             lefty = int((-x * vy / vx) + y)
             righty = int(((cols - x) * vy / vx) + y)
-            black_frame = cv.line(black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
+            black_frame = cv.line(
+                black_frame, (cols - 1, righty), (0, lefty), (255, 255, 0), 9)
             lines.append([cols - 1, righty, 0, lefty])
 
         else:
-            black_frame = cv.line(black_frame, (int(x), 0), (int(x), rows - 1), (255, 255, 0), 9)
+            black_frame = cv.line(black_frame, (int(x), 0),
+                                  (int(x), rows - 1), (255, 255, 0), 9)
             lines.append([int(x), 0, int(x), rows - 1])
 
         return lines, slopes, black_frame

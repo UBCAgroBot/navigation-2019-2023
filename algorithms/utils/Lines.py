@@ -89,7 +89,8 @@ def get_intersections(lines, min_slope=1):
                 x1R, y1R, x2R, y2R = assign_coordinate_values(lineR)
 
                 # calls the getIntersection helper function
-                intersect = get_intersection(((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
+                intersect = get_intersection(
+                    ((x1L, y1L), (x2L, y2L)), ((x1R, y1R), (x2R, y2R)))
                 if isinstance(intersect, bool):
                     continue
 
@@ -228,7 +229,8 @@ def draw_vanishing_point(frame, x_points, y_points, show, use_median=True):
             intersecting_x = np.mean(filtered_x)
             intersecting_y = np.mean(filtered_y)
         if show:
-            cv.circle(frame, (int(intersecting_x), int(intersecting_y)), 8, (255, 0, 0), -1)
+            cv.circle(frame, (int(intersecting_x), int(
+                intersecting_y)), 8, (255, 0, 0), -1)
         return (int(intersecting_x), int(intersecting_y))
     else:
         return None

@@ -36,9 +36,11 @@ def morph_op(mask, kernel_size, op, iterations):
     if op == 2:
         mask = cv.dilate(mask, kernel, iterations=iterations)
     if op == 3:
-        mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel, iterations=iterations)
+        mask = cv.morphologyEx(mask, cv.MORPH_CLOSE,
+                               kernel, iterations=iterations)
     if op == 4:
-        mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel, iterations=iterations)
+        mask = cv.morphologyEx(mask, cv.MORPH_OPEN,
+                               kernel, iterations=iterations)
     else:
         mask = mask
 

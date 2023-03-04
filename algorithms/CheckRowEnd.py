@@ -26,7 +26,7 @@ class CheckRowEnd(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, frame, show):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value
         of zero is greater than req_rows_empty, then frame is row end\n

@@ -24,11 +24,14 @@ class MiniContoursDownwards():
         self.high_green = np.array(config.high_green)
 
         # random colors for drawing lines
-        self.color_1 = (255, 255, 0)  # teal (for contour points that are within bounds)
+        # teal (for contour points that are within bounds)
+        self.color_1 = (255, 255, 0)
         # pink (for the line of best fit through all the contour points that are within bounds)
         self.color_2 = (200, 0, 255)
-        self.color_3 = (0, 0, 255)  # red (for contour points that are out of bounds)
-        self.midline = (0, 129, 255)  # orange (for a reference line vertically down center of frame)
+        # red (for contour points that are out of bounds)
+        self.color_3 = (0, 0, 255)
+        # orange (for a reference line vertically down center of frame)
+        self.midline = (0, 129, 255)
 
         # parameters for calculating centroids and drawing the best fit line among them
         self.num_strips = self.config.num_strips
@@ -65,7 +68,8 @@ class MiniContoursDownwards():
 
         centroids = []
         for i, strip in enumerate(strips):
-            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(
+                strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
@@ -89,7 +93,8 @@ class MiniContoursDownwards():
          -line: A vector [vx, vy, x, y] representing the line of best fit through all the centroids. [vx, vy] is a vector that describes the direction of the line, where (x, y) when taken together is a point on the line
         """""
 
-        mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
+        mask = cv2.inRange(cv2.cvtColor(
+            frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
         # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
@@ -111,8 +116,10 @@ class MiniContoursDownwards():
                 idx = int(x / width * split_factor)
                 segmented_points[idx].append([int(x), int(y)])
                 if show:
-                    cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
-                    cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
+                    cv2.circle(frame, (int(centroid[0]), int(
+                        centroid[1])), 3, self.color_1, -1)
+                    cv2.circle(mask, (int(centroid[0]), int(
+                        centroid[1])), 3, self.color_1, -1)
                 points_vector.append([int(centroid[0]), int(centroid[1])])
 
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -161,7 +168,7 @@ class MiniContoursDownwards():
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, original_frame, num_strips=60, show=False):
         """""
         parameters:
@@ -184,7 +191,8 @@ class MiniContoursDownwards():
 
         if line[0] is not None:
             angle = round(math.degrees(math.atan(-line[0] / line[1])), 2)
-            cv2.line(frame, (int(self.WIDTH / 2), 0), (int(self.WIDTH / 2), int(self.HEIGHT)), self.midline, 2)
+            cv2.line(frame, (int(self.WIDTH / 2), 0),
+                     (int(self.WIDTH / 2), int(self.HEIGHT)), self.midline, 2)
             print(angle)
             return frame, angle
         else:

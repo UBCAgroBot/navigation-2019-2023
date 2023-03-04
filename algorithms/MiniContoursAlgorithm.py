@@ -72,7 +72,8 @@ class MiniContoursAlgorithm(Algorithm):
 
         centroids = []
         for i, strip in enumerate(strips):
-            contours, hierarchy = cv2.findContours(strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(
+                strip, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             strip_centroids = []
             for contour in contours:
                 M = cv2.moments(contour)
@@ -106,7 +107,8 @@ class MiniContoursAlgorithm(Algorithm):
         # lines: list of [[votes, rho, theta]] of all lines
         # point_lines: list of [votes, pt1, pt2] of all lines
 
-        mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
+        mask = cv2.inRange(cv2.cvtColor(
+            frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
         # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
@@ -134,7 +136,8 @@ class MiniContoursAlgorithm(Algorithm):
         if show:
 
             cv2.line(frame, (0, cut_off_height), (width // 2, 0), self.color_2)
-            cv2.line(frame, (width, cut_off_height), (width // 2, 0), self.color_2)
+            cv2.line(frame, (width, cut_off_height),
+                     (width // 2, 0), self.color_2)
 
         for i, strip_centroid in enumerate(centroids):
             if i > int(0.3 * len(centroids)):
@@ -149,12 +152,16 @@ class MiniContoursAlgorithm(Algorithm):
                         segmented_points[idx].append([int(x), int(y)])
 
                         if show:
-                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
-                            cv2.circle(mask, (int(centroid[0]), int(centroid[1])), 3, self.color_1, -1)
-                        points_vector.append([int(centroid[0]), int(centroid[1])])
+                            cv2.circle(frame, (int(centroid[0]), int(
+                                centroid[1])), 3, self.color_1, -1)
+                            cv2.circle(mask, (int(centroid[0]), int(
+                                centroid[1])), 3, self.color_1, -1)
+                        points_vector.append(
+                            [int(centroid[0]), int(centroid[1])])
                     else:
                         if show:
-                            cv2.circle(frame, (int(centroid[0]), int(centroid[1])), 3, self.color_3, -1)
+                            cv2.circle(frame, (int(centroid[0]), int(
+                                centroid[1])), 3, self.color_3, -1)
 
         c_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
 
@@ -210,7 +217,7 @@ class MiniContoursAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, original_frame, num_strips=60, show=False):
 
         # original_frame: BGR frame
@@ -236,9 +243,11 @@ class MiniContoursAlgorithm(Algorithm):
 
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
+        vanishing_point = Lines.draw_vanishing_point(
+            frame, x_points, y_points, show)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
+        angle = Lines.calculate_angle_from_v_point(
+            vanishing_point, self.WIDTH, self.HEIGHT)
 
         return frame, angle

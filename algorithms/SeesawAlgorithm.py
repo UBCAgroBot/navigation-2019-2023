@@ -15,7 +15,8 @@ class SeesawAlgorithm(Algorithm):
 
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
-        self.gauss_kernel_size = list(map(int, config.gauss_kernel_size.split(',')))
+        self.gauss_kernel_size = list(
+            map(int, config.gauss_kernel_size.split(',')))
         self.dilate_kernel_size = config.dilate_kernel_size
         self.sigma_x = config.sigma_x
 
@@ -32,7 +33,7 @@ class SeesawAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, frame, show):
 
         black_frame, points, both_points = self.plot_points(frame)
@@ -45,11 +46,13 @@ class SeesawAlgorithm(Algorithm):
         x2 = int(x + vx * self.WIDTH)
         y1 = int(y - vy * self.HEIGHT)
         y2 = int(y + vy * self.HEIGHT)
-        black_frame = cv.line(black_frame, (x1, y1), (x2, y2), (0, 255, 255), 9)
+        black_frame = cv.line(black_frame, (x1, y1),
+                              (x2, y2), (0, 255, 255), 9)
 
         """calculate angle"""
         if y1 - y2 != 0:
-            angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 2)
+            angle = round(math.degrees(
+                math.atan(int(x2 - x1) / int(y1 - y2))), 2)
         else:
             angle = None
 
@@ -79,7 +82,8 @@ class SeesawAlgorithm(Algorithm):
         while square_low < self.HEIGHT:
             normalized = False
             seg_left = left[int(square_low) + 1:int(square_high), 0:half_width]
-            seg_right = right[int(square_low) + 1:int(square_high), 0:half_width]
+            seg_right = right[int(square_low) +
+                              1:int(square_high), 0:half_width]
 
             left_x = int(np.sum(seg_left == 255) / bar_height)
             right_x = int(np.sum(seg_right == 255) / bar_height)
@@ -97,10 +101,12 @@ class SeesawAlgorithm(Algorithm):
             black_frame = cv.rectangle(black_frame, (half_width, square_low), (
                 x2, int(square_high)), (255, 255, 0), 3)
 
-            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
+            both_point = [int((x1 + x2) / 2),
+                          int((square_high + square_low) / 2)]
             both_points.append(both_point)
 
-            black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 0, 255), thickness=15)
+            black_frame = cv.circle(
+                black_frame, both_point, radius=0, color=(0, 0, 255), thickness=15)
 
             square_high += bar_height
             square_low += bar_height

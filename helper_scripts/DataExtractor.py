@@ -46,17 +46,20 @@ class DataExtractor:
         success, frame = stream.read()
         h, w, d = frame.shape
 
-        out = cv.VideoWriter(f'{self.video_path}/{self.name}_key.mp4', cv.VideoWriter_fourcc(*'mp4v'), 1, (w, h))
+        out = cv.VideoWriter(f'{self.video_path}/{self.name}_key.mp4',
+                             cv.VideoWriter_fourcc(*'mp4v'), 1, (w, h))
 
         count = 0
         while success:
             # if frame is a keyframe create a red, vertical line in the middle of the frame and save it
             if count % self.interval == 0:
-                frame = cv.line(frame, (w // 2, 0), (w // 2, h), (0, 0, 255), thickness=2)
+                frame = cv.line(frame, (w // 2, 0), (w // 2, h),
+                                (0, 0, 255), thickness=2)
                 self.frames.append(frame)
                 self.frames_copy.append(frame.copy())
                 out.write(frame)
-                cv.imwrite(f'{self.keyframes_path}/{self.name}_{count}.jpg', frame)
+                cv.imwrite(
+                    f'{self.keyframes_path}/{self.name}_{count}.jpg', frame)
                 print('frame ', count)
             success, frame = stream.read()
             count += 1

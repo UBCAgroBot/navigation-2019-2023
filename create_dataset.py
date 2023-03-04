@@ -23,7 +23,8 @@ def main():
 
     # verify that video exists in ./videos
     if not path.isfile(f'videos/{video_name}.mp4'):
-        print('--vid', video_name, "is an invalid video name, make sure video exists in ./videos")
+        print('--vid', video_name,
+              "is an invalid video name, make sure video exists in ./videos")
         sys.exit()
 
     # make sure any important data does not get overwritten

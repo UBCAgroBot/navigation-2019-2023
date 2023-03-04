@@ -26,7 +26,8 @@ class ScanningAlgorithm(Algorithm):
         self.right_x_bound = int(self.WIDTH * (1 - self.config.bounding_box_x))
         self.upper_y_bound = int(self.HEIGHT * self.config.bounding_box_y)
         self.lower_y_bound = self.HEIGHT - 1
-        self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
+        self.mid_y = self.lower_y_bound - \
+            (self.lower_y_bound - self.upper_y_bound) // 2
 
         self.kernel = np.ones((5, 5), np.uint8)
 
@@ -37,14 +38,16 @@ class ScanningAlgorithm(Algorithm):
         # creates lines from the top of the horizon to the bottom
         for top_x in range(0, self.WIDTH, self.pixel_gap):
             for bottom_x in range(0, self.WIDTH, self.pixel_gap):
-                line = self.create_line(top_x, self.upper_y_bound, bottom_x, self.lower_y_bound)
+                line = self.create_line(
+                    top_x, self.upper_y_bound, bottom_x, self.lower_y_bound)
                 self.lines.append(line)
 
         # creates lines from horizon to the right side
         for top_x in range(0, self.WIDTH, self.pixel_gap):
             for right_y in range(self.mid_y,
                                  self.lower_y_bound, self.pixel_gap):
-                line1 = self.create_line(top_x, self.upper_y_bound, self.WIDTH - 1, right_y)
+                line1 = self.create_line(
+                    top_x, self.upper_y_bound, self.WIDTH - 1, right_y)
                 self.lines.append(line1)
 
         # creates lines from horizon to the left side
@@ -83,7 +86,7 @@ class ScanningAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, frame, show):
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -98,7 +101,8 @@ class ScanningAlgorithm(Algorithm):
             return mask, None
 
         self.upper_y_bound = white_pixels[0][0]
-        self.mid_y = self.lower_y_bound - (self.lower_y_bound - self.upper_y_bound) // 2
+        self.mid_y = self.lower_y_bound - \
+            (self.lower_y_bound - self.upper_y_bound) // 2
 
         # use this to invert the mask
         # mask = ~mask
@@ -131,7 +135,8 @@ class ScanningAlgorithm(Algorithm):
         most_prominent_pos_lines = pos_array[:, 1][largest_pos_indices]
         most_prominent_neg_lines = neg_array[:, 1][largest_neg_indices]
 
-        most_prominent_lines = numpy.concatenate((most_prominent_pos_lines, most_prominent_neg_lines), axis=None)
+        most_prominent_lines = numpy.concatenate(
+            (most_prominent_pos_lines, most_prominent_neg_lines), axis=None)
 
         # convert to lines as defined in Lines.py
         converted_lines = []
@@ -146,27 +151,33 @@ class ScanningAlgorithm(Algorithm):
 
         x_points = [point[0] for point in intersections]
         y_points = [point[1] for point in intersections]
-        vanishing_point = Lines.draw_vanishing_point(frame, x_points, y_points, show)
+        vanishing_point = Lines.draw_vanishing_point(
+            frame, x_points, y_points, show)
 
         if show:
             for line in converted_lines:
-                frame = cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
+                frame = cv2.line(
+                    frame, (line[0], line[1]), (line[2], line[3]), (255, 255, 255), 1)
 
             # line for the middle of frame
-            frame = cv2.line(frame, (self.WIDTH // 2, self.HEIGHT), (self.WIDTH // 2, 0), (0, 0, 255), 1)
+            frame = cv2.line(frame, (self.WIDTH // 2, self.HEIGHT),
+                             (self.WIDTH // 2, 0), (0, 0, 255), 1)
 
             # point with x coordinate of the vanishing point and y coordinate of the end of the crop row
-            frame = cv2.circle(frame, (vanishing_point[0], self.upper_y_bound), 5, (0, 255, 0), -1)
+            frame = cv2.circle(
+                frame, (vanishing_point[0], self.upper_y_bound), 5, (0, 255, 0), -1)
 
             # point in the middle of frame at midpoint between the horizon and bottom of the screen
-            frame = cv2.circle(frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
+            frame = cv2.circle(
+                frame, (self.WIDTH // 2, self.mid_y), 5, (0, 255, 0), -1)
 
             # line between the two points above
             frame = cv2.line(frame, (self.WIDTH // 2, self.mid_y),
                              (vanishing_point[0], self.upper_y_bound), (0, 255, 0), 2)
 
         # Calculating angle from vanishing point to (self.WIDTH // 2, 0)
-        angle = Lines.calculate_angle_from_v_point(vanishing_point, self.WIDTH, self.HEIGHT)
+        angle = Lines.calculate_angle_from_v_point(
+            vanishing_point, self.WIDTH, self.HEIGHT)
 
         return frame, angle
 
