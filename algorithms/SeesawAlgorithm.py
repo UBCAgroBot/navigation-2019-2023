@@ -68,20 +68,6 @@ class SeesawAlgorithm(Algorithm):
         else:
             angle = None
 
-        # alternative way of calculating angle
-
-        # angle = 0
-        # for point in both_points:
-        #     if point[0] > self.WIDTH / 2:
-        #         angle += 1
-        #     elif point[0] < self.WIDTH / 2:
-        #         angle -= 1
-        #
-        # if abs(angle) >= self.k:
-        #     angle = round(angle/(len(both_points))*90, 1)
-        # else:
-        #     angle = 0
-
         return black_frame, angle
 
     def plot_points_2(self, frame):
@@ -101,18 +87,14 @@ class SeesawAlgorithm(Algorithm):
 
             seg = mask[int(square_low) + 1:int(square_high), 0:self.WIDTH]
 
-            # iterable = (index for index, x in enumerate(seg[0]) if x == 255)
-            # points = np.fromiter(iterable, int)
+            condition = (seg == 255)
+            points = np.where(condition)[1]
 
-            for iy, ix in np.ndindex(seg.shape):
-                if seg[iy, ix] == 255:
-                    points.append(ix)
+            # for iy, ix in np.ndindex(seg.shape):
+            #     if seg[iy, ix] == 255:
+            #         points.append(ix)
 
-            # for strip in seg:
-            #     iterable = (index for index, x in enumerate(strip) if x == 255)
-            #     points = np.fromiter(iterable, int)
-
-            if points:
+            if points.any():
                 centre = int(numpy.average(points))
                 black_frame = cv.circle(black_frame, [int(centre), int((square_high + square_low) / 2)],
                                         radius=0, color=(0, 0, 255), thickness=15)
