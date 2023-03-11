@@ -10,3 +10,11 @@ def change_res(frame, scale_percent):
     frame = cv.resize(frame, dim, interpolation=cv.INTER_AREA)
 
     return frame
+
+
+def change_res_2(frame, resolution):
+    height, width, channels = frame.shape
+    new_width = int(width/height*resolution)
+    frame = cv.resize(frame, (new_width, resolution), interpolation=cv.INTER_AREA)
+
+    return frame
