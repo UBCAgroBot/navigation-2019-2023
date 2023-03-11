@@ -10,6 +10,7 @@ from algorithms.Algorithm import Algorithm
 from algorithms.utils import Lines
 
 
+cmask = ""
 class MiniContoursAlgorithm(Algorithm):
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
@@ -108,6 +109,8 @@ class MiniContoursAlgorithm(Algorithm):
 
         mask = cv2.inRange(cv2.cvtColor(frame, cv2.COLOR_BGR2HSV), self.low_green, self.high_green)
         mask = cv2.medianBlur(mask, 9)
+        global cmask
+        cmask = mask
         # mask = cv2.GaussianBlur(mask, (9,9), 10)
         # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, self.morphology_kernel)
         centroids = self.get_centroids(mask, num_strips=num_strips)
@@ -202,8 +205,10 @@ class MiniContoursAlgorithm(Algorithm):
         return frame, lines, point_lines
 
     def get_extra_content(self, frame, show):
+        global cmask
+        # maskf = self.create_binary_mask(frame)
         item1, item2 = self.process_frame(frame, show)
-        return item1, item2
+        return item1, item2, cmask
 
     def update_lower_hsv(self, next):
         self.LOW_GREEN = np.array(next)

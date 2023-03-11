@@ -18,8 +18,9 @@ class CheckRowEnd(Algorithm):
         self.percentage_of_empty_rows = config.percentage_of_empty_rows
 
     def get_extra_content(self, frame, show):
+        maskf = self.create_binary_mask(frame)
         item1, item2 = self.process_frame(frame, show)
-        return item1, item2
+        return item1, item2, maskf
 
     def update_lower_hsv(self, next):
         self.LOW_GREEN = np.array(next)

@@ -132,7 +132,8 @@ def run_algorithm(alg, vid_file):
             app.update_dict({'standard': frame})
             alg.update_lower_hsv(app.getLowerHSV())
             alg.update_upper_hsv(app.getUpperHSV())
-            frame = app.apply_filter(frame)
+            # uncomment if want the input to be affected
+            # frame = app.apply_filter(frame)
         #
         start_time_frame = time.time()
         #

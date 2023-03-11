@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk # change to Tkinter for python2
 
 import cv2 as cv
 import numpy as np
@@ -10,6 +10,7 @@ img_dict = {}
 isActive = False
 
 
+# scanning not working + no binary_mask
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
     creates 2 sliders for brightness and saturation, then render images accordingly\n

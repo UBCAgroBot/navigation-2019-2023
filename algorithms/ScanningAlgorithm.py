@@ -76,7 +76,8 @@ class ScanningAlgorithm(Algorithm):
 
     def get_extra_content(self, frame, show):
         item1, item2 = self.process_frame(frame, show)
-        return item1, item2
+        maskf = frame
+        return item1, item2, maskf
 
     def update_lower_hsv(self, next):
         self.LOW_GREEN = np.array(next)
