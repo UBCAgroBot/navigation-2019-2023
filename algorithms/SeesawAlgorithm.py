@@ -46,6 +46,7 @@ class SeesawAlgorithm(Algorithm):
         :type show: bool
         :return: processed frame (mat), angle [-90, 90]
         """
+
         frame = change_res(frame, self.RES_FACTOR)
         # black_frame, both_points = self.plot_points(frame)
         black_frame, both_points = self.plot_points_2(frame)
@@ -79,7 +80,6 @@ class SeesawAlgorithm(Algorithm):
         square_high = bar_height
 
         black_frame = frame
-
         centre_points = []
 
         while square_low < self.HEIGHT:
@@ -89,10 +89,6 @@ class SeesawAlgorithm(Algorithm):
 
             condition = (seg == 255)
             points = np.where(condition)[1]
-
-            # for iy, ix in np.ndindex(seg.shape):
-            #     if seg[iy, ix] == 255:
-            #         points.append(ix)
 
             if points.any():
                 centre = int(numpy.average(points))

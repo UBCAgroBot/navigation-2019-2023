@@ -14,6 +14,7 @@ from algorithms.ScanningAlgorithm import ScanningAlgorithm
 import pre_process
 from algorithms.SeesawAlgorithm import SeesawAlgorithm
 from algorithms.CenterDownwards import CenterDownward
+from helper_scripts.change_res import change_res_2
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -74,6 +75,7 @@ def run_algorithm(alg, vid_file):
 
     while vid.isOpened():
         ret, frame = vid.read()
+        frame = change_res_2(frame, 720)
 
         if not ret:
             print('No More Frames Remaining')
