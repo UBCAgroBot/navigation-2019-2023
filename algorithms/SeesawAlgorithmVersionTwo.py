@@ -43,7 +43,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
         """
 
         frame = change_res(frame, self.RES_FACTOR)
-        black_frame, average_points = self.plot_points(frame)
+        black_frame, average_points, overall_bias = self.plot_points(frame)
         average_points = np.array(average_points)
 
         if average_points.any():
@@ -58,12 +58,20 @@ class SeesawAlgorithmVersionTwo(Algorithm):
             # calculate angle
             if y1 - y2 != 0:
                 angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 1)
-            else:
-                angle = None
-        else:
-            angle = None
+                bias = round(numpy.average(overall_bias)/(self.WIDTH/2)*90, 2)
 
-        return black_frame, angle
+                if abs(angle) > abs(bias):
+                    output = angle
+                else:
+                    output = bias
+            else:
+                output = None
+        else:
+            output = None
+
+        black_frame = self.print_text(frame, str(output))
+
+        return black_frame, output
 
     def plot_points(self, frame):
         """
@@ -71,7 +79,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
         :param frame: current frame (mat)
         :return: processed frame (mat), list of centre points
         """
-
+        frame = cv.line(frame, (int(self.WIDTH/2), 0), (int(self.WIDTH/2), int(self.HEIGHT)), (255, 0, 255), 9)
         bar_height = int(self.BAR_HEIGHT)
         mask = self.create_binary_mask(frame)
 
@@ -81,6 +89,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
         black_frame = frame
 
         centre_points = []
+        overall_bias = []
 
         while square_low < self.HEIGHT:
             points = []
@@ -92,14 +101,39 @@ class SeesawAlgorithmVersionTwo(Algorithm):
 
             if points.any():
                 centre = int(numpy.average(points))
+                bias = int(centre - self.WIDTH/2)
                 black_frame = cv.circle(black_frame, [int(centre), int((square_high + square_low) / 2)],
                                         radius=0, color=(0, 0, 255), thickness=15)
                 centre_points.append([centre, int((square_high + square_low) / 2)])
+                overall_bias.append(bias)
 
             square_high += bar_height
             square_low += bar_height
 
-        return frame, centre_points
+        return frame, centre_points, overall_bias
+
+
+    def print_text(self, frame, text):
+
+        # Define the font and text size
+        font = cv.FONT_HERSHEY_SIMPLEX
+        font_scale = 1
+
+        # Define the color and thickness of the text
+        color = (255, 255, 255)  # in BGR format
+        thickness = 2
+
+        # Get the size of the text box
+        text_size, _ = cv.getTextSize(text, font, font_scale, thickness)
+
+        # Calculate the position of the text box
+        x = int((frame.shape[1] - text_size[0]) / 4)
+        y = int((frame.shape[0] + text_size[1]) / 4)
+
+        # Draw the text on the image
+        cv.putText(frame, text, (x, y), font, font_scale, color, thickness)
+
+        return frame
 
     def create_binary_mask(self, frame):
         """
