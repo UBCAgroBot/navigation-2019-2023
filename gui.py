@@ -2,6 +2,8 @@ import tkinter as tk # change to Tkinter for python2
 
 import cv2 as cv
 import numpy as np
+import sys
+sys.path.insert(1, '')
 from PIL import Image, ImageTk
 
 import pre_process
@@ -10,6 +12,7 @@ img_dict = {}
 isActive = False
 
 
+# TODO: sliders and show colors
 # scanning not working + no binary_mask
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
@@ -136,10 +139,29 @@ class GUI:
         self.update_btn_high = tk.Button(
             self.upper_frame, text="Update", command=self.update_upper_hsv)
         self.update_btn_high.pack(pady=0, side="left")
+
+        # # Create the three sliders for MAX Hue, Saturation, and Value
+        # self.max_hue_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Hue", command=self.update_color)
+        # self.max_hue_slider.pack()
+
+        # self.max_saturation_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Saturation", command=self.update_color)
+        # self.max_saturation_slider.pack()
+
+        # self.max_value_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Value", command=self.update_color)
+        # self.max_value_slider.pack()
+
+        # self.color_canvas = tk.Canvas(self.upper_frame, width=50, height=50, bg="#000000")
+        # self.color_canvas.pack()
         #
         #
         #
         self.render_image()
+
+    def update_color(self, event=None):
+        r, g, b = self.max_hue_slider.get(), self.max_saturation_slider.get(), self.max_value_slider.get()
+        color = f"#{r:02x}{g:02x}{b:02x}"
+        self.color_canvas.config(bg=color)
+
 
     def update_upper_hsv(self):
         upper_h = int(self.up_h_entry.get())
