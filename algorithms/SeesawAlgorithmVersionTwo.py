@@ -100,7 +100,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
             points = np.where(condition)[1]
 
             if points.any():
-                centre = int(numpy.average(points))
+                centre = int(numpy.median(points))
                 bias = int(centre - self.WIDTH/2)
                 black_frame = cv.circle(black_frame, [int(centre), int((square_high + square_low) / 2)],
                                         radius=0, color=(0, 0, 255), thickness=15)
@@ -111,7 +111,6 @@ class SeesawAlgorithmVersionTwo(Algorithm):
             square_low += bar_height
 
         return frame, centre_points, overall_bias
-
 
     def print_text(self, frame, text):
 
