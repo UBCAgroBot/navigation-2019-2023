@@ -15,6 +15,7 @@ from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
 from algorithms.SeesawAlgorithm import SeesawAlgorithm
+from algorithms.SeesawAlgorithmVersionTwo import SeesawAlgorithmVersionTwo
 from gui import startGUI
 
 # parser for command line arguments
@@ -38,7 +39,10 @@ algo_list = [
     ('check_row_end',
      CheckRowEnd),
     ('seesaw',
-     SeesawAlgorithm)]
+     SeesawAlgorithm),
+     ('seesaw_v2',
+     SeesawAlgorithmVersionTwo)
+     ]
 #
 number_of_frames = 0
 

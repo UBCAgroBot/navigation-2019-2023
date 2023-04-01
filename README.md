@@ -38,11 +38,11 @@
 - example : `python create_dataset.py -v sim` or `python create_dataset.py -v crop -i 60 -o`
 
 `test_pf.py:`
-  - runs performance tests on seesaw ~~(any of the algorithms)~~ against any video with an optional GUI
+  - runs performance tests on algorithms against any video with an optional GUI
   - reports `framerate`, `time-to-finish`, `vanishing point uptime`, `avg time to process frame`
   - arguments :
     - `-a/--alg` : name of algorithm
-      - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, `seesaw`, or `check_row_end`
+      - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, `seesaw`, `seesaw_v2`, or `check_row_end`
     - `-v/--vid` : name of video
       - video has to be stored in `./videos/`
       - video configuration has to be stored as a `yaml` at `./config/video/`

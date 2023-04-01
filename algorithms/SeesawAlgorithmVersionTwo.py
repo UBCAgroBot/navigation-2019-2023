@@ -31,6 +31,17 @@ class SeesawAlgorithmVersionTwo(Algorithm):
         self.BAR_HEIGHT = config.bar_height
         self.RES_FACTOR = config.resolution_factor
 
+    def get_extra_content(self, frame, show):
+        maskf = self.create_binary_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+
     def process_frame(self, frame, show):
         """
         Divides screen into horizontal strips and find average location of green for each strip.
