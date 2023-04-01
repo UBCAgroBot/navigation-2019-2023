@@ -11,6 +11,8 @@ from algorithms.utils import Lines
 
 
 cmask = ""
+
+
 class MiniContoursAlgorithm(Algorithm):
     # applies hsv binarization to the image
     # slices the image into horizontal strips and finds all the contours in each strip
@@ -215,7 +217,7 @@ class MiniContoursAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, original_frame, num_strips=60, show=False):
 
         # original_frame: BGR frame

@@ -42,7 +42,7 @@ class HoughAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
     def process_frame(self, frame, show=True):

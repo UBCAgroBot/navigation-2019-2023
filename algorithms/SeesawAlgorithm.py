@@ -33,7 +33,7 @@ class SeesawAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, frame, show):
 
         black_frame, points, both_points = self.plot_points(frame)

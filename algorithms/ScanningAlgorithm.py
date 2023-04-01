@@ -84,7 +84,7 @@ class ScanningAlgorithm(Algorithm):
 
     def update_upper_hsv(self, next):
         self.HIGH_GREEN = np.array(next)
-        
+
     def process_frame(self, frame, show):
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)

@@ -1,4 +1,4 @@
-import tkinter as tk # change to Tkinter for python2
+import tkinter as tk  # change to Tkinter for python2
 
 import cv2 as cv
 import numpy as np
@@ -61,7 +61,11 @@ class GUI:
 
         for i, (img_name, img_array) in enumerate(img_dict.items(), 1):
             radiobutton = tk.Radiobutton(
-                self.scrollable_frame, text=img_name, variable=self.var, value=i, command=lambda i=i: self.update_frameType(i))
+                self.scrollable_frame,
+                text=img_name,
+                variable=self.var,
+                value=i,
+                command=lambda i=i: self.update_frameType(i))
             radiobutton.pack(pady=5, side="bottom")
 
         self.brightness_scale = tk.Scale(self.scrollable_frame, from_=0, to=255, orient="horizontal",
@@ -77,12 +81,12 @@ class GUI:
         # Create a Frame to hold both the upper and lower frames
         self.center_frame = tk.Frame(self.scrollable_frame)
         self.center_frame.pack(in_=self.scrollable_frame, anchor="c", side="bottom")
-        
+
         self.lower_frame = tk.Frame(self.center_frame)
         self.lower_frame.pack(in_=self.center_frame, anchor="c", side="left", ipady=15)
         self.upper_frame = tk.Frame(self.center_frame)
         self.upper_frame.pack(in_=self.center_frame, anchor="c", side="right", ipadx=15)
-        
+
         self.alert_for_hsv = tk.Label(
             self.lower_frame, text="", fg="red")
         self.alert_for_hsv.pack(side="top", anchor="c")
@@ -142,39 +146,81 @@ class GUI:
         # self.update_btn_high.pack(pady=0, side="left")
 
         # Create the three sliders for MIN Hue, Saturation, and Value
-        self.min_hue_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Hue", command=self.update_min_color_canvas)
+        self.min_hue_slider = tk.Scale(
+            self.lower_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Min Hue",
+            command=self.update_min_color_canvas)
         self.min_hue_slider.set(self.LOWER_GREEN[0])
         self.min_hue_slider.pack()
 
-        self.min_saturation_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Saturation", command=self.update_min_color_canvas)
+        self.min_saturation_slider = tk.Scale(
+            self.lower_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Min Saturation",
+            command=self.update_min_color_canvas)
         self.min_saturation_slider.set(self.LOWER_GREEN[1])
         self.min_saturation_slider.pack()
 
-        self.min_value_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Value", command=self.update_min_color_canvas)
+        self.min_value_slider = tk.Scale(
+            self.lower_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Min Value",
+            command=self.update_min_color_canvas)
         self.min_value_slider.set(self.LOWER_GREEN[2])
         self.min_value_slider.pack()
 
         self.min_color_canvas = tk.Canvas(self.lower_frame, width=20, height=20, bg="#000000")
         self.min_color_canvas.pack()
-        self.min_color_update_button = tk.Button(self.lower_frame, text="Update Min Color", command=self.update_min_color)
+        self.min_color_update_button = tk.Button(
+            self.lower_frame,
+            text="Update Min Color",
+            command=self.update_min_color)
         self.min_color_update_button.pack()
 
         # Create the three sliders for MAX Hue, Saturation, and Value
-        self.max_hue_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Hue", command=self.update_max_color_canvas)
+        self.max_hue_slider = tk.Scale(
+            self.upper_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Max Hue",
+            command=self.update_max_color_canvas)
         self.max_hue_slider.set(self.UPPER_GREEN[0])
         self.max_hue_slider.pack()
 
-        self.max_saturation_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Saturation", command=self.update_max_color_canvas)
+        self.max_saturation_slider = tk.Scale(
+            self.upper_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Max Saturation",
+            command=self.update_max_color_canvas)
         self.max_saturation_slider.set(self.UPPER_GREEN[1])
         self.max_saturation_slider.pack()
 
-        self.max_value_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Value", command=self.update_max_color_canvas)
+        self.max_value_slider = tk.Scale(
+            self.upper_frame,
+            from_=0,
+            to=255,
+            orient="horizontal",
+            label="Max Value",
+            command=self.update_max_color_canvas)
         self.max_value_slider.set(self.UPPER_GREEN[2])
         self.max_value_slider.pack()
 
         self.max_color_canvas = tk.Canvas(self.upper_frame, width=20, height=20, bg="#000000")
         self.max_color_canvas.pack()
-        self.max_color_update_button = tk.Button(self.upper_frame, text="Update Max Color", command=self.update_max_color)
+        self.max_color_update_button = tk.Button(
+            self.upper_frame,
+            text="Update Max Color",
+            command=self.update_max_color)
         self.max_color_update_button.pack()
         #
         #
@@ -234,8 +280,6 @@ class GUI:
 
             self.alert_for_hsv.config(
                 text=warning)
-
-
 
     def update_upper_hsv(self):
         upper_h = int(self.up_h_entry.get())
@@ -365,7 +409,7 @@ class GUI:
         self.img_container.image = curr_img
         self.fps_label.config(
             text="Frames Per Second: ~" + str(self.fps), padx=10, pady=10)
-        
+
         self.master.update()
 
     def isActive(self):
@@ -396,7 +440,7 @@ def startGUI(window_name, **kwargs):
         raise KeyError("kwargs is empty in startGUI(), start with name1= ... ")
 
     for key, value in kwargs.items():
-        if key == curr_name+str(curr_index):
+        if key == curr_name + str(curr_index):
             frame_type = value
             img_dict[frame_type] = np.zeros((100, 100))
             curr_index += 1
