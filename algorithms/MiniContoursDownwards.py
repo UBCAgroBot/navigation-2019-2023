@@ -6,6 +6,7 @@ import sys
 import math
 from algorithms.utils import Lines
 
+cmask = ""
 
 class MiniContoursDownwards():
 
@@ -144,6 +145,8 @@ class MiniContoursDownwards():
         else:
             line = None
 
+        global cmask
+        cmask = c_mask
         if show:
             cv2.imshow('frame', frame)
             cv2.imshow('mask', mask)
@@ -152,6 +155,18 @@ class MiniContoursDownwards():
 
         return frame, line
 
+    def get_extra_content(self, frame, show):
+        global cmask
+        # maskf = self.create_binary_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, cmask
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     def process_frame(self, original_frame, num_strips=60, show=False):
         """""
         parameters:

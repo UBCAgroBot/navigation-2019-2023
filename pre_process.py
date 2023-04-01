@@ -1,5 +1,7 @@
-import cv2
 import math
+
+import cv2
+import numpy as np
 
 BRIGHTNESS_BASELINE = 110
 SATURATION_BASELINE = 105
@@ -145,6 +147,15 @@ def increase_saturation(img, value):
 
 
 def standardize_frame(img):
+    if len(img.shape) < 3:
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    try:
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    except:
+        img_float32 = np.float32(img)
+        hsv = cv2.cvtColor(img_float32, cv2.COLOR_BGR2HSV)
+
     """
         Main function that modifies the saturation and brightness of a frame
         based on it's mean s and v values.
@@ -163,15 +174,33 @@ def standardize_frame(img):
 
     if mean_brightness < BRIGHTNESS_BASELINE:
         if mean_brightness + ACCEPTABLE_DIFFERENCE < BRIGHTNESS_BASELINE:
-            img = alter_brightness(img, math.floor(BRIGHTNESS_BASELINE - (mean_brightness + ACCEPTABLE_DIFFERENCE)))
+            img = alter_brightness(img, math.floor(
+                BRIGHTNESS_BASELINE - (mean_brightness + ACCEPTABLE_DIFFERENCE)))
     else:
         if mean_brightness - ACCEPTABLE_DIFFERENCE > BRIGHTNESS_BASELINE:
-            img = alter_brightness(img, math.floor(BRIGHTNESS_BASELINE - (mean_brightness - ACCEPTABLE_DIFFERENCE)))
+            img = alter_brightness(img, math.floor(
+                BRIGHTNESS_BASELINE - (mean_brightness - ACCEPTABLE_DIFFERENCE)))
     if mean_saturation < SATURATION_BASELINE:
         if mean_saturation + ACCEPTABLE_DIFFERENCE < SATURATION_BASELINE:
-            img = alter_saturation(img, math.floor(SATURATION_BASELINE - (mean_saturation + ACCEPTABLE_DIFFERENCE)))
+            img = alter_saturation(img, math.floor(
+                SATURATION_BASELINE - (mean_saturation + ACCEPTABLE_DIFFERENCE)))
     else:
         if mean_saturation - ACCEPTABLE_DIFFERENCE > SATURATION_BASELINE:
-            img = alter_saturation(img, math.floor(SATURATION_BASELINE - (mean_saturation - ACCEPTABLE_DIFFERENCE)))
+            img = alter_saturation(img, math.floor(
+                SATURATION_BASELINE - (mean_saturation - ACCEPTABLE_DIFFERENCE)))
+            img = alter_brightness(img, math.floor(
+                BRIGHTNESS_BASELINE - (mean_brightness + ACCEPTABLE_DIFFERENCE)))
+        else:
+            if mean_brightness - ACCEPTABLE_DIFFERENCE > BRIGHTNESS_BASELINE:
+                img = alter_brightness(img, math.floor(
+                    BRIGHTNESS_BASELINE - (mean_brightness - ACCEPTABLE_DIFFERENCE)))
+    if mean_saturation < SATURATION_BASELINE:
+        if mean_saturation + ACCEPTABLE_DIFFERENCE < SATURATION_BASELINE:
+            img = alter_saturation(img, math.floor(
+                SATURATION_BASELINE - (mean_saturation + ACCEPTABLE_DIFFERENCE)))
+    else:
+        if mean_saturation - ACCEPTABLE_DIFFERENCE > SATURATION_BASELINE:
+            img = alter_saturation(img, math.floor(
+                SATURATION_BASELINE - (mean_saturation - ACCEPTABLE_DIFFERENCE)))
 
     return img

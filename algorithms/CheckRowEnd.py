@@ -17,6 +17,17 @@ class CheckRowEnd(Algorithm):
         # Percentage of empty rows required to register as row end
         self.percentage_of_empty_rows = config.percentage_of_empty_rows
 
+    def get_extra_content(self, frame, show):
+        maskf = self.create_binary_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     def process_frame(self, frame, show):
         """Averages values in each row in a mask of the frame. If the number of rows with an average value
         of zero is greater than req_rows_empty, then frame is row end\n

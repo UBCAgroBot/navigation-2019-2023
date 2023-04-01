@@ -32,6 +32,17 @@ class HoughAlgorithm(Algorithm):
         # resize factor
         self.RESIZE_FACTOR = config.resize_factor
 
+    def get_extra_content(self, frame, show):
+        maskf = self.create_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     # processFrame function that is called to process a frame of a video
     # takes in frame mat object obtained from cv2 video.read()
     def process_frame(self, frame, show=True):

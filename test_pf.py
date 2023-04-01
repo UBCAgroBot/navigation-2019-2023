@@ -1,9 +1,11 @@
-import time
 import argparse
 import os.path as path
 import sys
+import time
+import tkinter as tk
 
 import cv2 as cv
+import numpy as np
 from omegaconf import OmegaConf
 
 from algorithms.CenterRowAlgorithm import CenterRowAlgorithm
@@ -12,7 +14,9 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
-
+from algorithms.SeesawAlgorithm import SeesawAlgorithm
+from algorithms.SeesawAlgorithmVersionTwo import SeesawAlgorithmVersionTwo
+from gui import startGUI
 
 # parser for command line arguments
 parser = argparse.ArgumentParser()
@@ -33,7 +37,14 @@ algo_list = [
     ('scanning',
      ScanningAlgorithm),
     ('check_row_end',
-     CheckRowEnd)]
+     CheckRowEnd),
+    ('seesaw',
+     SeesawAlgorithm),
+     ('seesaw_v2',
+     SeesawAlgorithmVersionTwo)
+     ]
+#
+number_of_frames = 0
 
 
 # ability to pass in args for reusability
@@ -106,38 +117,63 @@ def run_algorithm(alg, vid_file):
 
     total_run = 0
     uptime = 0
-    all_frame = []
+    all_frame_time = []
+    time_till_second = 0
+    frame_within_second = 0
+    #
+    if args.show:
+        window_name = f'{args.alg}s algorithm on {args.vid}s video'
+        app = startGUI(window_name, name1="standard",
+                       name2="processed", name3='masked')
+
     while vid.isOpened():
         ret, frame = vid.read()
         if not ret:
             print('No More Frames Remaining\n')
             break
-
+        #
+        if args.show and app.isActive():
+            app.update_dict({'standard': frame})
+            alg.update_lower_hsv(app.getLowerHSV())
+            alg.update_upper_hsv(app.getUpperHSV())
+            # uncomment if want the input to be affected
+            frame = app.apply_filter(frame)
+        #
         start_time_frame = time.time()
-        processed_image, angle = alg.process_frame(frame, show=args.show)
+        #
+        processed, angle, maskf = alg.get_extra_content(
+            frame, show=args.show)
+        #
         end_time_frame = time.time()
-        all_frame.append(end_time_frame - start_time_frame)
-
+        #
+        all_frame_time.append(end_time_frame - start_time_frame)
+        #
         print(angle)
-
+        time_till_second += end_time_frame - start_time_frame
+        frame_within_second += 1
+        #
+        if args.show and app.isActive():
+            app.update_dict({'processed': processed})
+            app.update_dict({'masked': maskf})
+            x = time_till_second  # replace with the integer you want to check
+            tolerance = 0.05
+            if abs(x - 1) <= tolerance:
+                app.update_fps(frame_within_second)
+                frame_within_second = 0
+                time_till_second = 0
+            app.render_image()
         # counters
         if angle is not None:
             uptime += 1
         total_run += 1
-
-        if args.show:
-            cv.imshow(
-                f'{args.alg}s algorithm on {args.vid}s video', processed_image)
-
-        key = cv.waitKey(25)
-
-        # Exit if Esc key is pressed
+        #
+        key = cv.waitKey(1)
         if key == 27:
             break
-
+    #
     vid.release()
     cv.destroyAllWindows()
-    return uptime, total_run, all_frame
+    return uptime, total_run, all_frame_time
 
 
 if __name__ == '__main__':

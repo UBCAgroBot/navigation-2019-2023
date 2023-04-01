@@ -23,6 +23,17 @@ class SeesawAlgorithm(Algorithm):
         self.HEIGHT = int(config.frame_length)
         self.WIDTH = int(config.frame_width)
 
+    def get_extra_content(self, frame, show):
+        maskf = self.create_binary_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     def process_frame(self, frame, show):
 
         black_frame, points, both_points = self.plot_points(frame)

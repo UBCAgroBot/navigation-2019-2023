@@ -2,8 +2,8 @@ import math
 
 import cv2 as cv
 import numpy as np
-from algorithms.Algorithm import Algorithm
 
+from algorithms.Algorithm import Algorithm
 from algorithms.utils import Lines
 
 
@@ -18,6 +18,7 @@ class CenterRowAlgorithm(Algorithm):
         # masking range for green
         self.LOW_GREEN = np.array(config.lower_hsv_threshold)
         self.HIGH_GREEN = np.array(config.upper_hsv_threshold)
+        # print(self.LOW_GREEN, self.HIGH_GREEN)
 
         # filtering parameters
         self.averaging_kernel_size = config.averaging_kernel_size
@@ -44,6 +45,17 @@ class CenterRowAlgorithm(Algorithm):
         self.center = None
         self.center_angle = 0
 
+    def get_extra_content(self, frame, show):
+        maskf = self.create_binary_mask(frame)
+        item1, item2 = self.process_frame(frame, show)
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     def process_frame(self, frame, show):
         """Uses contouring to create contours around each crop row and uses these contours to find centroid lines,
         row vanishing point, a center contour and the angle between the center contour and vanishing point\n

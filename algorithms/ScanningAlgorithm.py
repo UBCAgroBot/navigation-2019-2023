@@ -74,6 +74,17 @@ class ScanningAlgorithm(Algorithm):
 
         return line
 
+    def get_extra_content(self, frame, show):
+        item1, item2 = self.process_frame(frame, show)
+        maskf = frame
+        return item1, item2, maskf
+
+    def update_lower_hsv(self, next):
+        self.LOW_GREEN = np.array(next)
+
+    def update_upper_hsv(self, next):
+        self.HIGH_GREEN = np.array(next)
+        
     def process_frame(self, frame, show):
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)

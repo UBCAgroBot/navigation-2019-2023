@@ -38,18 +38,17 @@
 - example : `python create_dataset.py -v sim` or `python create_dataset.py -v crop -i 60 -o`
 
 `test_pf.py:`
-
-- runs performance tests on any of the algorithms against any video
+- runs performance tests on algorithms against any video with an optional GUI
 - reports `framerate`, `time-to-finish`, `vanishing point uptime`, `avg time to process frame`
 - arguments :
   - `-a/--alg` : name of algorithm
-    - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, `check_row_end` or `center_down`
+    - `hough`, `center_row`, `mini_contour`, `mini_contour_downward`, `scanning`, `seesaw`, `seesaw_v2`, or `check_row_end`
   - `-v/--vid` : name of video
     - video has to be stored in `./videos/`
     - video configuration has to be stored as a `yaml` at `./config/video/`
-  - `-s/--show` : process drawings and show frame
-- example : `python test_pf.py -a center_row -v farm4`
-
+  - `-s/--show` : creates a GUI that shows the frame, allow filter, toggle between views, adjust saturation, brightness, upper, and lower HSV
+- example : `python test_pf.py -a seesaw -v crop -s`
+  
 ### Commands to Start World in Gazebo
 
 Run the following Commands the first time:
