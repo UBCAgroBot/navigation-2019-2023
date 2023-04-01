@@ -2,8 +2,8 @@ import tkinter as tk # change to Tkinter for python2
 
 import cv2 as cv
 import numpy as np
-import sys
-sys.path.insert(1, '')
+# import sys
+# sys.path.insert(1, '')
 from PIL import Image, ImageTk
 
 import pre_process
@@ -12,7 +12,6 @@ img_dict = {}
 isActive = False
 
 
-# TODO: sliders and show colors
 # scanning not working + no binary_mask
 class GUI:
     """Creates GUI with tkinter: initializes a master window, creates the same number of radiobuttons as the length of img_dict,
@@ -75,92 +74,167 @@ class GUI:
         self.saturation_scale.set(self.current_avg_saturation)
         self.saturation_scale.pack(pady=5, side="bottom")
         #
-        #
-        self.upper_frame = tk.Frame(self.scrollable_frame)
-        self.upper_frame.pack(in_=self.scrollable_frame,
-                              anchor="c", side="bottom")
-        self.lower_frame = tk.Frame(self.scrollable_frame)
-        self.lower_frame.pack(in_=self.scrollable_frame,
-                              anchor="c", side="bottom")
+        # Create a Frame to hold both the upper and lower frames
+        self.center_frame = tk.Frame(self.scrollable_frame)
+        self.center_frame.pack(in_=self.scrollable_frame, anchor="c", side="bottom")
+        
+        self.lower_frame = tk.Frame(self.center_frame)
+        self.lower_frame.pack(in_=self.center_frame, anchor="c", side="left", ipady=15)
+        self.upper_frame = tk.Frame(self.center_frame)
+        self.upper_frame.pack(in_=self.center_frame, anchor="c", side="right", ipadx=15)
+        
         self.alert_for_hsv = tk.Label(
             self.lower_frame, text="", fg="red")
-        self.alert_for_hsv.pack(pady=5, side="top")
+        self.alert_for_hsv.pack(side="top", anchor="c")
         #
         #
         self.LOWER_GREEN = [35, 80, 80]
-        self.low_h_entry_label = tk.Label(self.lower_frame, text="LOWER-H:")
-        self.low_h_entry_label.pack(pady=5, side="left")
-        self.low_h_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_h_entry.insert(0, str(self.LOWER_GREEN[0]))
-        self.low_h_entry.pack(pady=5, side="left")
-        #
-        self.low_s_entry_label = tk.Label(self.lower_frame, text="S:")
-        self.low_s_entry_label.pack(pady=5, side="left")
-        self.low_s_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_s_entry.insert(0, str(self.LOWER_GREEN[1]))
-        self.low_s_entry.pack(pady=5, side="left")
-        #
-        self.low_v_entry_label = tk.Label(self.lower_frame, text="V:")
-        self.low_v_entry_label.pack(pady=5, side="left")
-        self.low_v_entry = tk.Entry(
-            self.lower_frame, width=5, justify="center", font="Courier 12")
-        self.low_v_entry.insert(0, str(self.LOWER_GREEN[2]))
-        self.low_v_entry.pack(pady=5, side="left")
-        #
-        self.update_btn_low = tk.Button(
-            self.lower_frame, text="Update", command=self.update_lower_hsv)
-        self.update_btn_low.pack(pady=0, side="left")
+        # self.low_h_entry_label = tk.Label(self.lower_frame, text="LOWER-H:")
+        # self.low_h_entry_label.pack(pady=5, side="left")
+        # self.low_h_entry = tk.Entry(
+        #     self.lower_frame, width=5, justify="center", font="Courier 12")
+        # self.low_h_entry.insert(0, str(self.LOWER_GREEN[0]))
+        # self.low_h_entry.pack(pady=5, side="left")
+        # #
+        # self.low_s_entry_label = tk.Label(self.lower_frame, text="S:")
+        # self.low_s_entry_label.pack(pady=5, side="left")
+        # self.low_s_entry = tk.Entry(
+        #     self.lower_frame, width=5, justify="center", font="Courier 12")
+        # self.low_s_entry.insert(0, str(self.LOWER_GREEN[1]))
+        # self.low_s_entry.pack(pady=5, side="left")
+        # #
+        # self.low_v_entry_label = tk.Label(self.lower_frame, text="V:")
+        # self.low_v_entry_label.pack(pady=5, side="left")
+        # self.low_v_entry = tk.Entry(
+        #     self.lower_frame, width=5, justify="center", font="Courier 12")
+        # self.low_v_entry.insert(0, str(self.LOWER_GREEN[2]))
+        # self.low_v_entry.pack(pady=5, side="left")
+        # #
+        # self.update_btn_low = tk.Button(
+        #     self.lower_frame, text="Update", command=self.update_lower_hsv)
+        # self.update_btn_low.pack(pady=0, side="left")
         #
         #
         self.UPPER_GREEN = [80, 255, 255]
-        self.up_h_entry_label = tk.Label(self.upper_frame, text="UPPER-H:")
-        self.up_h_entry_label.pack(pady=5, side="left")
-        self.up_h_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
-        self.up_h_entry.insert(0, str(self.UPPER_GREEN[0]))
-        self.up_h_entry.pack(pady=5, side="left")
-        #
-        self.up_s_entry_label = tk.Label(self.upper_frame, text="S:")
-        self.up_s_entry_label.pack(pady=5, side="left")
-        self.up_s_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
-        self.up_s_entry.insert(0, str(self.UPPER_GREEN[1]))
-        self.up_s_entry.pack(pady=5, side="left")
-        #
-        self.up_v_entry_label = tk.Label(self.upper_frame, text="V:")
-        self.up_v_entry_label.pack(pady=5, side="left")
-        self.up_v_entry = tk.Entry(
-            self.upper_frame, width=5, justify="center", font="Courier 12")
-        self.up_v_entry.insert(0, str(self.UPPER_GREEN[2]))
-        self.up_v_entry.pack(pady=5, side="left")
-        #
-        self.update_btn_high = tk.Button(
-            self.upper_frame, text="Update", command=self.update_upper_hsv)
-        self.update_btn_high.pack(pady=0, side="left")
+        # self.up_h_entry_label = tk.Label(self.upper_frame, text="UPPER-H:")
+        # self.up_h_entry_label.pack(pady=5, side="left")
+        # self.up_h_entry = tk.Entry(
+        #     self.upper_frame, width=5, justify="center", font="Courier 12")
+        # self.up_h_entry.insert(0, str(self.UPPER_GREEN[0]))
+        # self.up_h_entry.pack(pady=5, side="left")
+        # #
+        # self.up_s_entry_label = tk.Label(self.upper_frame, text="S:")
+        # self.up_s_entry_label.pack(pady=5, side="left")
+        # self.up_s_entry = tk.Entry(
+        #     self.upper_frame, width=5, justify="center", font="Courier 12")
+        # self.up_s_entry.insert(0, str(self.UPPER_GREEN[1]))
+        # self.up_s_entry.pack(pady=5, side="left")
+        # #
+        # self.up_v_entry_label = tk.Label(self.upper_frame, text="V:")
+        # self.up_v_entry_label.pack(pady=5, side="left")
+        # self.up_v_entry = tk.Entry(
+        #     self.upper_frame, width=5, justify="center", font="Courier 12")
+        # self.up_v_entry.insert(0, str(self.UPPER_GREEN[2]))
+        # self.up_v_entry.pack(pady=5, side="left")
+        # #
+        # self.update_btn_high = tk.Button(
+        #     self.upper_frame, text="Update", command=self.update_upper_hsv)
+        # self.update_btn_high.pack(pady=0, side="left")
 
-        # # Create the three sliders for MAX Hue, Saturation, and Value
-        # self.max_hue_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Hue", command=self.update_color)
-        # self.max_hue_slider.pack()
+        # Create the three sliders for MIN Hue, Saturation, and Value
+        self.min_hue_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Hue", command=self.update_min_color_canvas)
+        self.min_hue_slider.set(self.LOWER_GREEN[0])
+        self.min_hue_slider.pack()
 
-        # self.max_saturation_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Saturation", command=self.update_color)
-        # self.max_saturation_slider.pack()
+        self.min_saturation_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Saturation", command=self.update_min_color_canvas)
+        self.min_saturation_slider.set(self.LOWER_GREEN[1])
+        self.min_saturation_slider.pack()
 
-        # self.max_value_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Value", command=self.update_color)
-        # self.max_value_slider.pack()
+        self.min_value_slider = tk.Scale(self.lower_frame, from_=0, to=255, orient="horizontal", label="Min Value", command=self.update_min_color_canvas)
+        self.min_value_slider.set(self.LOWER_GREEN[2])
+        self.min_value_slider.pack()
 
-        # self.color_canvas = tk.Canvas(self.upper_frame, width=50, height=50, bg="#000000")
-        # self.color_canvas.pack()
+        self.min_color_canvas = tk.Canvas(self.lower_frame, width=20, height=20, bg="#000000")
+        self.min_color_canvas.pack()
+        self.min_color_update_button = tk.Button(self.lower_frame, text="Update Min Color", command=self.update_min_color)
+        self.min_color_update_button.pack()
+
+        # Create the three sliders for MAX Hue, Saturation, and Value
+        self.max_hue_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Hue", command=self.update_max_color_canvas)
+        self.max_hue_slider.set(self.UPPER_GREEN[0])
+        self.max_hue_slider.pack()
+
+        self.max_saturation_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Saturation", command=self.update_max_color_canvas)
+        self.max_saturation_slider.set(self.UPPER_GREEN[1])
+        self.max_saturation_slider.pack()
+
+        self.max_value_slider = tk.Scale(self.upper_frame, from_=0, to=255, orient="horizontal", label="Max Value", command=self.update_max_color_canvas)
+        self.max_value_slider.set(self.UPPER_GREEN[2])
+        self.max_value_slider.pack()
+
+        self.max_color_canvas = tk.Canvas(self.upper_frame, width=20, height=20, bg="#000000")
+        self.max_color_canvas.pack()
+        self.max_color_update_button = tk.Button(self.upper_frame, text="Update Max Color", command=self.update_max_color)
+        self.max_color_update_button.pack()
         #
         #
         #
         self.render_image()
 
-    def update_color(self, event=None):
+    def update_min_color_canvas(self, event=None):
+        r, g, b = self.min_hue_slider.get(), self.min_saturation_slider.get(), self.min_value_slider.get()
+        color = f"#{r:02x}{g:02x}{b:02x}"
+        self.min_color_canvas.config(bg=color)
+
+    def update_max_color_canvas(self, event=None):
         r, g, b = self.max_hue_slider.get(), self.max_saturation_slider.get(), self.max_value_slider.get()
         color = f"#{r:02x}{g:02x}{b:02x}"
-        self.color_canvas.config(bg=color)
+        self.max_color_canvas.config(bg=color)
+
+    def update_min_color(self):
+        lower_h = self.min_hue_slider.get()
+        lower_s = self.min_saturation_slider.get()
+        lower_v = self.min_value_slider.get()
+        if lower_h < self.UPPER_GREEN[0] and lower_s < self.UPPER_GREEN[1] and lower_v < self.UPPER_GREEN[2] and lower_h >= 0 and lower_s >= 0 and lower_v >= 0:
+            self.LOWER_GREEN = [lower_h, lower_s, lower_v]
+            self.alert_for_hsv.config(
+                text="new LOWER-HSV: " + str(self.LOWER_GREEN))
+        else:
+            warning = "INVALID: "
+            if lower_h >= self.UPPER_GREEN[0]:
+                warning += "UPPER_H <= LOWER_H\t"
+            elif lower_s >= self.UPPER_GREEN[1]:
+                warning += "UPPER_S <= LOWER_S\t"
+            elif lower_v >= self.UPPER_GREEN[2]:
+                warning += "UPPER_V <= LOWER_V\t"
+            else:
+                warning += "LOWER_V < 0\t"
+
+            self.alert_for_hsv.config(
+                text=warning)
+
+    def update_max_color(self):
+        upper_h = self.max_hue_slider.get()
+        upper_s = self.max_saturation_slider.get()
+        upper_v = self.max_value_slider.get()
+        if upper_h > self.LOWER_GREEN[0] and upper_s > self.LOWER_GREEN[1] and upper_v > self.LOWER_GREEN[2] and upper_h <= 255 and upper_s <= 255 and upper_v <= 255:
+            self.UPPER_GREEN = [upper_h, upper_s, upper_v]
+            self.alert_for_hsv.config(
+                text="new UPPER-HSV: " + str(self.UPPER_GREEN))
+        else:
+            warning = "INVALID: "
+            if upper_h <= self.LOWER_GREEN[0]:
+                warning += "UPPER_H <= LOWER_H\t"
+            elif upper_s <= self.LOWER_GREEN[1]:
+                warning += "UPPER_S <= LOWER_S\t"
+            elif upper_v <= self.LOWER_GREEN[2]:
+                warning += "UPPER_V <= LOWER_V\t"
+            else:
+                warning += "UPPER_V > 255\t"
+
+            self.alert_for_hsv.config(
+                text=warning)
+
 
 
     def update_upper_hsv(self):
