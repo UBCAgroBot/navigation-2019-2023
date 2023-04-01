@@ -40,9 +40,9 @@ algo_list = [
      CheckRowEnd),
     ('seesaw',
      SeesawAlgorithm),
-     ('seesaw_v2',
+    ('seesaw_v2',
      SeesawAlgorithmVersionTwo)
-     ]
+]
 #
 number_of_frames = 0
 

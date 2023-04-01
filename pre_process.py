@@ -152,7 +152,7 @@ def standardize_frame(img):
 
     try:
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    except:
+    except BaseException:
         img_float32 = np.float32(img)
         hsv = cv2.cvtColor(img_float32, cv2.COLOR_BGR2HSV)
 
