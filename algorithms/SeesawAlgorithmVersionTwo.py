@@ -58,7 +58,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
             # calculate angle
             if y1 - y2 != 0:
                 angle = round(math.degrees(math.atan(int(x2 - x1) / int(y1 - y2))), 1)
-                bias = round(numpy.average(overall_bias)/(self.WIDTH/2)*90, 2)
+                bias = round(numpy.average(overall_bias) / (self.WIDTH / 2) * 90, 2)
 
                 if abs(angle) > abs(bias):
                     output = angle
@@ -79,7 +79,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
         :param frame: current frame (mat)
         :return: processed frame (mat), list of centre points
         """
-        frame = cv.line(frame, (int(self.WIDTH/2), 0), (int(self.WIDTH/2), int(self.HEIGHT)), (255, 0, 255), 9)
+        frame = cv.line(frame, (int(self.WIDTH / 2), 0), (int(self.WIDTH / 2), int(self.HEIGHT)), (255, 0, 255), 9)
         bar_height = int(self.BAR_HEIGHT)
         mask = self.create_binary_mask(frame)
 
@@ -101,7 +101,7 @@ class SeesawAlgorithmVersionTwo(Algorithm):
 
             if points.any():
                 centre = int(numpy.median(points))
-                bias = int(centre - self.WIDTH/2)
+                bias = int(centre - self.WIDTH / 2)
                 black_frame = cv.circle(black_frame, [int(centre), int((square_high + square_low) / 2)],
                                         radius=0, color=(0, 0, 255), thickness=15)
                 centre_points.append([centre, int((square_high + square_low) / 2)])
