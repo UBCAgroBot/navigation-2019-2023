@@ -1,0 +1,18 @@
+#filtering parameters
+averaging_kernel_size: (5,5)
+gauss_kernel_size: 3,3
+dilate_kernel_size: (5,5)
+sigma_x: 0
+
+contour_color: 0,129,255
+bar_height: 30
+resolution_factor: 100
+
+#### size of frame
+frame_width: 1280
+frame_length: 720
+
+#### hsv thresholds for crop video
+lower_hsv_threshold: [35, 80, 80]
+upper_hsv_threshold: [80, 255, 255]
+

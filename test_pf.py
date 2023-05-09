@@ -12,6 +12,7 @@ from algorithms.HoughAlgorithm import HoughAlgorithm
 from algorithms.MiniContoursAlgorithm import MiniContoursAlgorithm
 from algorithms.MiniContoursDownwards import MiniContoursDownwards
 from algorithms.ScanningAlgorithm import ScanningAlgorithm
+from algorithms.SeesawAlgorithmVersionTwo import SeesawAlgorithmVersionTwo
 
 
 # parser for command line arguments
@@ -33,7 +34,9 @@ algo_list = [
     ('scanning',
      ScanningAlgorithm),
     ('check_row_end',
-     CheckRowEnd)]
+     CheckRowEnd),
+    ('seesaw_v2',
+     SeesawAlgorithmVersionTwo)]
 
 
 # ability to pass in args for reusability
