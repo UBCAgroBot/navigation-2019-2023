@@ -2,7 +2,7 @@ import math
 
 import cv2 as cv
 import numpy as np
-from algorithms.Algorithm import Algorithm
+from .Algorithm import Algorithm
 
 
 class SeesawAlgorithm(Algorithm):
@@ -87,7 +87,7 @@ class SeesawAlgorithm(Algorithm):
             black_frame = cv.rectangle(black_frame, (half_width, square_low), (
                 x2, int(square_high)), (255, 255, 0), 3)
 
-            both_point = [int((x1 + x2) / 2), int((square_high + square_low) / 2)]
+            both_point = (int((x1 + x2) / 2), int((square_high + square_low) / 2))
             both_points.append(both_point)
 
             black_frame = cv.circle(black_frame, both_point, radius=0, color=(0, 0, 255), thickness=15)
