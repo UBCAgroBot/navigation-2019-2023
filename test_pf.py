@@ -36,7 +36,7 @@ algo_list = [
     ('check_row_end',
      CheckRowEnd),
     ('seesaw_v2',
-    SeesawAlgorithmVersionTwo)]
+     SeesawAlgorithmVersionTwo)]
 
 
 # ability to pass in args for reusability
